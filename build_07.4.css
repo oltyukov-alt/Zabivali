@@ -1,0 +1,2287 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+
+<head>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>PROJECT ZABIVALY --- ACT V «ГДЕ КУПИТЬ»</title>
+
+    <style>
+        /* ============================================================
+           RESET & BASE (без изменений)
+           ============================================================ */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #0a0a0a;
+            color: #ece6e0;
+            overflow-x: hidden;
+            line-height: 1.4;
+            margin: 0;
+            padding: 0;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            border: none;
+            background: none;
+            cursor: pointer;
+            font: inherit;
+            color: inherit;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+            background: #0a0a0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3d3d3d;
+            border-radius: 2px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6a6a6a;
+        }
+
+        /* ============================================================
+           ACT V --- ГДЕ КУПИТЬ
+           ============================================================ */
+        .act-where {
+            position: relative;
+            width: 100%;
+            min-height: 100dvh;
+            background: #0f0f0f;
+            padding: 30px 40px 30px;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.9s cubic-bezier(0.23, 1, 0.32, 1),
+                transform 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .act-where.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .act-where__bg {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse at 80% 20%, rgba(183, 28, 28, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 20% 80%, rgba(183, 28, 28, 0.04) 0%, transparent 40%),
+                linear-gradient(180deg, #0f0f0f 0%, #161616 100%);
+        }
+
+        .act-where__inner {
+            position: relative;
+            z-index: 1;
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        /* --------- Заголовок --------- */
+        .where-header {
+            margin-bottom: 20px;
+        }
+
+        .where-header__title {
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            font-size: clamp(2.8rem, 6vw, 4.4rem);
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
+            color: #ece6e0;
+            line-height: 1.05;
+        }
+
+        .where-header__title .highlight {
+            color: #b71c1c;
+        }
+
+        .where-header__sub {
+            font-size: clamp(1rem, 1.2vw, 1.25rem);
+            font-weight: 300;
+            color: rgba(236, 230, 224, 0.55);
+            margin-top: 6px;
+            letter-spacing: 0.02em;
+            transition: opacity 0.3s ease;
+        }
+
+        .where-header__line {
+            width: 3em;
+            height: 3px;
+            background: #b71c1c;
+            margin-top: 12px;
+            border-radius: 2px;
+        }
+
+        /* ============================================================
+           ОСНОВНОЙ КОНТЕЙНЕР (карта + карточка)
+           ============================================================ */
+        .where-main {
+            display: flex;
+            gap: 24px;
+            margin-top: 0;
+            align-items: stretch;
+        }
+
+        /* --------- Левая часть: фильтры + карта (без счётчика) --------- */
+        .where-map-area {
+            flex: 1 1 65%;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --------- Фильтры (без поиска) --------- */
+        .where-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 16px;
+            align-items: center;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .where-filters__geo {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.02);
+            color: rgba(236, 230, 224, 0.6);
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            white-space: nowrap;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .where-filters__geo:hover {
+            border-color: rgba(183, 28, 28, 0.3);
+            color: #ece6e0;
+        }
+
+        .where-filters__geo .icon {
+            font-size: 1.1rem;
+        }
+
+        .where-filters__select {
+            position: relative;
+            min-width: 130px;
+        }
+
+        .where-filters__select select {
+            padding: 10px 32px 10px 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            color: #ece6e0;
+            font-size: 0.9rem;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            font-family: inherit;
+            width: 100%;
+            transition: border-color 0.3s;
+        }
+
+        .where-filters__select select:focus {
+            border-color: rgba(183, 28, 28, 0.4);
+        }
+
+        .where-filters__select select option {
+            background: #1a1a1a;
+            color: #ece6e0;
+        }
+
+        .where-filters__select .arrow {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: rgba(236, 230, 224, 0.25);
+            font-size: 0.7rem;
+        }
+
+        .where-filters__reset {
+            padding: 10px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            color: rgba(236, 230, 224, 0.5);
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            white-space: nowrap;
+            font-family: inherit;
+            background: transparent;
+        }
+
+        .where-filters__reset:hover {
+            border-color: rgba(183, 28, 28, 0.3);
+            color: #ece6e0;
+        }
+
+        /* --------- Ряд карты (новый контейнер) --------- */
+        .where-map-row {
+            flex: 1;
+            display: flex;
+            align-items: stretch;
+            min-height: 0;
+        }
+
+        /* --------- Карта --------- */
+        .where-map {
+            flex: 1;
+            height: auto;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #1a1a1a;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            position: relative;
+            display: block;
+        }
+
+        .where-map canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        /* --------- Маркеры (поверх canvas) --------- */
+        .where-map__markers {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .where-map__marker {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #b71c1c;
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 0 0 4px rgba(183, 28, 28, 0.15), 0 4px 16px rgba(0, 0, 0, 0.3);
+            transform: translate(-50%, -50%);
+            pointer-events: auto;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+            z-index: 1;
+            will-change: transform;
+        }
+
+        .where-map__marker::after {
+            content: '';
+            position: absolute;
+            inset: 5px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .where-map__marker:hover {
+            transform: translate(-50%, -50%) scale(1.25);
+            box-shadow: 0 0 0 6px rgba(183, 28, 28, 0.25), 0 6px 24px rgba(183, 28, 28, 0.2);
+            z-index: 3;
+        }
+
+        .where-map__marker.active {
+            transform: translate(-50%, -50%) scale(1.35);
+            box-shadow: 0 0 0 8px rgba(183, 28, 28, 0.3), 0 8px 32px rgba(183, 28, 28, 0.25);
+            z-index: 3;
+            border-color: #ffffff;
+            animation: pulse-marker 1.8s ease-in-out infinite;
+        }
+
+        .where-map__marker.nearest {
+            box-shadow: 0 0 0 4px rgba(183, 28, 28, 0.15), 0 0 0 10px rgba(183, 28, 28, 0.08), 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .where-map__marker.nearest.active {
+            box-shadow: 0 0 0 8px rgba(183, 28, 28, 0.3), 0 0 0 14px rgba(183, 28, 28, 0.12), 0 8px 32px rgba(183, 28, 28, 0.25);
+        }
+
+        @keyframes pulse-marker {
+            0%,
+            100% {
+                box-shadow: 0 0 0 8px rgba(183, 28, 28, 0.3), 0 8px 32px rgba(183, 28, 28, 0.25);
+            }
+            50% {
+                box-shadow: 0 0 0 12px rgba(183, 28, 28, 0.15), 0 8px 40px rgba(183, 28, 28, 0.35);
+            }
+        }
+
+        /* --------- Счётчик (вынесен из .where-map-area) --------- */
+        .where-counter {
+            font-size: 0.9rem;
+            color: rgba(236, 230, 224, 0.5);
+            padding: 8px 0 4px;
+            letter-spacing: 0.03em;
+            transition: opacity 0.3s ease;
+            min-height: 2rem;
+            margin-top: 14px;
+            flex: 0 0 auto;
+        }
+
+        .where-counter strong {
+            color: #ece6e0;
+            font-weight: 600;
+        }
+
+        .where-counter .city-name {
+            color: #ece6e0;
+            font-weight: 500;
+        }
+
+        /* ============================================================
+           КАРТОЧКА ПАРТНЕРА (правая часть)
+           ============================================================ */
+        .where-card {
+            flex: 0 0 35%;
+            min-width: 320px;
+            max-width: 460px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 32px 28px 28px;
+            display: flex;
+            flex-direction: column;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            opacity: 0;
+            transform: translateY(16px);
+            min-height: 450px;
+            height: auto;
+            align-self: stretch;
+        }
+
+        .where-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .where-card__empty {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(236, 230, 224, 0.2);
+            font-size: 0.95rem;
+            text-align: center;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .where-card__empty .icon {
+            font-size: 2.4rem;
+            opacity: 0.3;
+        }
+
+        .where-card__brand {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(183, 28, 28, 0.6);
+            margin-bottom: 6px;
+        }
+
+        .where-card__name {
+            font-size: clamp(1.5rem, 1.8vw, 2rem);
+            font-weight: 700;
+            color: #ece6e0;
+            line-height: 1.2;
+            width: 100%;
+        }
+
+        .where-card__city {
+            font-size: 1rem;
+            color: rgba(236, 230, 224, 0.5);
+            margin-top: 4px;
+            width: 100%;
+        }
+
+        .where-card__divider {
+            width: 2.5em;
+            height: 2px;
+            background: #b71c1c;
+            margin: 18px 0 14px;
+            border-radius: 2px;
+        }
+
+        .where-card__address {
+            font-size: 0.95rem;
+            color: rgba(236, 230, 224, 0.6);
+            line-height: 1.5;
+            margin-bottom: 14px;
+            width: 100%;
+        }
+
+        .where-card__address .label {
+            color: rgba(236, 230, 224, 0.3);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .where-card__site {
+            font-size: 0.95rem;
+            color: rgba(236, 230, 224, 0.5);
+            margin-bottom: 18px;
+            word-break: break-all;
+            width: 100%;
+        }
+
+        .where-card__site .label {
+            color: rgba(236, 230, 224, 0.3);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .where-card__site a {
+            color: rgba(183, 28, 28, 0.7);
+            transition: color 0.3s;
+        }
+
+        .where-card__site a:hover {
+            color: #b71c1c;
+        }
+
+        .where-card__actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: auto;
+            padding-top: 18px;
+            width: 100%;
+        }
+
+        .where-card__btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 24px;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            flex: 1;
+            min-width: 130px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            color: #ece6e0;
+            text-align: center;
+        }
+
+        .where-card__btn--primary {
+            background: #b71c1c;
+            border-color: #b71c1c;
+            color: #ece6e0;
+        }
+
+        .where-card__btn--primary:hover {
+            background: #8b1414;
+            border-color: #8b1414;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(183, 28, 28, 0.2);
+        }
+
+        .where-card__btn--outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .where-card__btn .icon {
+            font-size: 1.1rem;
+        }
+
+        /* --------- Блок доверия --------- */
+        .where-card__trust {
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255, 255, 255, .08);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .where-card__trust-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 14px;
+            line-height: 1.45;
+            color: rgba(236, 230, 224, .78);
+        }
+
+        .where-card__trust-icon {
+            color: #b71c1c;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* ============================================================
+           СЕКЦИЯ H15
+           ============================================================ */
+        .where-h15 {
+            margin-top: 48px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .where-h15__header {
+            margin-bottom: 24px;
+        }
+
+        .where-h15__title {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: clamp(1.6rem, 3vw, 2.4rem);
+            letter-spacing: -0.01em;
+            color: #ece6e0;
+        }
+
+        .where-h15__sub {
+            font-size: 1rem;
+            color: rgba(236, 230, 224, 0.45);
+            margin-top: 4px;
+            max-width: 500px;
+        }
+
+        .where-h15__card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 24px;
+            padding: 28px 32px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .where-h15__card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .where-h15__brand {
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            font-size: clamp(2rem, 4vw, 3rem);
+            letter-spacing: -0.02em;
+            color: #ece6e0;
+        }
+
+        .where-h15__brand .highlight {
+            color: #b71c1c;
+        }
+
+        .where-h15__features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px 24px;
+            margin: 6px 0;
+        }
+
+        .where-h15__feature {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: rgba(236, 230, 224, 0.5);
+        }
+
+        .where-h15__feature .icon {
+            color: #b71c1c;
+            font-size: 1.1rem;
+        }
+
+        .where-h15__btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            background: #b71c1c;
+            border: none;
+            color: #ece6e0;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .where-h15__btn:hover {
+            background: #8b1414;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(183, 28, 28, 0.2);
+        }
+
+        .where-h15__btn .icon {
+            font-size: 1.2rem;
+        }
+
+        /* ============================================================
+           АДАПТИВНОСТЬ
+           ============================================================ */
+        /* Десктоп: все фильтры в одну строку, нужный порядок */
+        @media (min-width: 1024px) {
+            .where-filters {
+                flex-wrap: nowrap;
+                gap: 12px;
+            }
+
+            .where-filters__select {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .where-filters__geo,
+            .where-filters__reset {
+                flex: 0 0 auto;
+            }
+        }
+
+        @media (max-width: 1100px) {
+            .act-where {
+                padding: 40px 24px 40px;
+            }
+            .where-main {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .where-card {
+                flex: 1 1 auto;
+                max-width: 100%;
+                min-height: auto;
+                padding: 24px 20px;
+            }
+            .where-map {
+                min-height: 380px;
+            }
+            .where-map-area {
+                flex: 1 1 auto;
+            }
+            .where-counter {
+                margin-top: 12px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .act-where {
+                padding: 28px 16px 32px;
+            }
+            .where-header__title {
+                font-size: clamp(2.2rem, 7vw, 3rem);
+            }
+            .where-header__sub {
+                font-size: 0.95rem;
+            }
+            .where-filters {
+                padding: 12px 14px;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+            .where-filters__geo {
+                flex: 0 0 auto;
+                padding: 10px 14px;
+                font-size: 0.8rem;
+            }
+            .where-filters__select {
+                flex: 1 1 calc(50% - 8px);
+                min-width: 0;
+            }
+            .where-filters__reset {
+                flex: 0 0 auto;
+                padding: 10px 16px;
+                font-size: 0.8rem;
+            }
+            .where-map {
+                min-height: 300px;
+            }
+            .where-map__marker {
+                width: 24px;
+                height: 24px;
+            }
+            .where-card {
+                padding: 20px 16px;
+                min-height: auto;
+            }
+            .where-card__name {
+                font-size: 1.3rem;
+            }
+            .where-card__actions {
+                flex-direction: column;
+            }
+            .where-card__btn {
+                flex: 1 1 auto;
+                min-width: 0;
+                padding: 12px 16px;
+                font-size: 0.8rem;
+            }
+            .where-h15 {
+                margin-top: 32px;
+                padding-top: 28px;
+            }
+            .where-h15__card {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 24px 20px;
+            }
+            .where-h15__brand {
+                font-size: clamp(1.8rem, 6vw, 2.4rem);
+            }
+            .where-h15__btn {
+                width: 100%;
+                justify-content: center;
+                padding: 14px 20px;
+            }
+            .where-h15__features {
+                gap: 10px 16px;
+            }
+            .where-counter {
+                margin-top: 10px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .act-where {
+                padding: 20px 12px 24px;
+            }
+            .where-filters {
+                padding: 10px 10px;
+                gap: 8px;
+            }
+            .where-filters__select select {
+                padding: 8px 28px 8px 10px;
+                font-size: 0.8rem;
+            }
+            .where-map {
+                min-height: 240px;
+                border-radius: 8px;
+            }
+            .where-map__marker {
+                width: 20px;
+                height: 20px;
+                border-width: 1.5px;
+            }
+            .where-card {
+                padding: 16px 12px;
+                border-radius: 8px;
+            }
+            .where-counter {
+                font-size: 0.8rem;
+            }
+            .where-h15__sub {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- ==========================================================
+    ACT V --- ГДЕ КУПИТЬ
+    ========================================================== -->
+    <section class="act-where" id="actWhere">
+
+        <div class="act-where__bg"></div>
+
+        <div class="act-where__inner">
+
+            <!-- Заголовок -->
+            <div class="where-header">
+                <h2 class="where-header__title">ГДЕ <span class="highlight">КУПИТЬ</span></h2>
+                <p class="where-header__sub" id="headerSub">Все официальные магазины H15 и CCM собраны на одной карте.</p>
+                <div class="where-header__line"></div>
+            </div>
+
+            <!-- Основной блок (только карта и карточка) -->
+            <div class="where-main">
+
+                <!-- Левая часть: фильтры + карта (без счётчика) -->
+                <div class="where-map-area">
+
+                    <!-- Фильтры -->
+                    <div class="where-filters" id="filtersPanel">
+
+                        <button class="where-filters__geo" id="geoButton">
+                            <span class="icon">📍</span> Найти ближайший
+                        </button>
+
+                        <div class="where-filters__select">
+                            <select id="brandFilter">
+                                <option value="all">Все товары</option>
+                                <option value="CCM">CCM</option>
+                                <option value="H15">H15</option>
+                            </select>
+                            <span class="arrow">▼</span>
+                        </div>
+
+                        <div class="where-filters__select">
+                            <select id="cityFilter">
+                                <option value="all">Все города</option>
+                            </select>
+                            <span class="arrow">▼</span>
+                        </div>
+
+                        <div class="where-filters__select">
+                            <select id="storeFilter">
+                                <option value="all">Все магазины</option>
+                            </select>
+                            <span class="arrow">▼</span>
+                        </div>
+
+                        <button class="where-filters__reset" id="resetFilters">Очистить</button>
+
+                    </div>
+
+                    <!-- Новый контейнер: карта -->
+                    <div class="where-map-row">
+                        <div class="where-map" id="mapContainer">
+                            <canvas id="mapCanvas"></canvas>
+                            <div class="where-map__markers" id="markersContainer"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Карточка партнера -->
+                <div class="where-card" id="partnerCard">
+
+                    <div class="where-card__empty" id="emptyState">
+                        <span class="icon">📍</span>
+                        <span>Выберите магазин на карте</span>
+                    </div>
+
+                    <div id="cardContent" style="display:none;">
+                        <div class="where-card__brand" id="cardBrand">Официальный партнер H15 × CCM</div>
+                        <div class="where-card__name" id="cardName"></div>
+                        <div class="where-card__city" id="cardCity"></div>
+                        <div class="where-card__divider"></div>
+
+                        <div class="where-card__address">
+                            <span class="label">Адрес</span>
+                            <span id="cardAddress"></span>
+                        </div>
+
+                        <div class="where-card__site">
+                            <span class="label">Сайт</span>
+                            <a href="#" target="_blank" id="cardSiteLink">nashaigra.ru</a>
+                        </div>
+
+                        <div class="where-card__actions">
+                            <a href="#" target="_blank" class="where-card__btn where-card__btn--primary" id="cardBtnSite">
+                                Перейти на сайт
+                            </a>
+                            <button class="where-card__btn where-card__btn--outline" id="cardBtnRoute">
+                                <span class="icon">📍</span> Открыть в Яндекс Картах
+                            </button>
+                        </div>
+
+                        <div class="where-card__trust">
+                            <div class="where-card__trust-item">
+                                <span class="where-card__trust-icon">✓</span>
+                                <span>Официальный партнер H15 × CCM</span>
+                            </div>
+                            <div class="where-card__trust-item">
+                                <span class="where-card__trust-icon">✓</span>
+                                <span>Покупка участвует в проекте «Забивалы»</span>
+                            </div>
+                            <div class="where-card__trust-item">
+                                <span class="where-card__trust-icon">✓</span>
+                                <span>После покупки вы сможете активировать Артефакт</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Счётчик (вынесен из .where-map-area, находится после .where-main) -->
+            <div class="where-counter" id="counter">
+                Найдено <strong id="countDisplay">0</strong> официальных партнеров
+            </div>
+
+            <!-- Секция H15 -->
+            <div class="where-h15">
+                <div class="where-h15__header">
+                    <h3 class="where-h15__title">НЕ НАШЛИ МАГАЗИН РЯДОМ?</h3>
+                    <p class="where-h15__sub">Одежду H15 можно заказать напрямую в официальном интернет-магазине.</p>
+                </div>
+
+                <div class="where-h15__card" id="h15Card">
+                    <div>
+                        <div class="where-h15__brand">H15 <span class="highlight">·</span></div>
+                        <div class="where-h15__features">
+                            <span class="where-h15__feature"><span class="icon">✓</span> Оригинальная продукция</span>
+                            <span class="where-h15__feature"><span class="icon">✓</span> Доставка по всей России</span>
+                            <span class="where-h15__feature"><span class="icon">✓</span> Полная коллекция</span>
+                        </div>
+                    </div>
+                    <a href="#" target="_blank" class="where-h15__btn" id="h15Btn">
+                        <span class="icon">→</span> Перейти в интернет-магазин
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <script>
+        /* ================================================================
+           PROJECT ZABIVALY --- ACT V «ГДЕ КУПИТЬ»
+           Финальная полировка: унифицированные тексты, пустое состояние
+           ================================================================ */
+
+        (function() {
+            'use strict';
+
+            // ============================================================
+            // ДАННЫЕ ПАРТНЕРОВ (все 50) с добавленным полем id и brands
+            // ============================================================
+            const partners = [{
+                id: 0,
+                lat: 55.70297089106273,
+                lng: 37.6488826073044,
+                name: 'Пункт выдачи ССМ',
+                city: 'Москва',
+                address: 'Москва, Автозаводская улица, 23Ак2',
+                site: 'https://ccm.ru/?utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=ccm_pickup&utm_term=moskva&clckid=2b2575bf',
+                store: 'Пункт выдачи ССМ',
+                brands: ["CCM"]
+            }, {
+                id: 1,
+                lat: 56.285958,
+                lng: 43.979342,
+                name: '«Наша Игра»',
+                city: 'Нижний Новгород',
+                address: 'Нижний Новгород, проспект Гагарина, 35к1',
+                site: 'https://www.nashaigra.ru/catalog/?q=ccm&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=nasha_igra&utm_term=nizhniy_novgorod&clckid=c49ff0e7',
+                store: 'Наша Игра',
+                brands: ["CCM"]
+            }, {
+                id: 2,
+                lat: 57.59074,
+                lng: 39.861789,
+                name: '«Наша Игра»',
+                city: 'Ярославль',
+                address: 'Ярославль, Московский проспект, 141',
+                site: 'https://www.nashaigra.ru/catalog/?q=ccm&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=nasha_igra&utm_term=yaroslavl&clckid=c49ff0e7',
+                store: 'Наша Игра',
+                brands: ["CCM"]
+            }, {
+                id: 3,
+                lat: 55.63230619558569,
+                lng: 37.36880600132714,
+                name: '«Наша Игра»',
+                city: 'Москва',
+                address: 'Москва, Новоорловская улица, 7В',
+                site: 'https://www.nashaigra.ru/catalog/?q=ccm&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=nasha_igra&utm_term=moskva&clckid=c49ff0e7',
+                store: 'Наша Игра',
+                brands: ["CCM"]
+            }, {
+                id: 4,
+                lat: 55.723577,
+                lng: 37.677014,
+                name: '«Наша Игра»',
+                city: 'Москва',
+                address: 'Москва, Новоостаповская улица, 5с2',
+                site: 'https://www.nashaigra.ru/catalog/?q=ccm&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=nasha_igra&utm_term=moskva&clckid=c49ff0e7',
+                store: 'Наша Игра',
+                brands: ["CCM"]
+            }, {
+                id: 5,
+                lat: 55.792908,
+                lng: 37.671588,
+                name: '«Наша Игра»',
+                city: 'Москва',
+                address: 'Москва, улица Сокольнический Вал, 1Б',
+                site: 'https://www.nashaigra.ru/catalog/?q=ccm&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=nasha_igra&utm_term=moskva&clckid=c49ff0e7',
+                store: 'Наша Игра',
+                brands: ["CCM"]
+            }, {
+                id: 6,
+                lat: 55.773393,
+                lng: 37.494584,
+                name: '«Наша Игра»',
+                city: 'Москва',
+                address: 'Москва, улица Мнёвники, 10к1',
+                site: 'https://www.nashaigra.ru/catalog/?q=ccm&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=nasha_igra&utm_term=moskva&clckid=c49ff0e7',
+                store: 'Наша Игра',
+                brands: ["CCM"]
+            }, {
+                id: 7,
+                lat: 59.924155041420015,
+                lng: 30.470629717929185,
+                name: '«Hockey Club»',
+                city: 'Санкт-Петербург',
+                address: 'Санкт-Петербург, Российский проспект, д. 6, стр. 1',
+                site: 'https://hockeyclub.ru/search/index.php?q=ccm&s=&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=hockey_club&utm_term=g_sankt_peterburg',
+                store: 'Hockey Club',
+                brands: ["CCM", "H15"]
+            }, {
+                id: 8,
+                lat: 55.817951584369304,
+                lng: 49.12832481366414,
+                name: '«Экипировочный центр Ак Барс»',
+                city: 'Казань',
+                address: 'Казань, улица Сибгата Хакима, 23',
+                site: 'https://ekip.ak-bars.ru/catalog/?q=ccm&s=&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=ekipirovochnyy_tsentr_ak_bars&utm_term=respublika_tatarstan_tatarstan',
+                store: 'Экипировочный центр Ак Барс',
+                brands: ["CCM"]
+            }, {
+                id: 9,
+                lat: 48.44739338112183,
+                lng: 135.0980242123027,
+                name: '«ТАФГАЙ»',
+                city: 'Хабаровск',
+                address: 'Хабаровск, улица Морозова Павла Леонтьевича, 113',
+                site: 'https://toughguydv.ru/?utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=tafgay&utm_term=habarovsk#/query=ccm&params%5B0%5D%5Bfield%5D=category&params%5B0%5D%5Bcondition%5D=in&params%5B0%5D%5Boptions%5D%5B0%5D=693&params%5B0%5D%5Boptions%5D%5B1%5D=694&params%5B0%5D%5Boptions%5D%5B2%5D=695&params%5B0%5D%5Boptions%5D%5B3%5D=716&params%5B0%5D%5Boptions%5D%5B4%5D=697&params%5B0%5D%5Boptions%5D%5B5%5D=691&params%5B0%5D%5Boptions%5D%5B6%5D=629&params%5B0%5D%5Boptions%5D%5B7%5D=633&params%5B0%5D%5Boptions%5D%5B8%5D=637&params%5B0%5D%5Boptions%5D%5B9%5D=636&params%5B0%5D%5Boptions%5D%5B10%5D=638&params%5B0%5D%5Boptions%5D%5B11%5D=651&params%5B0%5D%5Boptions%5D%5B12%5D=646&limit=24',
+                store: 'ТАФГАЙ',
+                brands: ["CCM"]
+            }, {
+                id: 10,
+                lat: 50.280268283039646,
+                lng: 127.51043305522431,
+                name: '«ТАФГАЙ»',
+                city: 'Благовещенск',
+                address: 'Благовещенск, улица Мухина, 114',
+                site: 'https://toughguydv.ru/?utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=tafgay&utm_term=amurskaya_oblast#/query=ccm&params%5B0%5D%5Bfield%5D=category&params%5B0%5D%5Bcondition%5D=in&params%5B0%5D%5Boptions%5D%5B0%5D=693&params%5B0%5D%5Boptions%5D%5B1%5D=694&params%5B0%5D%5Boptions%5D%5B2%5D=695&params%5B0%5D%5Boptions%5D%5B3%5D=716&params%5B0%5D%5Boptions%5D%5B4%5D=697&params%5B0%5D%5Boptions%5D%5B5%5D=691&params%5B0%5D%5Boptions%5D%5B6%5D=629&params%5B0%5D%5Boptions%5D%5B7%5D=633&params%5B0%5D%5Boptions%5D%5B8%5D=637&params%5B0%5D%5Boptions%5D%5B9%5D=636&params%5B0%5D%5Boptions%5D%5B10%5D=638&params%5B0%5D%5Boptions%5D%5B11%5D=651&params%5B0%5D%5Boptions%5D%5B12%5D=646&limit=24',
+                store: 'ТАФГАЙ',
+                brands: ["CCM"]
+            }, {
+                id: 11,
+                lat: 46.902393,
+                lng: 142.744293,
+                name: '«ТАФГАЙ»',
+                city: 'Южно-Сахалинск',
+                address: 'Южно-Сахалинск, проспект Мира, 480',
+                site: 'https://toughguydv.ru/?utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=tafgay&utm_term=sahalinskaya_oblast#/query=ccm&params%5B0%5D%5Bfield%5D=category&params%5B0%5D%5Bcondition%5D=in&params%5B0%5D%5Boptions%5D%5B0%5D=693&params%5B0%5D%5Boptions%5D%5B1%5D=694&params%5B0%5D%5Boptions%5D%5B2%5D=695&params%5B0%5D%5Boptions%5D%5B3%5D=716&params%5B0%5D%5Boptions%5D%5B4%5D=697&params%5B0%5D%5Boptions%5D%5B5%5D=691&params%5B0%5D%5Boptions%5D%5B6%5D=629&params%5B0%5D%5Boptions%5D%5B7%5D=633&params%5B0%5D%5Boptions%5D%5B8%5D=637&params%5B0%5D%5Boptions%5D%5B9%5D=636&params%5B0%5D%5Boptions%5D%5B10%5D=638&params%5B0%5D%5Boptions%5D%5B11%5D=651&params%5B0%5D%5Boptions%5D%5B12%5D=646&limit=24',
+                store: 'ТАФГАЙ',
+                brands: ["CCM"]
+            }, {
+                id: 12,
+                lat: 54.99161557656352,
+                lng: 82.91414972635353,
+                name: '«ТАФГАЙ»',
+                city: 'Новосибирск',
+                address: 'Новосибирск, улица Немировича-Данченко, 158',
+                site: 'https://toughguydv.ru/?utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=tafgay&utm_term=novosibirsk#/query=ccm&params%5B0%5D%5Bfield%5D=category&params%5B0%5D%5Bcondition%5D=in&params%5B0%5D%5Boptions%5D%5B0%5D=693&params%5B0%5D%5Boptions%5D%5B1%5D=694&params%5B0%5D%5Boptions%5D%5B2%5D=695&params%5B0%5D%5Boptions%5D%5B3%5D=716&params%5B0%5D%5Boptions%5D%5B4%5D=697&params%5B0%5D%5Boptions%5D%5B5%5D=691&params%5B0%5D%5Boptions%5D%5B6%5D=629&params%5B0%5D%5Boptions%5D%5B7%5D=633&params%5B0%5D%5Boptions%5D%5B8%5D=637&params%5B0%5D%5Boptions%5D%5B9%5D=636&params%5B0%5D%5Boptions%5D%5B10%5D=638&params%5B0%5D%5Boptions%5D%5B11%5D=651&params%5B0%5D%5Boptions%5D%5B12%5D=646&limit=24',
+                store: 'ТАФГАЙ',
+                brands: ["CCM"]
+            }, {
+                id: 13,
+                lat: 52.253751,
+                lng: 104.258193,
+                name: '«ТАФГАЙ»',
+                city: 'Иркутск',
+                address: 'Иркутск, проезд Юрия Тена, 21',
+                site: 'https://toughguydv.ru/?utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=tafgay&utm_term=irkutsk#/query=ccm&params%5B0%5D%5Bfield%5D=category&params%5B0%5D%5Bcondition%5D=in&params%5B0%5D%5Boptions%5D%5B0%5D=693&params%5B0%5D%5Boptions%5D%5B1%5D=694&params%5B0%5D%5Boptions%5D%5B2%5D=695&params%5B0%5D%5Boptions%5D%5B3%5D=716&params%5B0%5D%5Boptions%5D%5B4%5D=697&params%5B0%5D%5Boptions%5D%5B5%5D=691&params%5B0%5D%5Boptions%5D%5B6%5D=629&params%5B0%5D%5Boptions%5D%5B7%5D=633&params%5B0%5D%5Boptions%5D%5B8%5D=637&params%5B0%5D%5Boptions%5D%5B9%5D=636&params%5B0%5D%5Boptions%5D%5B10%5D=638&params%5B0%5D%5Boptions%5D%5B11%5D=651&params%5B0%5D%5Boptions%5D%5B12%5D=646&limit=24',
+                store: 'ТАФГАЙ',
+                brands: ["CCM"]
+            }, {
+                id: 14,
+                lat: 55.171714,
+                lng: 61.287039,
+                name: '«Мир хоккея»',
+                city: 'Челябинск',
+                address: 'Челябинск, улица 250-летия Челябинска, 31',
+                site: 'https://worldhockey.market/info/brands/ccm/?utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=mir_hokkeya&utm_term=chelyabinsk',
+                store: 'Мир хоккея',
+                brands: ["CCM"]
+            }, {
+                id: 15,
+                lat: 55.16097061284173,
+                lng: 61.448827906745514,
+                name: '«Мир хоккея»',
+                city: 'Челябинск',
+                address: 'Челябинск, проспект Ленина, 12А',
+                site: 'https://worldhockey.market/info/brands/ccm/?utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=mir_hokkeya&utm_term=chelyabinsk',
+                store: 'Мир хоккея',
+                brands: ["CCM"]
+            }, {
+                id: 16,
+                lat: 57.138275045082054,
+                lng: 65.58450771163861,
+                name: '«Мир хоккея»',
+                city: 'Тюмень',
+                address: 'Тюмень, улица Пржевальского, 40',
+                site: 'https://worldhockey.market/info/brands/ccm/?utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=mir_hokkeya&utm_term=tyumen',
+                store: 'Мир хоккея',
+                brands: ["CCM"]
+            }, {
+                id: 17,
+                lat: 54.995503461582985,
+                lng: 73.36158368676745,
+                name: '«Overtime»',
+                city: 'Омск',
+                address: 'Омск, улица Красный Путь, 18',
+                site: 'https://hockeyshop24.ru/search?search=ccm&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=overtime&utm_term=omsk',
+                store: 'Overtime',
+                brands: ["CCM"]
+            }, {
+                id: 18,
+                lat: 56.03430042699436,
+                lng: 92.91651162334739,
+                name: '«Overtime»',
+                city: 'Красноярск',
+                address: 'Красноярск, Взлётная улица, 6А',
+                site: 'https://hockeyshop24.ru/search?search=ccm&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=overtime&utm_term=krasnoyarsk',
+                store: 'Overtime',
+                brands: ["CCM"]
+            }, {
+                id: 19,
+                lat: 53.76842377017892,
+                lng: 87.11968762831006,
+                name: '«Overtime»',
+                city: 'Новокузнецк',
+                address: 'Новокузнецк, проспект Металлургов, 56',
+                site: 'https://hockeyshop24.ru/search?search=ccm&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=overtime&utm_term=novokuznetsk',
+                store: 'Overtime',
+                brands: ["CCM"]
+            }, {
+                id: 20,
+                lat: 55.64695258849899,
+                lng: 37.61892990310959,
+                name: '«Overtime»',
+                city: 'Москва',
+                address: 'Москва, Варшавское шоссе, 94',
+                site: 'https://hockeyshop24.ru/search?search=ccm&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=overtime&utm_term=moskva',
+                store: 'Overtime',
+                brands: ["CCM"]
+            }, {
+                id: 21,
+                lat: 55.851647482618404,
+                lng: 37.64189554232764,
+                name: '«Overtime»',
+                city: 'Москва',
+                address: 'Москва, улица Седова, 5к1',
+                site: 'https://hockeyshop24.ru/search?search=ccm&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=overtime&utm_term=moskva',
+                store: 'Overtime',
+                brands: ["CCM"]
+            }, {
+                id: 22,
+                lat: 55.70835090161102,
+                lng: 37.64183939748302,
+                name: '«Overtime»',
+                city: 'Москва',
+                address: 'Москва, Даниловская набережная, 2к4',
+                site: 'https://hockeyshop24.ru/search?search=ccm&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=overtime&utm_term=moskva',
+                store: 'Overtime',
+                brands: ["CCM"]
+            }, {
+                id: 23,
+                lat: 55.81551632714126,
+                lng: 37.46412546759743,
+                name: '«Overtime»',
+                city: 'Москва',
+                address: 'Москва, улица Габричевского, 10к4',
+                site: 'https://hockeyshop24.ru/search?search=ccm&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=overtime&utm_term=moskva',
+                store: 'Overtime',
+                brands: ["CCM"]
+            }, {
+                id: 24,
+                lat: 55.73034972864278,
+                lng: 37.67919151785985,
+                name: '«Overtime»',
+                city: 'Москва',
+                address: 'Москва, улица Талалихина, 28с4',
+                site: 'https://hockeyshop24.ru/search?search=ccm&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=overtime&utm_term=moskva',
+                store: 'Overtime',
+                brands: ["CCM"]
+            }, {
+                id: 25,
+                lat: 55.798616,
+                lng: 37.939861,
+                name: '«Overtime»',
+                city: 'Балашиха',
+                address: 'Балашиха, Парковая улица, 2',
+                site: 'https://hockeyshop24.ru/search?search=ccm&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=overtime&utm_term=balashiha',
+                store: 'Overtime',
+                brands: ["CCM"]
+            }, {
+                id: 26,
+                lat: 60.01682391674497,
+                lng: 30.246019172944425,
+                name: 'ООО «Хоккей без границ»',
+                city: 'Санкт-Петербург',
+                address: 'Санкт-Петербург, Долгоозёрная улица, 14, ТРК «5 ОЗЕР», 2 этаж, секция В30',
+                site: 'https://hockeybezgranic.ru/poisk/index.php?q=ccm&s=&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=hockey_bez_granic&utm_term=sankt_peterburg',
+                store: 'Хоккей без границ',
+                brands: ["CCM"]
+            }, {
+                id: 27,
+                lat: 59.853754,
+                lng: 30.349703,
+                name: 'ООО «Хоккей без границ»',
+                city: 'Санкт-Петербург',
+                address: '196211, ул. Типанова, д.27/39, ТРК «Космос», 2 этаж, секция 222',
+                site: 'https://hockeybezgranic.ru/poisk/index.php?q=ccm&s=&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=hockey_bez_granic&utm_term=sankt_peterburg',
+                store: 'Хоккей без границ',
+                brands: ["CCM"]
+            }, {
+                id: 28,
+                lat: 59.737798,
+                lng: 30.624414,
+                name: 'ООО «Хоккей без границ»',
+                city: 'Колпино',
+                address: 'Колпино, Октябрьская улица, 8, ТРК «ОКА», эт. 3, секция 101',
+                site: 'https://hockeybezgranic.ru/poisk/index.php?q=ccm&s=&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=hockey_bez_granic&utm_term=kolpino',
+                store: 'Хоккей без границ',
+                brands: ["CCM"]
+            }, {
+                id: 29,
+                lat: 56.85682951083,
+                lng: 60.59780798891918,
+                name: '«PROХОККЕЙ»',
+                city: 'Екатеринбург',
+                address: 'Екатеринбург, улица Героев России, 2, этаж 3',
+                site: 'https://prohockey96.ru/?product_cat=&post_type=product&s=ccm&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=prohockey&utm_term=ekaterinburg',
+                store: 'PROХОККЕЙ',
+                brands: ["CCM"]
+            }, {
+                id: 30,
+                lat: 56.79888957542816,
+                lng: 60.59562995204402,
+                name: '«PROХОККЕЙ»',
+                city: 'Екатеринбург',
+                address: 'Екатеринбург, Московская улица, 281',
+                site: 'https://prohockey96.ru/?product_cat=&post_type=product&s=ccm&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=prohockey&utm_term=ekaterinburg',
+                store: 'PROХОККЕЙ',
+                brands: ["CCM"]
+            }, {
+                id: 31,
+                lat: 47.27502782584653,
+                lng: 39.79100785152016,
+                name: '«ХОККЕЙ ПЛЮС»',
+                city: 'Ростов-на-Дону',
+                address: 'Ростов-на-Дону, посёлок Орджоникидзе, Лесозащитная улица, 41',
+                site: 'https://www.hockeypluskrd.ru/index.php?route=product/search&search=ccm&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=hockey_plus&utm_term=rostov_na_donu',
+                store: 'ХОККЕЙ ПЛЮС',
+                brands: ["CCM"]
+            }, {
+                id: 32,
+                lat: 45.11269684583668,
+                lng: 38.985314571757975,
+                name: '«ХОККЕЙ ПЛЮС»',
+                city: 'Краснодар',
+                address: 'Краснодар, Прикубанский внутригородской округ, микрорайон Горхутор, Яхонтовая улица, 1/1',
+                site: 'https://www.hockeypluskrd.ru/index.php?route=product/search&search=ccm&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=hockey_plus&utm_term=krasnodar',
+                store: 'ХОККЕЙ ПЛЮС',
+                brands: ["CCM"]
+            }, {
+                id: 33,
+                lat: 53.2526825655281,
+                lng: 50.2180796577413,
+                name: '«Red Ice»',
+                city: 'Самара',
+                address: 'Самара, проспект Кирова, 308А, Максидом, 2 этаж, Red Ice - Хоккейный центр экипировки',
+                site: 'https://vk.com/redice_centr?utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=red_ice&utm_term=samara',
+                store: 'Red Ice',
+                brands: ["CCM"]
+            }, {
+                id: 34,
+                lat: 53.539912,
+                lng: 49.300684,
+                name: '«Red Ice»',
+                city: 'Тольятти',
+                address: 'Тольятти, Ботаническая улица, 7Б, 1 этаж, Red Ice - Хоккейный центр экипировки',
+                site: 'https://vk.com/redice_centr?utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=red_ice&utm_term=tolyatti',
+                store: 'Red Ice',
+                brands: ["CCM"]
+            }, {
+                id: 35,
+                lat: 56.850097,
+                lng: 60.596882,
+                name: '«R5 - REDFIVE HOCKEY»',
+                city: 'Екатеринбург',
+                address: 'Екатеринбург, Красный переулок, 5к1',
+                site: 'https://redfivehockey.com/catalog/konki_i_aksessuary/konki_khokkeynye/ccm/?utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=redfive_hockey&utm_term=ekaterinburg',
+                store: 'REDFIVE HOCKEY',
+                brands: ["CCM"]
+            }, {
+                id: 36,
+                lat: 56.82709826436279,
+                lng: 60.5999650846552,
+                name: '«R5 - REDFIVE HOCKEY»',
+                city: 'Екатеринбург',
+                address: 'Екатеринбург, улица Куйбышева, 55',
+                site: 'https://redfivehockey.com/catalog/konki_i_aksessuary/konki_khokkeynye/ccm/?utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=redfive_hockey&utm_term=ekaterinburg',
+                store: 'REDFIVE HOCKEY',
+                brands: ["CCM"]
+            }, {
+                id: 37,
+                lat: 56.74877105787616,
+                lng: 60.5582007116338,
+                name: '«R5 - REDFIVE HOCKEY»',
+                city: 'Екатеринбург',
+                address: 'Екатеринбург, Счастливая улица, 16',
+                site: 'https://redfivehockey.com/catalog/konki_i_aksessuary/konki_khokkeynye/ccm/?utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=redfive_hockey&utm_term=ekaterinburg',
+                store: 'REDFIVE HOCKEY',
+                brands: ["CCM"]
+            }, {
+                id: 38,
+                lat: 54.97209320213039,
+                lng: 73.39032805026186,
+                name: 'Хокк',
+                city: 'Омск',
+                address: 'Омск, улица Маршала Жукова, 101',
+                site: 'https://xokk.ru/catalog/?q=ccm&s=%D0%9F%D0%BE%D0%B8%D1%81%D0%BA&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=xokk&utm_term=omsk',
+                store: 'Хокк',
+                brands: ["CCM"]
+            }, {
+                id: 39,
+                lat: 55.05190514401921,
+                lng: 82.9026738234164,
+                name: 'Хокк',
+                city: 'Новосибирск',
+                address: 'Новосибирск, улица Галущака, 2А',
+                site: 'https://xokk.ru/catalog/?q=ccm&s=%D0%9F%D0%BE%D0%B8%D1%81%D0%BA&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=xokk&utm_term=novosibirsk',
+                store: 'Хокк',
+                brands: ["CCM"]
+            }, {
+                id: 40,
+                lat: 56.034956733559206,
+                lng: 92.92544091170794,
+                name: 'Хокк',
+                city: 'Красноярск',
+                address: 'Красноярск, улица Партизана Железняка, 40А',
+                site: 'https://xokk.ru/catalog/?q=ccm&s=%D0%9F%D0%BE%D0%B8%D1%81%D0%BA&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=xokk&utm_term=krasnoyarsk',
+                store: 'Хокк',
+                brands: ["CCM"]
+            }, {
+                id: 41,
+                lat: 53.381414078907845,
+                lng: 58.989719901434924,
+                name: '«Хит Хоккей»',
+                city: 'Магнитогорск',
+                address: 'Магнитогорск, проспект Ленина, 126 (напротив Арены Металлург)',
+                site: 'https://vk.com/hithockey',
+                store: 'Хит Хоккей',
+                brands: ["CCM"]
+            }, {
+                id: 42,
+                lat: 55.05198521645206,
+                lng: 82.90287834185382,
+                name: 'Reeform',
+                city: 'Новосибирск',
+                address: 'Новосибирск, улица Галущака, 2А',
+                site: 'https://reeform.ru/search/?query=ccm&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=reeform&utm_term=novosibirsk',
+                store: 'Reeform',
+                brands: ["CCM"]
+            }, {
+                id: 43,
+                lat: 55.345952724536374,
+                lng: 86.06270646378823,
+                name: 'Reeform',
+                city: 'Кемерово',
+                address: 'Кемерово, Кузнецкий проспект, 80',
+                site: 'https://reeform.ru/search/?query=ccm&utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=reeform&utm_term=kemerovo',
+                store: 'Reeform',
+                brands: ["CCM"]
+            }, {
+                id: 44,
+                lat: 55.98924,
+                lng: 37.22738,
+                name: 'Матч хоккей',
+                city: 'Москва',
+                address: 'Москва, Зеленоград, к601А (офлайн магазин)',
+                site: 'https://ccm.ru/',
+                store: 'Матч хоккей',
+                brands: ["CCM"]
+            }, {
+                id: 45,
+                lat: 56.862775,
+                lng: 35.879216,
+                name: 'Матч хоккей',
+                city: 'Тверь',
+                address: 'Тверь, Краснофлотская набережная, 17 (офлайн магазин)',
+                site: 'https://ccm.ru/',
+                store: 'Матч хоккей',
+                brands: ["CCM"]
+            }, {
+                id: 46,
+                lat: 55.636213414636146,
+                lng: 51.80553315459578,
+                name: 'Магазин «Хоккеист 2.0»',
+                city: 'Нижнекамск',
+                address: 'Нижнекамск, проспект Строителей, 32',
+                site: 'https://t.me/hockeist2_0',
+                store: 'Хоккеист 2.0',
+                brands: ["CCM"]
+            }, {
+                id: 47,
+                lat: 55.81779,
+                lng: 49.127264,
+                name: 'Магазин «Хоккеист 2.0»',
+                city: 'Казань',
+                address: 'Казань, улица Сибгата Хакима, 23',
+                site: 'https://t.me/hockeist2_0',
+                store: 'Хоккеист 2.0',
+                brands: ["CCM"]
+            }, {
+                id: 48,
+                lat: 55.78967594885761,
+                lng: 49.10872186871585,
+                name: 'Магазин «Хоккеист 2.0»',
+                city: 'Казань',
+                address: 'Казань, улица Тази Гиззата, 4',
+                site: 'https://t.me/hockeist2_0',
+                store: 'Хоккеист 2.0',
+                brands: ["CCM"]
+            }, {
+                id: 49,
+                lat: 55.84015254765051,
+                lng: 49.15484646494228,
+                name: 'Магазин «Хоккеист 2.0»',
+                city: 'Казань',
+                address: 'Казань, улица Гаврилова, 48А',
+                site: 'https://t.me/hockeist2_0',
+                store: 'Хоккеист 2.0',
+                brands: ["CCM"]
+            }];
+
+            // ============================================================
+            // СОСТОЯНИЕ
+            // ============================================================
+            const state = {
+                filtered: [...partners],
+                selectedId: null,
+                activeCity: 'all',
+                activeStore: 'all',
+                activeBrand: 'all',
+                isNearest: false,
+                nearestPartner: null
+            };
+
+            // ============================================================
+            // DOM-ЭЛЕМЕНТЫ
+            // ============================================================
+            const mapContainer = document.getElementById('mapContainer');
+            const canvas = document.getElementById('mapCanvas');
+            const markersContainer = document.getElementById('markersContainer');
+            const cityFilter = document.getElementById('cityFilter');
+            const storeFilter = document.getElementById('storeFilter');
+            const brandFilter = document.getElementById('brandFilter');
+            const resetBtn = document.getElementById('resetFilters');
+            const geoButton = document.getElementById('geoButton');
+            const countDisplay = document.getElementById('countDisplay');
+            const counter = document.getElementById('counter');
+            const partnerCard = document.getElementById('partnerCard');
+            const emptyState = document.getElementById('emptyState');
+            const cardContent = document.getElementById('cardContent');
+            const cardBrand = document.getElementById('cardBrand');
+            const cardName = document.getElementById('cardName');
+            const cardCity = document.getElementById('cardCity');
+            const cardAddress = document.getElementById('cardAddress');
+            const cardSiteLink = document.getElementById('cardSiteLink');
+            const cardBtnSite = document.getElementById('cardBtnSite');
+            const cardBtnRoute = document.getElementById('cardBtnRoute');
+            const h15Card = document.getElementById('h15Card');
+            const h15Btn = document.getElementById('h15Btn');
+            const actWhere = document.getElementById('actWhere');
+            const headerSub = document.getElementById('headerSub');
+
+            // ============================================================
+            // УНИКАЛЬНЫЕ ГОРОДА И МАГАЗИНЫ ДЛЯ ФИЛЬТРОВ
+            // ============================================================
+            const cities = [...new Set(partners.map(p => p.city))].sort();
+            const stores = [...new Set(partners.map(p => p.store))].sort();
+
+            function populateFilters() {
+                cityFilter.innerHTML = '<option value="all">Все города</option>';
+                cities.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c;
+                    opt.textContent = c;
+                    cityFilter.appendChild(opt);
+                });
+
+                storeFilter.innerHTML = '<option value="all">Все магазины</option>';
+                stores.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s;
+                    opt.textContent = s;
+                    storeFilter.appendChild(opt);
+                });
+            }
+            populateFilters();
+
+            // ============================================================
+            // КООРДИНАТЫ ДЛЯ КАРТЫ (вычисляем bounding box)
+            // ============================================================
+            let currentBounds = {
+                minLat: Infinity,
+                maxLat: -Infinity,
+                minLng: Infinity,
+                maxLng: -Infinity
+            };
+
+            function computeBounds(partnersList) {
+                if (!partnersList || partnersList.length === 0) {
+                    return { minLat: 45, maxLat: 70, minLng: 20, maxLng: 140 };
+                }
+                const b = {
+                    minLat: Infinity,
+                    maxLat: -Infinity,
+                    minLng: Infinity,
+                    maxLng: -Infinity
+                };
+                partnersList.forEach(p => {
+                    if (p.lat < b.minLat) b.minLat = p.lat;
+                    if (p.lat > b.maxLat) b.maxLat = p.lat;
+                    if (p.lng < b.minLng) b.minLng = p.lng;
+                    if (p.lng > b.maxLng) b.maxLng = p.lng;
+                });
+                const padLat = (b.maxLat - b.minLat) * 0.15 + 0.5;
+                const padLng = (b.maxLng - b.minLng) * 0.15 + 0.5;
+                b.minLat -= padLat;
+                b.maxLat += padLat;
+                b.minLng -= padLng;
+                b.maxLng += padLng;
+                return b;
+            }
+
+            // ============================================================
+            // СИЛУЭТ РОССИИ (приблизительный полигон)
+            // ============================================================
+            const russiaOutline = [
+                [70, 20],
+                [72, 30],
+                [73, 40],
+                [74, 50],
+                [73, 60],
+                [72, 70],
+                [70, 80],
+                [68, 90],
+                [66, 100],
+                [64, 110],
+                [62, 120],
+                [60, 130],
+                [58, 140],
+                [56, 150],
+                [54, 160],
+                [52, 165],
+                [50, 170],
+                [48, 175],
+                [46, 180],
+                [44, 185],
+                [42, 190],
+                [40, 195],
+                [38, 200],
+                [36, 205],
+                [34, 210],
+                [32, 215],
+                [30, 220],
+                [28, 225],
+                [26, 230],
+                [24, 235],
+                [22, 240],
+                [20, 245],
+                [18, 250],
+                [16, 255],
+                [14, 260],
+                [12, 265],
+                [10, 270],
+                [8, 275],
+                [6, 280],
+                [4, 285],
+                [2, 290],
+                [0, 295],
+                [-2, 300],
+                [-4, 305],
+                [-6, 310],
+                [-8, 315],
+                [-10, 320],
+                [-12, 325],
+                [-14, 330],
+                [-16, 335],
+                [-18, 340],
+                [-20, 345],
+                [-22, 350],
+                [-24, 355],
+                [-26, 360],
+                [-28, 365],
+                [-30, 370],
+                [-32, 375],
+                [-34, 380],
+                [-36, 385],
+                [-38, 390],
+                [-40, 395],
+                [-42, 400],
+                [-44, 405],
+                [-46, 410],
+                [-48, 415],
+                [-50, 420],
+                [-52, 425],
+                [-54, 430],
+                [-56, 435],
+                [-58, 440],
+                [-60, 445],
+                [-62, 450],
+                [-64, 455],
+                [-66, 460],
+                [-68, 465],
+                [-70, 470],
+                [-72, 475],
+                [-74, 480],
+                [-76, 485],
+                [-78, 490],
+                [-80, 495],
+                [-82, 500],
+                [-84, 505],
+                [-86, 510],
+                [-88, 515],
+                [-90, 520],
+                [-92, 525],
+                [-94, 530],
+                [-96, 535],
+                [-98, 540],
+                [-100, 545],
+                [-102, 550],
+                [-104, 555],
+                [-106, 560],
+                [-108, 565],
+                [-110, 570],
+                [-112, 575],
+                [-114, 580],
+                [-116, 585],
+                [-118, 590],
+                [-120, 595],
+                [-122, 600],
+                [-124, 605],
+                [-126, 610],
+                [-128, 615],
+                [-130, 620],
+                [-132, 625],
+                [-134, 630],
+                [-136, 635],
+                [-138, 640],
+                [-140, 645],
+                [-142, 650],
+                [-144, 655],
+                [-146, 660],
+                [-148, 665],
+                [-150, 670],
+                [-152, 675],
+                [-154, 680],
+                [-156, 685],
+                [-158, 690],
+                [-160, 695],
+                [-162, 700],
+                [-164, 705],
+                [-166, 710],
+                [-168, 715],
+                [-170, 720],
+                [-172, 725],
+                [-174, 730],
+                [-176, 735],
+                [-178, 740],
+                [-180, 745]
+            ];
+
+            // ============================================================
+            // КОНВЕРТАЦИЯ КООРДИНАТ В ПИКСЕЛИ
+            // ============================================================
+            function latLngToPixel(lat, lng, width, height) {
+                const x = ((lng - currentBounds.minLng) / (currentBounds.maxLng - currentBounds.minLng)) * width;
+                const y = (1 - ((lat - currentBounds.minLat) / (currentBounds.maxLat - currentBounds.minLat))) * height;
+                return { x, y };
+            }
+
+            // ============================================================
+            // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+            // ============================================================
+            function deg2rad(deg) { return deg * (Math.PI / 180); }
+
+            function haversine(lat1, lng1, lat2, lng2) {
+                const R = 6371;
+                const dLat = deg2rad(lat2 - lat1);
+                const dLng = deg2rad(lng2 - lng1);
+                const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                    Math.sin(dLng / 2) * Math.sin(dLng / 2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                return R * c;
+            }
+
+            function findNearest(lat, lng) {
+                let nearest = null;
+                let minDist = Infinity;
+                partners.forEach(p => {
+                    const dist = haversine(lat, lng, p.lat, p.lng);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        nearest = p;
+                    }
+                });
+                return { partner: nearest, distance: minDist };
+            }
+
+            // ============================================================
+            // ОТРИСОВКА КАРТЫ (canvas)
+            // ============================================================
+            let mapWidth = 0;
+            let mapHeight = 0;
+            let ctx = null;
+
+            function resizeMap() {
+                const rect = mapContainer.getBoundingClientRect();
+                const dpr = window.devicePixelRatio || 1;
+                mapWidth = rect.width;
+                mapHeight = rect.height || 400;
+                canvas.width = mapWidth * dpr;
+                canvas.height = mapHeight * dpr;
+                canvas.style.width = mapWidth + 'px';
+                canvas.style.height = mapHeight + 'px';
+                ctx = canvas.getContext('2d');
+                ctx.scale(dpr, dpr);
+                drawMap();
+                updateMarkers();
+            }
+
+            function drawMap() {
+                if (!ctx) return;
+                const w = mapWidth;
+                const h = mapHeight;
+                const grad = ctx.createRadialGradient(w * 0.5, h * 0.4, 0, w * 0.5, h * 0.4, Math.max(w, h) * 0.7);
+                grad.addColorStop(0, '#1e1e1e');
+                grad.addColorStop(1, '#121212');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, w, h);
+
+                if (russiaOutline.length > 0) {
+                    ctx.beginPath();
+                    const first = latLngToPixel(russiaOutline[0][0], russiaOutline[0][1], w, h);
+                    ctx.moveTo(first.x, first.y);
+                    for (let i = 1; i < russiaOutline.length; i++) {
+                        const p = latLngToPixel(russiaOutline[i][0], russiaOutline[i][1], w, h);
+                        ctx.lineTo(p.x, p.y);
+                    }
+                    ctx.closePath();
+                    ctx.fillStyle = 'rgba(255,255,255,0.04)';
+                    ctx.fill();
+                    ctx.strokeStyle = 'rgba(255,255,255,0.02)';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+
+                ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+                ctx.lineWidth = 0.5;
+                const step = 40;
+                for (let x = step; x < w; x += step) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, h);
+                    ctx.stroke();
+                }
+                for (let y = step; y < h; y += step) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(w, y);
+                    ctx.stroke();
+                }
+
+                ctx.strokeStyle = 'rgba(255,255,255,0.02)';
+                ctx.lineWidth = 1.5;
+                const indices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+                for (let i = 0; i < indices.length - 1; i++) {
+                    const a = partners[indices[i]];
+                    const b = partners[indices[i + 1]];
+                    if (a && b) {
+                        const p1 = latLngToPixel(a.lat, a.lng, w, h);
+                        const p2 = latLngToPixel(b.lat, b.lng, w, h);
+                        ctx.beginPath();
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                }
+
+                const vignette = ctx.createRadialGradient(w * 0.5, h * 0.5, w * 0.2, w * 0.5, h * 0.5, Math.max(w, h) * 0.7);
+                vignette.addColorStop(0, 'rgba(0,0,0,0)');
+                vignette.addColorStop(1, 'rgba(0,0,0,0.3)');
+                ctx.fillStyle = vignette;
+                ctx.fillRect(0, 0, w, h);
+            }
+
+            // ============================================================
+            // МАРКЕРЫ (без кластеризации, выделение по id)
+            // ============================================================
+            function updateMarkers() {
+                const w = mapWidth;
+                const h = mapHeight || 400;
+                markersContainer.innerHTML = '';
+                if (state.filtered.length === 0) return;
+
+                state.filtered.forEach(partner => {
+                    const pos = latLngToPixel(partner.lat, partner.lng, w, h);
+                    const marker = document.createElement('div');
+                    marker.className = 'where-map__marker';
+                    marker.style.left = pos.x + 'px';
+                    marker.style.top = pos.y + 'px';
+                    marker.dataset.partnerId = partner.id;
+                    marker.title = partner.name + ', ' + partner.city;
+
+                    if (state.selectedId !== null && partner.id === state.selectedId) {
+                        marker.classList.add('active');
+                    }
+                    if (state.isNearest && state.nearestPartner && partner.id === state.nearestPartner.id) {
+                        marker.classList.add('nearest');
+                    }
+
+                    marker.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const id = parseInt(this.dataset.partnerId, 10);
+                        const partner = state.filtered.find(p => p.id === id);
+                        if (partner) {
+                            selectPartnerById(id, false);
+                        }
+                    });
+
+                    markersContainer.appendChild(marker);
+                });
+            }
+
+            // ============================================================
+            // УПРАВЛЕНИЕ ПУСТЫМ СОСТОЯНИЕМ
+            // ============================================================
+            function setEmptyState(message) {
+                emptyState.innerHTML = `<span class="icon">📍</span><span>${message}</span>`;
+            }
+
+            function showEmptyState(message) {
+                setEmptyState(message);
+                emptyState.style.display = 'flex';
+                cardContent.style.display = 'none';
+                partnerCard.classList.remove('visible');
+            }
+
+            function hideEmptyState() {
+                emptyState.style.display = 'none';
+            }
+
+            // ============================================================
+            // ВЫБОР ПАРТНЕРА ПО ID
+            // ============================================================
+            function selectPartnerById(id, isNearest = false) {
+                const partner = state.filtered.find(p => p.id === id);
+                if (!partner) return;
+
+                state.selectedId = id;
+                state.isNearest = isNearest;
+                if (isNearest) {
+                    state.nearestPartner = partner;
+                } else {
+                    state.nearestPartner = null;
+                }
+
+                hideEmptyState();
+                cardContent.style.display = 'block';
+                partnerCard.classList.add('visible');
+
+                // Унифицированная подпись
+                if (isNearest) {
+                    cardBrand.textContent = 'Ближайший официальный партнер H15 × CCM';
+                } else {
+                    cardBrand.textContent = 'Официальный партнер H15 × CCM';
+                }
+
+                cardName.textContent = partner.name;
+                cardCity.textContent = partner.city;
+                cardAddress.textContent = partner.address;
+
+                let displayUrl = partner.site;
+                try {
+                    const url = new URL(partner.site);
+                    displayUrl = url.hostname.replace('www.', '');
+                } catch (e) {
+                    displayUrl = partner.site;
+                }
+                cardSiteLink.textContent = displayUrl;
+                cardSiteLink.href = partner.site;
+                cardBtnSite.href = partner.site;
+
+                cardBtnRoute.onclick = function() {
+                    const query = encodeURIComponent(partner.address + ', ' + partner.city);
+                    window.open('https://yandex.ru/maps/?text=' + query, '_blank');
+                };
+
+                updateH15Utm(partner);
+                updateCounter();
+                updateMarkers();
+                updateHeaderSub();
+            }
+
+            // ============================================================
+            // ОБНОВЛЕНИЕ UTM ДЛЯ H15
+            // ============================================================
+            function updateH15Utm(partner) {
+                const content = partner ? partner.store : 'general';
+                const term = partner ? partner.city : 'all';
+                const url =
+                    `https://h15wear.ru/?utm_source=zabivaly&utm_medium=partner&utm_campaign=zabivaly_2026&utm_content=${encodeURIComponent(content)}&utm_term=${encodeURIComponent(term)}`;
+                h15Btn.href = url;
+            }
+
+            // ============================================================
+            // ОБНОВЛЕНИЕ ПОДЗАГОЛОВКА (всегда один текст)
+            // ============================================================
+            function updateHeaderSub() {
+                headerSub.textContent = 'Все официальные магазины H15 и CCM собраны на одной карте.';
+            }
+
+            // ============================================================
+            // ФИЛЬТРАЦИЯ (с учётом города, магазина и бренда)
+            // ============================================================
+            function filterPartners() {
+                const city = state.activeCity;
+                const store = state.activeStore;
+                const brand = state.activeBrand;
+
+                let filtered = partners.filter(p => {
+                    let match = true;
+                    if (city !== 'all' && p.city !== city) match = false;
+                    if (store !== 'all' && p.store !== store) match = false;
+                    if (brand !== 'all') {
+                        if (brand === 'H15') {
+                            if (!p.brands || !p.brands.includes('H15')) match = false;
+                        }
+                    }
+                    return match;
+                });
+
+                // Если по городу ничего не найдено, но город выбран — пытаемся найти ближайший
+                if (filtered.length === 0 && city !== 'all') {
+                    const found = partners.find(p => p.city === city);
+                    if (found) {
+                        const { partner, distance } = findNearest(found.lat, found.lng);
+                        if (partner) {
+                            if (brand === 'H15' && (!partner.brands || !partner.brands.includes('H15'))) {
+                                // Нет подходящих по бренду
+                                state.filtered = [];
+                                state.isNearest = false;
+                                state.nearestPartner = null;
+                                if (state.selectedId !== null) {
+                                    const stillIn = state.filtered.some(p => p.id === state.selectedId);
+                                    if (!stillIn) {
+                                        state.selectedId = null;
+                                    }
+                                }
+                                currentBounds = computeBounds(partners);
+                                resizeMap();
+                                updateMarkers();
+                                drawMap();
+                                updateCounter();
+                                updateHeaderSub();
+                                // Показываем пустое состояние с сообщением об отсутствии
+                                showEmptyState('Магазины не найдены. Перейдите в официальный интернет-магазин ниже.');
+                                return;
+                            }
+                            state.isNearest = true;
+                            state.nearestPartner = partner;
+                            state.filtered = [partner];
+                            currentBounds = computeBounds([partner]);
+                            selectPartnerById(partner.id, true);
+                            resizeMap();
+                            updateMarkers();
+                            drawMap();
+                            updateCounter();
+                            updateHeaderSub();
+                            return;
+                        }
+                    }
+                }
+
+                state.filtered = filtered;
+                state.isNearest = false;
+                state.nearestPartner = null;
+
+                // Если выбранный партнёр не входит в новый список, сбрасываем выбор
+                if (state.selectedId !== null) {
+                    const stillIn = state.filtered.some(p => p.id === state.selectedId);
+                    if (!stillIn) {
+                        state.selectedId = null;
+                    }
+                }
+
+                if (state.filtered.length > 0) {
+                    currentBounds = computeBounds(state.filtered);
+                    if (state.selectedId === null) {
+                        selectPartnerById(state.filtered[0].id, false);
+                    } else {
+                        selectPartnerById(state.selectedId, false);
+                    }
+                    // Убедимся, что пустое состояние скрыто
+                    hideEmptyState();
+                } else {
+                    currentBounds = computeBounds(partners);
+                    // Показываем пустое состояние с сообщением об отсутствии
+                    showEmptyState('Магазины не найдены. Перейдите в официальный интернет-магазин ниже.');
+                    updateH15Utm(null);
+                }
+
+                resizeMap();
+                updateMarkers();
+                drawMap();
+                updateCounter();
+                updateHeaderSub();
+            }
+
+            // ============================================================
+            // СЧЕТЧИК (универсальные сообщения)
+            // ============================================================
+            function updateCounter() {
+                const count = state.filtered.length;
+                let text = '';
+
+                if (state.isNearest && state.nearestPartner) {
+                    const dist = haversine(
+                        state.nearestPartner.lat,
+                        state.nearestPartner.lng,
+                        (currentBounds.minLat + currentBounds.maxLat) / 2,
+                        (currentBounds.minLng + currentBounds.maxLng) / 2
+                    );
+                    text =
+                        `Ближайший официальный партнер: <strong>${state.nearestPartner.city}</strong> · ${Math.round(dist)} км`;
+                } else if (state.activeCity !== 'all' && count > 0) {
+                    text = `<span class="city-name">${state.activeCity}</span> · Найдено <strong>${count}</strong> официальных партнеров`;
+                } else if (state.activeStore !== 'all' && count > 0) {
+                    text = `Найдено <strong>${count}</strong> официальных партнеров в магазине «${state.filtered[0].store}»`;
+                } else {
+                    text = `Найдено <strong>${count}</strong> официальных партнеров`;
+                }
+
+                counter.innerHTML = text;
+            }
+
+            // ============================================================
+            // СБРОС (сбрасываем все фильтры, включая бренд)
+            // ============================================================
+            function resetFilters() {
+                state.activeCity = 'all';
+                state.activeStore = 'all';
+                state.activeBrand = 'all';
+                state.isNearest = false;
+                state.nearestPartner = null;
+
+                cityFilter.value = 'all';
+                storeFilter.value = 'all';
+                brandFilter.value = 'all';
+
+                filterPartners();
+            }
+
+            // ============================================================
+            // ГЕОЛОКАЦИЯ (полезное сообщение при отсутствии H15)
+            // ============================================================
+            function findNearestByGeo() {
+                if (!navigator.geolocation) {
+                    counter.innerHTML = '⚠️ Ваш браузер не поддерживает геолокацию.';
+                    return;
+                }
+
+                counter.innerHTML = '📍 Определяем ваше местоположение...';
+
+                navigator.geolocation.getCurrentPosition(
+                    function(pos) {
+                        const lat = pos.coords.latitude;
+                        const lng = pos.coords.longitude;
+                        const { partner, distance } = findNearest(lat, lng);
+
+                        if (partner) {
+                            const brand = state.activeBrand;
+                            if (brand === 'H15' && (!partner.brands || !partner.brands.includes('H15'))) {
+                                counter.innerHTML = '⚠️ Рядом не найдено магазинов H15. Заказать продукцию можно в официальном интернет-магазине ниже на странице.';
+                                // Также показываем сообщение в карточке
+                                showEmptyState('Рядом не найдено магазинов H15. Заказать продукцию можно в официальном интернет-магазине ниже.');
+                                return;
+                            }
+
+                            state.activeCity = 'all';
+                            state.activeStore = 'all';
+                            cityFilter.value = 'all';
+                            storeFilter.value = 'all';
+
+                            state.isNearest = true;
+                            state.nearestPartner = partner;
+                            state.filtered = [partner];
+                            currentBounds = computeBounds([partner]);
+
+                            selectPartnerById(partner.id, true);
+                            resizeMap();
+                            updateMarkers();
+                            drawMap();
+
+                            counter.innerHTML =
+                                `Ближайший официальный партнер: <strong>${partner.city}</strong> · ${Math.round(distance)} км`;
+                        } else {
+                            counter.innerHTML = '⚠️ Не удалось найти партнеров поблизости.';
+                            showEmptyState('Не удалось найти партнеров поблизости.');
+                        }
+                    },
+                    function(err) {
+                        let msg = '⚠️ Не удалось определить местоположение.';
+                        if (err.code === 1) {
+                            msg = '⚠️ Разрешите доступ к геолокации, чтобы найти ближайший магазин.';
+                        }
+                        counter.innerHTML = msg;
+                        console.warn('Геолокация отклонена или ошибка:', err.message);
+                    }
+                );
+            }
+
+            // ============================================================
+            // СОБЫТИЯ ФИЛЬТРОВ
+            // ============================================================
+            cityFilter.addEventListener('change', function() {
+                state.activeCity = this.value;
+                filterPartners();
+            });
+
+            storeFilter.addEventListener('change', function() {
+                state.activeStore = this.value;
+                filterPartners();
+            });
+
+            brandFilter.addEventListener('change', function() {
+                state.activeBrand = this.value;
+                filterPartners();
+            });
+
+            resetBtn.addEventListener('click', resetFilters);
+            geoButton.addEventListener('click', findNearestByGeo);
+
+            // ============================================================
+            // АНИМАЦИЯ ПОЯВЛЕНИЯ БЛОКА
+            // ============================================================
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        actWhere.classList.add('visible');
+                        setTimeout(() => {
+                            h15Card.classList.add('visible');
+                        }, 400);
+                    }
+                });
+            }, { threshold: 0.1 });
+            observer.observe(actWhere);
+
+            // ============================================================
+            // ИНИЦИАЛИЗАЦИЯ
+            // ============================================================
+            function init() {
+                currentBounds = computeBounds(partners);
+                resizeMap();
+                filterPartners();
+
+                if (state.filtered.length > 0 && state.selectedId === null) {
+                    selectPartnerById(state.filtered[0].id, false);
+                }
+
+                if (state.selectedId !== null) {
+                    const p = partners.find(pp => pp.id === state.selectedId);
+                    updateH15Utm(p || null);
+                } else {
+                    updateH15Utm(null);
+                }
+
+                updateHeaderSub();
+            }
+
+            let resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    resizeMap();
+                    updateMarkers();
+                    drawMap();
+                }, 200);
+            });
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+            // ============================================================
+            // ПУБЛИЧНЫЙ ИНТЕРФЕЙС
+            // ============================================================
+            window.resetWhere = function() {
+                resetFilters();
+                if (state.filtered.length > 0 && state.selectedId === null) {
+                    selectPartnerById(state.filtered[0].id, false);
+                }
+                actWhere.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            };
+
+            window.addEventListener('where:reset', function() {
+                if (window.resetWhere) window.resetWhere();
+            });
+
+            console.log('ACT V --- «Где купить» загружен (финальная полировка).');
+
+        })();
+    </script>
+
+</body>
+
+</html>

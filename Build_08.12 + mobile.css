@@ -1,0 +1,2185 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+
+<head>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>PROJECT ZABIVALY --- ACT V «ЗАРЕГИСТРИРУЙ ЧЕК»</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <style>
+        /* ============================================================
+           RESET & BASE
+           ============================================================ */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #0a0a0a;
+            color: #ece6e0;
+            overflow-x: hidden;
+            line-height: 1.4;
+            margin: 0;
+            padding: 0;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            border: none;
+            background: none;
+            cursor: pointer;
+            font: inherit;
+            color: inherit;
+        }
+
+        /* ============================================================
+           ACT V --- ЗАРЕГИСТРИРУЙ ЧЕК
+           ============================================================ */
+        .act-receipt {
+            position: relative;
+            width: 100%;
+            min-height: 100dvh;
+            background: #0d0d0d;
+            padding: 40px 40px 36px;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.9s cubic-bezier(0.23, 1, 0.32, 1),
+                transform 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .act-receipt.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .act-receipt__bg {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse at 70% 30%, rgba(183, 28, 28, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 30% 70%, rgba(183, 28, 28, 0.04) 0%, transparent 40%),
+                linear-gradient(180deg, #0d0d0d 0%, #161616 100%);
+        }
+
+        .act-receipt__grid {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.12;
+            background-image:
+                repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 39px,
+                    rgba(183, 28, 28, 0.06) 39px,
+                    rgba(183, 28, 28, 0.06) 40px),
+                repeating-linear-gradient(90deg,
+                    transparent,
+                    transparent 39px,
+                    rgba(183, 28, 28, 0.06) 39px,
+                    rgba(183, 28, 28, 0.06) 40px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+        }
+
+        .act-receipt__vignette {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.4) 100%);
+        }
+
+        .act-receipt__inner {
+            position: relative;
+            z-index: 1;
+            max-width: 1280px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            padding-top: 18px;
+            padding-bottom: 10px;
+        }
+
+        /* ============================================================
+           ЗАГОЛОВОК
+           ============================================================ */
+        .receipt-header {
+            text-align: left;
+            margin-bottom: 0;
+        }
+
+        .receipt-header__title {
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            font-size: clamp(2.8rem, 7vw, 5rem);
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
+            color: #ece6e0;
+            line-height: 1.05;
+        }
+
+        .receipt-header__title .highlight {
+            color: #b71c1c;
+        }
+
+        .receipt-header__sub {
+            font-size: clamp(1rem, 1.2vw, 1.25rem);
+            font-weight: 300;
+            color: rgba(236, 230, 224, 0.55);
+            margin-top: 6px;
+            letter-spacing: 0.02em;
+            max-width: 600px;
+        }
+
+        .receipt-header__line {
+            width: 3em;
+            height: 3px;
+            background: #b71c1c;
+            margin-top: 12px;
+            border-radius: 2px;
+        }
+
+        /* ============================================================
+           ОСНОВНОЙ КОНТЕЙНЕР (чек + карточка)
+           ============================================================ */
+        .receipt-main {
+            display: flex;
+            gap: 12px;
+            align-items: stretch;
+            margin-top: 0;
+            min-height: 480px;
+            position: relative;
+        }
+
+        .receipt-left {
+            flex: 1 1 60%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 0;
+            position: relative;
+        }
+
+        .receipt-right {
+            flex: 0 0 32%;
+            min-width: 260px;
+            max-width: 360px;
+            display: flex;
+            align-items: stretch;
+        }
+
+        /* ============================================================
+           КАНАЛ ПЕРЕДАЧИ (горизонтальный для десктопа, вертикальный для мобильных)
+           ============================================================ */
+        .data-channel {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 2px;
+            background: linear-gradient(90deg,
+                    rgba(183, 28, 28, 0),
+                    rgba(183, 28, 28, 0.12),
+                    rgba(183, 28, 28, 0.25),
+                    rgba(183, 28, 28, 0.12),
+                    rgba(183, 28, 28, 0));
+            border-radius: 1px;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 5;
+            overflow: visible;
+            transition: opacity 0.5s ease;
+        }
+
+        .data-channel.active {
+            opacity: 0.85;
+        }
+
+        /* Убираем псевдоэлемент, чтобы не было постоянной жилы */
+        .data-channel::before {
+            display: none;
+        }
+
+        .data-channel .pulse {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 3px;
+            border-radius: 2px;
+            background: #ff2a2a;
+            box-shadow:
+                0 0 6px rgba(255, 42, 42, 0.45),
+                0 0 12px rgba(255, 42, 42, 0.3);
+            will-change: transform;
+            opacity: 0.8;
+            filter: blur(0.5px);
+            transition: transform linear;
+        }
+
+        /* ============================================================
+           КАРТОЧКА ЛИЧНОГО КАБИНЕТА
+           ============================================================ */
+        .cabinet-card {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 28px 24px;
+            display: flex;
+            flex-direction: column;
+            transition: opacity 0.8s ease, transform 0.8s ease, filter 0.8s ease,
+                border-color 0.8s ease, box-shadow 0.8s ease;
+            opacity: 0.7;
+            filter: brightness(0.9) grayscale(0.25);
+            pointer-events: none;
+            transform: translateX(20px);
+            min-height: 400px;
+            position: relative;
+            border-color: rgba(255, 255, 255, 0.06);
+            box-shadow: none;
+            overflow: hidden;
+        }
+
+        /* Подсветка границы карточки при приёме (десктоп — левая, мобиль — верхняя) */
+        .packet-flash {
+            position: absolute;
+            left: -2px;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: rgba(183, 28, 28, 0.3);
+            border-radius: 2px;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 3;
+            transition: opacity 0.1s ease;
+        }
+
+        .packet-flash.active {
+            opacity: 1;
+            animation: flashPulse 150ms ease forwards;
+        }
+
+        @keyframes flashPulse {
+            0% {
+                opacity: 0.8;
+                transform: scaleX(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scaleX(1.5);
+            }
+            100% {
+                opacity: 0;
+                transform: scaleX(1);
+            }
+        }
+
+        .cabinet-card__title,
+        .cabinet-card__item,
+        .cabinet-card__btn {
+            opacity: 0.18;
+            filter: grayscale(100%);
+            transition: opacity 0.5s cubic-bezier(0.2, 0.9, 0.3, 1),
+                filter 0.5s cubic-bezier(0.2, 0.9, 0.3, 1),
+                transform 0.5s cubic-bezier(0.2, 0.9, 0.3, 1);
+            transform: translateY(6px);
+            pointer-events: none;
+        }
+
+        .cabinet-card__title.active,
+        .cabinet-card__item.active,
+        .cabinet-card__btn.active {
+            opacity: 1;
+            filter: none;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .cabinet-card__title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ece6e0;
+            letter-spacing: 0.04em;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .cabinet-card__list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            flex: 1;
+        }
+
+        .cabinet-card__item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+            color: rgba(236, 230, 224, 0.6);
+        }
+
+        .cabinet-card__item .icon {
+            color: rgba(183, 28, 28, 0.6);
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .cabinet-card__btn {
+            margin-top: 24px;
+            padding: 14px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #ece6e0;
+            background: rgba(255, 255, 255, 0.02);
+            cursor: pointer;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        .cabinet-card__btn:hover {
+            background: rgba(183, 28, 28, 0.15);
+            border-color: rgba(183, 28, 28, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .cabinet-card.unlocked {
+            opacity: 1;
+            filter: brightness(1) grayscale(0.05);
+            pointer-events: auto;
+            transform: translateX(0);
+            border-color: rgba(183, 28, 28, 0.18);
+            box-shadow: 0 0 25px rgba(183, 28, 28, 0.08);
+        }
+
+        .cabinet-card.idle {
+            animation: idleGlow 8s ease infinite;
+        }
+
+        @keyframes idleGlow {
+            0% {
+                box-shadow: 0 0 10px rgba(183, 28, 28, 0.08);
+            }
+            50% {
+                box-shadow: 0 0 26px rgba(183, 28, 28, 0.18);
+            }
+            100% {
+                box-shadow: 0 0 10px rgba(183, 28, 28, 0.08);
+            }
+        }
+
+        /* ============================================================
+           ОСТАЛЬНЫЕ СТИЛИ ЧЕКА
+           ============================================================ */
+        .receipt-ticket {
+            position: relative;
+            width: 100%;
+            max-width: 460px;
+            aspect-ratio: 1 / 1.6;
+            background: #f5f3ef;
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04);
+            transition: box-shadow 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            cursor: default;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 20px 0 20px;
+            user-select: none;
+            font-family: 'Courier New', monospace;
+        }
+
+        .ticket-top {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 2;
+            padding-bottom: 8px;
+        }
+
+        .ticket-header {
+            text-align: center;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        .ticket-header__title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .ticket-header__brand {
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            margin-top: 4px;
+            color: #b71c1c;
+        }
+
+        .ticket-header__divider {
+            width: 60%;
+            height: 1px;
+            background: #ccc;
+            margin: 8px auto 0;
+        }
+
+        .ticket-lines {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 6px 0;
+            position: relative;
+        }
+
+        .ticket-lines .line {
+            height: 22px;
+            background: #d0d0d0;
+            border-radius: 2px;
+            width: 100%;
+            opacity: 0.5;
+            position: relative;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            padding-left: 0;
+            transition: background 0.25s ease, opacity 0.25s ease, border 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .ticket-lines .line.short {
+            width: 60%;
+        }
+        .ticket-lines .line.medium {
+            width: 75%;
+        }
+        .ticket-lines .line.long {
+            width: 90%;
+        }
+        .ticket-lines .line.dark {
+            background: #b0b0b0;
+            opacity: 0.7;
+        }
+
+        .ticket-lines .line .line-code {
+            display: inline-block;
+            color: rgba(183, 28, 28, 0);
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.62rem;
+            letter-spacing: 0.08em;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: opacity 0.25s ease, transform 0.25s ease, color 0.25s ease;
+            white-space: nowrap;
+            padding-left: 12px;
+        }
+
+        .ticket-lines .line.digital {
+            background: #171717 !important;
+            opacity: 1 !important;
+            border-left: 3px solid #b71c1c;
+            border-radius: 0 2px 2px 0;
+            padding-left: 0;
+            box-shadow: inset 0 0 12px rgba(183, 28, 28, 0.08);
+        }
+
+        .ticket-lines .line.digital .line-code {
+            color: rgba(183, 28, 28, 0.85);
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .ticket-lines .line.highlight {
+            background: #a0a0a0;
+            opacity: 0.8;
+            border-left: 2px solid rgba(183, 28, 28, 0.3);
+        }
+
+        .ticket-qr {
+            margin: 8px auto 0;
+            width: 64px;
+            height: 64px;
+            background: #1a1a1a;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: box-shadow 0.4s ease;
+        }
+
+        .ticket-qr svg {
+            width: 50px;
+            height: 50px;
+            fill: none;
+        }
+
+        .ticket-qr.glow {
+            box-shadow: 0 0 30px rgba(183, 28, 28, 0.3);
+        }
+        .ticket-qr.flash {
+            animation: qrFlash 0.5s ease 2;
+        }
+
+        @keyframes qrFlash {
+            0% {
+                box-shadow: 0 0 0 rgba(183, 28, 28, 0);
+            }
+            50% {
+                box-shadow: 0 0 60px rgba(183, 28, 28, 0.7);
+            }
+            100% {
+                box-shadow: 0 0 0 rgba(183, 28, 28, 0);
+            }
+        }
+
+        .ticket-digital-header {
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 8px 0 4px 0;
+            border-bottom: 1px solid transparent;
+            margin-bottom: 6px;
+            font-family: 'Inter', sans-serif;
+            opacity: 0;
+            transform: translateY(-8px);
+            pointer-events: none;
+            overflow: hidden;
+            transition: opacity 0.6s ease, transform 0.6s ease, border-color 0.6s ease;
+        }
+
+        .ticket-digital-header.active {
+            opacity: 1;
+            transform: translateY(0);
+            border-bottom-color: rgba(183, 28, 28, 0.15);
+            pointer-events: auto;
+        }
+
+        .scan-status {
+            display: flex;
+            gap: 12px;
+            font-size: 0.55rem;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            color: rgba(183, 28, 28, 0.7);
+            opacity: 0.45;
+            transform: translateX(-8px);
+            transition: opacity 0.25s ease, transform 0.25s ease, color 0.25s ease;
+            align-items: center;
+        }
+
+        .scan-status .label {
+            color: rgba(0, 0, 0, 0.3);
+            font-weight: 400;
+            min-width: 40px;
+        }
+        .scan-status .value {
+            color: #1a1a1a;
+            font-weight: 600;
+            transition: color 0.25s ease;
+        }
+        .scan-status .cursor {
+            display: inline-block;
+            width: 6px;
+            height: 12px;
+            margin-left: 4px;
+            background: #b71c1c;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .scan-status.updating {
+            opacity: 1;
+            color: #ffffff;
+            transform: translateX(0);
+        }
+        .scan-status.updating .cursor {
+            opacity: 1;
+            animation: blinkCursor 0.6s infinite;
+        }
+        .scan-status.done {
+            color: #b71c1c;
+        }
+        .scan-status.done .cursor {
+            display: none;
+        }
+        .scan-status.done .value {
+            color: #b71c1c;
+        }
+
+        @keyframes blinkCursor {
+            0%,
+            50% {
+                opacity: 1;
+            }
+            51%,
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .ticket-bottom {
+            position: relative;
+            z-index: 2;
+            height: 120px;
+            min-height: 120px;
+            margin-top: auto;
+            border-top: 2px dashed rgba(0, 0, 0, 0.12);
+            background: #f5f3ef;
+            border-radius: 0 0 8px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.8s cubic-bezier(0.34, 1.2, 0.64, 1),
+                box-shadow 0.8s ease,
+                background 0.6s ease 0.3s,
+                border-color 0.3s;
+            padding: 12px 16px;
+            color: #1a1a1a;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            cursor: default;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .ticket-bottom.detached {
+            transform: translateY(18px) rotateX(6deg);
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2);
+            border-top-color: transparent;
+        }
+
+        .ticket-bottom.activated {
+            background: #b71c1c;
+            color: #fff;
+            border-top-color: transparent;
+            transform: translateY(18px) rotateX(6deg);
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            padding: 12px 16px;
+        }
+
+        .ticket-bottom .activated-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 100%;
+            width: 100%;
+            gap: 6px;
+            opacity: 0;
+            transition: opacity 0.6s ease 0.2s;
+        }
+
+        .ticket-bottom.activated .activated-content {
+            opacity: 1;
+        }
+
+        .ticket-bottom .activated-content .title {
+            font-weight: 800;
+            font-size: 1.15rem;
+            line-height: 1.15;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .ticket-bottom .activated-content .sub {
+            font-size: 0.72rem;
+            letter-spacing: 0.12em;
+            opacity: 0.9;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .ticket-bottom .activated-content .sub:hover {
+            opacity: 1;
+        }
+
+        .scan-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ff3b3b, #ffffff, #ff3b3b, transparent);
+            filter: blur(1px);
+            box-shadow: 0 0 20px rgba(183, 28, 28, 0.6);
+            opacity: 0;
+            z-index: 3;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            transform: translate3d(0, 0, 0);
+            will-change: transform;
+        }
+
+        .scan-line.active {
+            opacity: 1;
+        }
+
+        .badge-verified {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #1a1a1a;
+            background: rgba(255, 255, 255, 0.92);
+            padding: 6px 18px;
+            border-radius: 6px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 4;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .badge-verified.visible {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .badge-verified.hidden {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .receipt-ticket.digital {
+            background: #f8f8f8;
+            background-image:
+                repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.02) 0px, rgba(0, 0, 0, 0.02) 2px, transparent 2px, transparent 6px),
+                linear-gradient(135deg, rgba(183, 28, 28, 0.02) 0%, rgba(183, 28, 28, 0.05) 100%);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(183, 28, 28, 0.15), inset 0 0 40px rgba(183, 28, 28, 0.06);
+            transition: background 0.8s ease, box-shadow 0.8s ease;
+        }
+
+        .env-dots {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
+
+        .env-dots.active {
+            opacity: 1;
+        }
+
+        .env-dots .dot {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(183, 28, 28, 0.15);
+            border-radius: 50%;
+            animation: envPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes envPulse {
+            0%,
+            100% {
+                opacity: 0.1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.4;
+                transform: scale(1.5);
+            }
+        }
+
+        .env-lines {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
+
+        .env-lines.active {
+            opacity: 1;
+        }
+
+        .env-lines .line {
+            position: absolute;
+            height: 1px;
+            background: rgba(183, 28, 28, 0.06);
+            transform-origin: left center;
+        }
+
+        /* ============================================================
+           КОМПАКТНЫЙ РЕЖИМ
+           ============================================================ */
+        .act-receipt.compact-height {
+            padding: 24px 40px 24px;
+        }
+
+        .act-receipt.compact-height .act-receipt__inner {
+            gap: 10px;
+            padding-top: 2px;
+            padding-bottom: 4px;
+        }
+
+        .act-receipt.compact-height .receipt-header__title {
+            font-size: clamp(2.4rem, 6vw, 4.4rem);
+            line-height: 1.02;
+        }
+
+        .act-receipt.compact-height .receipt-header__sub {
+            font-size: clamp(0.9rem, 1.1vw, 1.125rem);
+            margin-top: 2px;
+        }
+
+        .act-receipt.compact-height .receipt-header__line {
+            margin-top: 6px;
+        }
+
+        .act-receipt.compact-height .receipt-main {
+            min-height: 400px;
+            gap: 6px;
+        }
+
+        .act-receipt.compact-height .receipt-ticket {
+            max-width: 360px;
+            padding: 14px 12px 0 12px;
+            transform: scale(0.92);
+            transform-origin: center center;
+            margin: 0 auto;
+        }
+
+        .act-receipt.compact-height .ticket-header__title {
+            font-size: 0.7rem;
+        }
+
+        .act-receipt.compact-height .ticket-header__brand {
+            font-size: 0.9rem;
+            margin-top: 0;
+        }
+
+        .act-receipt.compact-height .ticket-header__divider {
+            margin-top: 2px;
+        }
+
+        .act-receipt.compact-height .ticket-lines {
+            gap: 4px;
+            padding: 2px 0;
+        }
+
+        .act-receipt.compact-height .ticket-lines .line {
+            height: 18px;
+        }
+
+        .act-receipt.compact-height .ticket-lines .line .line-code {
+            font-size: 0.5rem;
+            padding-left: 6px;
+        }
+
+        .act-receipt.compact-height .ticket-qr {
+            width: 48px;
+            height: 48px;
+        }
+
+        .act-receipt.compact-height .ticket-qr svg {
+            width: 38px;
+            height: 38px;
+        }
+
+        .act-receipt.compact-height .ticket-digital-header {
+            height: 64px;
+            gap: 2px;
+            padding: 4px 0 2px 0;
+            margin-bottom: 2px;
+        }
+
+        .act-receipt.compact-height .scan-status {
+            font-size: 0.45rem;
+            gap: 6px;
+        }
+
+        .act-receipt.compact-height .scan-status .label {
+            min-width: 30px;
+        }
+
+        .act-receipt.compact-height .ticket-bottom {
+            height: 80px;
+            min-height: 80px;
+            padding: 6px 10px;
+            font-size: 0.6rem;
+        }
+
+        .act-receipt.compact-height .ticket-bottom .activated-content .title {
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+
+        .act-receipt.compact-height .ticket-bottom .activated-content .sub {
+            font-size: 0.55rem;
+        }
+
+        .act-receipt.compact-height .cabinet-card {
+            min-height: 320px;
+            padding: 20px 18px;
+        }
+
+        .act-receipt.compact-height .cabinet-card__title {
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        .act-receipt.compact-height .cabinet-card__item {
+            font-size: 0.8rem;
+            gap: 8px;
+        }
+
+        .act-receipt.compact-height .cabinet-card__item .icon {
+            font-size: 0.9rem;
+            width: 18px;
+        }
+
+        .act-receipt.compact-height .cabinet-card__btn {
+            font-size: 0.7rem;
+            padding: 10px 16px;
+            margin-top: 16px;
+        }
+
+        /* ============================================================
+           МОБИЛЬНАЯ АДАПТАЦИЯ (max-width: 768px)
+           ============================================================ */
+        @media (max-width: 768px) {
+            .act-receipt {
+                padding: 24px 16px 28px;
+                min-height: auto;
+            }
+
+            .act-receipt__inner {
+                gap: 10px;
+                padding-top: 4px;
+                padding-bottom: 4px;
+            }
+
+            .receipt-header__title {
+                font-size: clamp(1.8rem, 6vw, 2.6rem);
+                line-height: 1.05;
+            }
+            .receipt-header__sub {
+                font-size: 0.9rem;
+                margin-top: 4px;
+            }
+            .receipt-header__line {
+                margin-top: 8px;
+            }
+
+            .receipt-main {
+                flex-direction: column;
+                align-items: center;
+                min-height: auto;
+                gap: 8px;
+                margin-top: 0;
+            }
+
+            .receipt-left {
+                flex: 1 1 auto;
+                width: 100%;
+                justify-content: center;
+                order: 1;
+            }
+
+            .receipt-right {
+                flex: 1 1 auto;
+                width: 100%;
+                max-width: 100%;
+                min-width: 0;
+                padding: 0 16px;
+                order: 3;
+            }
+
+            /* Канал на мобильных — вертикальный */
+            .data-channel {
+                position: relative;
+                left: auto !important;
+                right: auto !important;
+                top: auto;
+                transform: none;
+                width: 8px;
+                height: 70px;
+                margin: 4px auto;
+                border-radius: 4px;
+                background: linear-gradient(180deg,
+                        rgba(183, 28, 28, 0),
+                        rgba(183, 28, 28, 0.12),
+                        rgba(183, 28, 28, 0.25),
+                        rgba(183, 28, 28, 0.12),
+                        rgba(183, 28, 28, 0));
+                order: 2;
+                flex-shrink: 0;
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                overflow: visible;
+                transition: opacity 0.5s ease;
+                opacity: 0;
+            }
+
+            .data-channel.active {
+                opacity: 0.85;
+            }
+
+            .data-channel .pulse {
+                top: 0;
+                left: 50%;
+                transform: translateX(-50%) translateY(0);
+                height: 2px;
+                width: 2px;
+                background: #ff2a2a;
+                border-radius: 1px;
+                box-shadow:
+                    0 0 6px rgba(255, 42, 42, 0.45),
+                    0 0 12px rgba(255, 42, 42, 0.3);
+                will-change: transform;
+                opacity: 0.8;
+                filter: blur(0.5px);
+                transition: transform 0.7s linear;
+            }
+
+            /* Подсветка границы карточки на мобильных: сверху, горизонтальная */
+            .packet-flash {
+                left: 0;
+                top: -2px;
+                width: 100%;
+                height: 3px;
+                border-radius: 0;
+                background: rgba(183, 28, 28, 0.5);
+                transform: none;
+            }
+
+            .packet-flash.active {
+                animation: flashPulseHorizontal 150ms ease forwards;
+            }
+
+            @keyframes flashPulseHorizontal {
+                0% {
+                    opacity: 0.8;
+                    transform: scaleY(1);
+                }
+                50% {
+                    opacity: 1;
+                    transform: scaleY(1.5);
+                }
+                100% {
+                    opacity: 0;
+                    transform: scaleY(1);
+                }
+            }
+
+            .receipt-ticket {
+                max-width: 320px;
+                aspect-ratio: auto;
+                height: auto;
+                padding: 16px 14px 0 14px;
+                margin: 0 auto;
+                transform: none;
+                overflow: visible;
+            }
+
+            .ticket-header__title {
+                font-size: 0.7rem;
+            }
+            .ticket-header__brand {
+                font-size: 0.85rem;
+                margin-top: 2px;
+            }
+            .ticket-header__divider {
+                margin-top: 4px;
+            }
+
+            .ticket-lines {
+                gap: 5px;
+                padding: 4px 0;
+            }
+            .ticket-lines .line {
+                height: 20px;
+            }
+            .ticket-lines .line .line-code {
+                font-size: 0.5rem;
+                padding-left: 8px;
+            }
+
+            .ticket-qr {
+                width: 52px;
+                height: 52px;
+                margin-top: 6px;
+            }
+            .ticket-qr svg {
+                width: 42px;
+                height: 42px;
+            }
+
+            .ticket-digital-header {
+                height: 68px;
+                gap: 3px;
+                padding: 6px 0 3px 0;
+                margin-bottom: 4px;
+            }
+            .scan-status {
+                font-size: 0.5rem;
+                gap: 8px;
+            }
+            .scan-status .label {
+                min-width: 34px;
+            }
+
+            .ticket-bottom {
+                height: auto;
+                min-height: 100px;
+                padding: 8px 12px;
+                font-size: 0.65rem;
+                overflow: visible;
+            }
+
+            .ticket-bottom.detached {
+                transform: none !important;
+                box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2);
+                border-top-color: transparent;
+            }
+
+            .ticket-bottom.activated {
+                transform: none !important;
+                background: #b71c1c;
+                color: #fff;
+                border-top-color: transparent;
+                box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3);
+                cursor: pointer;
+                padding: 8px 12px;
+            }
+
+            .ticket-bottom .activated-content .title {
+                font-size: 1rem;
+                margin-bottom: 4px;
+            }
+            .ticket-bottom .activated-content .sub {
+                font-size: 0.65rem;
+            }
+
+            .cabinet-card {
+                min-height: 300px;
+                padding: 20px 18px;
+                transform: none;
+                margin: 0 auto;
+                width: 100%;
+                max-width: 380px;
+                border-radius: 10px;
+            }
+
+            .cabinet-card__title {
+                font-size: 0.95rem;
+                margin-bottom: 14px;
+            }
+            .cabinet-card__item {
+                font-size: 0.85rem;
+                gap: 10px;
+            }
+            .cabinet-card__item .icon {
+                font-size: 1rem;
+                width: 20px;
+            }
+            .cabinet-card__btn {
+                font-size: 0.8rem;
+                padding: 12px 16px;
+                margin-top: 18px;
+            }
+
+            .act-receipt.compact-height .receipt-ticket {
+                transform: none;
+                max-width: 320px;
+            }
+
+            .act-receipt.compact-height .cabinet-card {
+                min-height: 280px;
+                padding: 18px 16px;
+            }
+            .act-receipt.compact-height .data-channel {
+                height: 60px;
+            }
+        }
+
+        /* ============================================================
+           МОБИЛЬНАЯ АДАПТАЦИЯ (max-width: 420px)
+           ============================================================ */
+        @media (max-width: 420px) {
+            .act-receipt {
+                padding: 16px 12px 20px;
+            }
+
+            .receipt-ticket {
+                max-width: 270px;
+                padding: 12px 8px 0 8px;
+            }
+
+            .ticket-header__title {
+                font-size: 0.6rem;
+            }
+            .ticket-header__brand {
+                font-size: 0.75rem;
+                margin-top: 0;
+            }
+            .ticket-header__divider {
+                margin-top: 2px;
+            }
+
+            .ticket-lines .line {
+                height: 18px;
+            }
+            .ticket-lines .line .line-code {
+                font-size: 0.45rem;
+                padding-left: 6px;
+            }
+
+            .ticket-qr {
+                width: 44px;
+                height: 44px;
+            }
+            .ticket-qr svg {
+                width: 34px;
+                height: 34px;
+            }
+
+            .ticket-digital-header {
+                height: 60px;
+                gap: 2px;
+                padding: 4px 0 2px 0;
+                margin-bottom: 2px;
+            }
+            .scan-status {
+                font-size: 0.45rem;
+                gap: 6px;
+            }
+            .scan-status .label {
+                min-width: 30px;
+            }
+
+            .ticket-bottom {
+                min-height: 80px;
+                padding: 6px 10px;
+                font-size: 0.55rem;
+            }
+            .ticket-bottom .activated-content .title {
+                font-size: 0.85rem;
+                margin-bottom: 4px;
+            }
+            .ticket-bottom .activated-content .sub {
+                font-size: 0.55rem;
+            }
+
+            .cabinet-card {
+                min-height: 260px;
+                padding: 16px 14px;
+                max-width: 320px;
+            }
+            .cabinet-card__title {
+                font-size: 0.9rem;
+                margin-bottom: 10px;
+            }
+            .cabinet-card__item {
+                font-size: 0.8rem;
+                gap: 8px;
+            }
+            .cabinet-card__item .icon {
+                font-size: 0.9rem;
+                width: 18px;
+            }
+            .cabinet-card__btn {
+                font-size: 0.7rem;
+                padding: 10px 14px;
+                margin-top: 14px;
+            }
+
+            .data-channel {
+                height: 60px;
+                width: 6px;
+                margin: 2px auto;
+            }
+
+            .act-receipt.compact-height .receipt-ticket {
+                max-width: 270px;
+            }
+            .act-receipt.compact-height .cabinet-card {
+                min-height: 240px;
+                padding: 14px 12px;
+            }
+            .act-receipt.compact-height .data-channel {
+                height: 50px;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+            background: #0a0a0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3d3d3d;
+            border-radius: 2px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6a6a6a;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- ==========================================================
+    ACT V --- ЗАРЕГИСТРИРУЙ ЧЕК
+    ========================================================== -->
+    <section class="act-receipt" id="actReceipt">
+
+        <div class="act-receipt__bg"></div>
+        <div class="act-receipt__grid"></div>
+        <div class="act-receipt__vignette"></div>
+
+        <div class="env-dots" id="envDots">
+            <div class="dot" style="top:10%;left:5%;animation-delay:0s;"></div>
+            <div class="dot" style="top:30%;right:8%;animation-delay:1s;"></div>
+            <div class="dot" style="bottom:20%;left:15%;animation-delay:2s;"></div>
+            <div class="dot" style="bottom:40%;right:20%;animation-delay:0.5s;"></div>
+            <div class="dot" style="top:60%;left:25%;animation-delay:1.5s;"></div>
+            <div class="dot" style="top:15%;right:25%;animation-delay:2.5s;"></div>
+        </div>
+
+        <div class="env-lines" id="envLines">
+            <div class="line" style="top:20%;left:0;width:30%;transform:rotate(5deg);"></div>
+            <div class="line" style="top:50%;left:10%;width:20%;transform:rotate(-3deg);"></div>
+            <div class="line" style="bottom:30%;left:5%;width:40%;transform:rotate(8deg);"></div>
+        </div>
+
+        <div class="act-receipt__inner">
+
+            <div class="receipt-header">
+                <h2 class="receipt-header__title">
+                    ЗАРЕГИСТРИРУЙ<br />
+                    <span class="highlight">ЧЕК</span>
+                </h2>
+                <p class="receipt-header__sub">
+                    Зарегистрируйте чек и примите участие в розыгрыше Редкого Артефакта.
+                </p>
+                <div class="receipt-header__line"></div>
+            </div>
+
+            <div class="receipt-main" id="receiptMain">
+
+                <div class="receipt-left">
+                    <div class="receipt-ticket" id="ticket">
+
+                        <div class="ticket-top" id="ticketTop">
+
+                            <div class="ticket-header">
+                                <div class="ticket-header__title">Кассовый чек</div>
+                                <div class="ticket-header__brand">H15 × CCM</div>
+                                <div class="ticket-header__divider"></div>
+                            </div>
+
+                            <div class="ticket-digital-header" id="digitalHeader">
+                                <div class="scan-status" data-index="0">
+                                    <span class="label">SCAN</span>
+                                    <span class="value">WAITING</span>
+                                    <span class="cursor"></span>
+                                </div>
+                                <div class="scan-status" data-index="1">
+                                    <span class="label">SERVER</span>
+                                    <span class="value">OFFLINE</span>
+                                    <span class="cursor"></span>
+                                </div>
+                                <div class="scan-status" data-index="2">
+                                    <span class="label">AUTH</span>
+                                    <span class="value">PENDING</span>
+                                    <span class="cursor"></span>
+                                </div>
+                                <div class="scan-status" data-index="3">
+                                    <span class="label">CRC</span>
+                                    <span class="value">CHECKING</span>
+                                    <span class="cursor"></span>
+                                </div>
+                            </div>
+
+                            <div class="ticket-lines" id="ticketLines"></div>
+
+                            <div class="ticket-qr" id="ticketQr">
+                                <svg viewBox="0 0 56 56">
+                                    <rect x="2" y="2" width="20" height="20" fill="none" stroke="#f5f3ef" stroke-width="2.5"/>
+                                    <rect x="6" y="6" width="12" height="12" fill="#f5f3ef"/>
+                                    <rect x="34" y="2" width="20" height="20" fill="none" stroke="#f5f3ef" stroke-width="2.5"/>
+                                    <rect x="38" y="6" width="12" height="12" fill="#f5f3ef"/>
+                                    <rect x="2" y="34" width="20" height="20" fill="none" stroke="#f5f3ef" stroke-width="2.5"/>
+                                    <rect x="6" y="38" width="12" height="12" fill="#f5f3ef"/>
+                                    <rect x="34" y="34" width="20" height="20" fill="none" stroke="#f5f3ef" stroke-width="2.5"/>
+                                    <rect x="38" y="38" width="12" height="12" fill="#f5f3ef"/>
+                                    <rect x="26" y="26" width="4" height="4" fill="#f5f3ef"/>
+                                    <rect x="26" y="14" width="4" height="4" fill="#f5f3ef"/>
+                                    <rect x="14" y="26" width="4" height="4" fill="#f5f3ef"/>
+                                    <rect x="38" y="26" width="4" height="4" fill="#f5f3ef"/>
+                                </svg>
+                            </div>
+
+                        </div>
+
+                        <div class="ticket-bottom" id="ticketBottom">
+                            <div class="activated-content">
+                                <div class="title">ПОКУПКА АКТИВИРОВАНА</div>
+                                <div class="sub" id="ctaBottom">ЗАГРУЗИТЬ ЧЕК →</div>
+                            </div>
+                        </div>
+
+                        <div class="scan-line" id="scanLine"></div>
+                        <div class="badge-verified" id="badgeVerified">✓ ПРОВЕРЕН</div>
+
+                    </div>
+                </div>
+
+                <div class="receipt-right">
+                    <div class="cabinet-card" id="cabinetCard">
+
+                        <!-- Подсветка границы карточки -->
+                        <div class="packet-flash" id="packetFlash"></div>
+
+                        <div class="cabinet-card__title">Личный кабинет</div>
+
+                        <div class="cabinet-card__list">
+                            <div class="cabinet-card__item" data-index="0">
+                                <span class="icon">✓</span> Профиль
+                            </div>
+                            <div class="cabinet-card__item" data-index="1">
+                                <span class="icon">✓</span> Мои Артефакты
+                            </div>
+                            <div class="cabinet-card__item" data-index="2">
+                                <span class="icon">✓</span> Мои чеки
+                            </div>
+                            <div class="cabinet-card__item" data-index="3">
+                                <span class="icon">✓</span> Участие в розыгрыше
+                            </div>
+                        </div>
+
+                        <a href="https://lk.zabivaly.h15wear.ru/profile" target="_blank" class="cabinet-card__btn">
+                            Войти
+                        </a>
+
+                    </div>
+                </div>
+
+                <div class="data-channel" id="dataChannel"></div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ============================================================
+            // ИНИЦИАЛИЗАЦИЯ СТРОК ЧЕКА
+            // ============================================================
+            const lineCodes = [
+                'AUTH OK',
+                'CRC OK',
+                'ID',
+                'DATA',
+                'HASH',
+                'SCAN',
+                'TOKEN',
+                'VERIFIED',
+                'SYNC'
+            ];
+            const widths = ['long', 'medium', 'long', 'short', 'medium', 'long', 'short', 'medium', 'long'];
+            const dark = [false, false, true, false, false, false, true, false, false];
+
+            const ticketLines = document.getElementById('ticketLines');
+            const lineElements = [];
+
+            lineCodes.forEach((code, i) => {
+                const div = document.createElement('div');
+                div.className = `line ${widths[i]}`;
+                if (dark[i]) div.classList.add('dark');
+                const span = document.createElement('span');
+                span.className = 'line-code';
+                span.textContent = code;
+                div.appendChild(span);
+                ticketLines.appendChild(div);
+                lineElements.push(div);
+            });
+
+            // ============================================================
+            // DOM-ЭЛЕМЕНТЫ
+            // ============================================================
+            const actReceipt = document.getElementById('actReceipt');
+            const ticket = document.getElementById('ticket');
+            const ticketTop = document.getElementById('ticketTop');
+            const scanLine = document.getElementById('scanLine');
+            const badgeVerified = document.getElementById('badgeVerified');
+            const ticketBottom = document.getElementById('ticketBottom');
+            const ctaBottom = document.getElementById('ctaBottom');
+            const ticketQr = document.getElementById('ticketQr');
+            const cabinetCard = document.getElementById('cabinetCard');
+            const packetFlash = document.getElementById('packetFlash');
+            const dataChannel = document.getElementById('dataChannel');
+            const receiptMain = document.getElementById('receiptMain');
+            const digitalHeader = document.getElementById('digitalHeader');
+            const envDots = document.getElementById('envDots');
+            const envLines = document.getElementById('envLines');
+
+            const cabinetTitle = cabinetCard.querySelector('.cabinet-card__title');
+            const cabinetItems = cabinetCard.querySelectorAll('.cabinet-card__item');
+            const cabinetBtn = cabinetCard.querySelector('.cabinet-card__btn');
+
+            const scanStatuses = digitalHeader.querySelectorAll('.scan-status');
+
+            // ============================================================
+            // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+            // ============================================================
+            function wait(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            function isMobile() {
+                return window.innerWidth <= 768;
+            }
+
+            // ============================================================
+            // РАСЧЁТ ПОЗИЦИИ КАНАЛА (только для десктопа)
+            // ============================================================
+            function updateChannelPosition() {
+                if (isMobile()) {
+                    return;
+                }
+                const ticketRect = ticket.getBoundingClientRect();
+                const cabinetRect = cabinetCard.getBoundingClientRect();
+                const parentRect = receiptMain.getBoundingClientRect();
+
+                const startX = ticketRect.right - parentRect.left;
+                const endX = cabinetRect.left - parentRect.left;
+                const width = endX - startX;
+
+                if (width > 0) {
+                    dataChannel.style.left = startX + 'px';
+                    dataChannel.style.width = width + 'px';
+                }
+            }
+
+            // ============================================================
+            // ОБНОВЛЕНИЕ КОМПАКТНОГО РЕЖИМА
+            // ============================================================
+            function updateCompactMode() {
+                if (window.innerWidth >= 1100 && window.innerHeight <= 940) {
+                    actReceipt.classList.add('compact-height');
+                } else {
+                    actReceipt.classList.remove('compact-height');
+                }
+                requestAnimationFrame(updateChannelPosition);
+            }
+            updateCompactMode();
+            window.addEventListener('resize', function() {
+                updateCompactMode();
+                updateChannelPosition();
+            });
+
+            // ============================================================
+            // FSM СОСТОЯНИЯ
+            // ============================================================
+            const State = {
+                IDLE: 'idle',
+                SCANNING: 'scanning',
+                VERIFIED: 'verified',
+                DETACHED: 'detached',
+                TRANSFERRING: 'transferring',
+                UNLOCKING: 'unlocking',
+                READY: 'ready'
+            };
+
+            let currentState = State.IDLE;
+            let rafId = null;
+            let resetTimer = null;
+            let ticketHeight = 0;
+            let linePositions = [];
+            let scanStartTime = 0;
+            let scanDuration = 5400;
+            let statusIndex = 0;
+            let scanCompleted = false;
+
+            // Переменные для хранения вычисленных координат (мобильная версия)
+            let scanMaxY = 0;
+            let scanEndTransform = '';
+
+            // ============================================================
+            // ПОЗИЦИИ СТРОК
+            // ============================================================
+            function updateLinePositions() {
+                linePositions = [];
+                lineElements.forEach(line => {
+                    const rect = line.getBoundingClientRect();
+                    const ticketRect = ticket.getBoundingClientRect();
+                    const top = rect.top - ticketRect.top;
+                    const bottom = rect.bottom - ticketRect.top;
+                    linePositions.push({
+                        top: top,
+                        bottom: bottom,
+                        center: (top + bottom) / 2,
+                        element: line,
+                        activated: false
+                    });
+                });
+            }
+
+            function updateLines(laserY) {
+                linePositions.forEach(pos => {
+                    if (!pos.activated && laserY >= pos.center) {
+                        pos.activated = true;
+                        const line = pos.element;
+                        const codeSpan = line.querySelector('.line-code');
+
+                        line.classList.add('highlight');
+                        setTimeout(() => {
+                            line.classList.remove('highlight');
+                            line.classList.add('digital');
+                            if (codeSpan) {
+                                codeSpan.style.opacity = '1';
+                                codeSpan.style.transform = 'translateX(0)';
+                                codeSpan.style.color = 'rgba(183,28,28,0.85)';
+                            }
+                        }, 200);
+                    }
+                });
+            }
+
+            // ============================================================
+            // ОБНОВЛЕНИЕ СТАТУСОВ СКАНЕРА
+            // ============================================================
+            function updateScanStatus(index, newLabel, newValue, done = false) {
+                if (index >= scanStatuses.length) return;
+                const el = scanStatuses[index];
+                const labelEl = el.querySelector('.label');
+                const valueEl = el.querySelector('.value');
+                if (labelEl) labelEl.textContent = newLabel;
+                if (valueEl) valueEl.textContent = newValue;
+                el.classList.add('updating');
+                setTimeout(() => {
+                    el.classList.remove('updating');
+                    if (done) el.classList.add('done');
+                }, 400);
+            }
+
+            // ============================================================
+            // СБРОС ВИЗУАЛЬНЫХ ЭЛЕМЕНТОВ (НЕ ТРОГАЕТ FSM)
+            // ============================================================
+            function resetVisualState() {
+                if (resetTimer) {
+                    clearTimeout(resetTimer);
+                    resetTimer = null;
+                }
+                if (rafId) {
+                    cancelAnimationFrame(rafId);
+                    rafId = null;
+                }
+
+                stopTransfer();
+
+                scanLine.classList.remove('active');
+                scanLine.style.transform = 'translate3d(0, 0, 0)';
+                badgeVerified.classList.remove('visible', 'hidden');
+                ticketBottom.classList.remove('detached', 'activated');
+                ticketQr.classList.remove('glow', 'flash');
+                cabinetCard.classList.remove('idle', 'unlocked');
+                cabinetCard.style.boxShadow = '';
+                dataChannel.classList.remove('active');
+                dataChannel.innerHTML = '';
+                packetFlash.classList.remove('active');
+                digitalHeader.classList.remove('active');
+                scanStatuses.forEach(el => el.classList.remove('updating', 'done'));
+
+                lineElements.forEach(line => {
+                    line.classList.remove('digital', 'highlight');
+                    const codeSpan = line.querySelector('.line-code');
+                    if (codeSpan) {
+                        codeSpan.style.opacity = '0';
+                        codeSpan.style.transform = 'translateX(-10px)';
+                        codeSpan.style.color = 'rgba(183,28,28,0)';
+                    }
+                });
+
+                linePositions.forEach(p => p.activated = false);
+
+                ticketBottom.onclick = null;
+                ticket.style.cursor = 'default';
+                ticket.onclick = null;
+                ticket.classList.remove('digital');
+
+                envDots.classList.remove('active');
+                envLines.classList.remove('active');
+
+                const allCabinetElements = [cabinetTitle, ...cabinetItems, cabinetBtn];
+                allCabinetElements.forEach(el => {
+                    el.classList.remove('active');
+                });
+
+                const initial = [
+                    { label: 'SCAN', value: 'WAITING' },
+                    { label: 'SERVER', value: 'OFFLINE' },
+                    { label: 'AUTH', value: 'PENDING' },
+                    { label: 'CRC', value: 'CHECKING' }
+                ];
+                scanStatuses.forEach((el, i) => {
+                    const labelEl = el.querySelector('.label');
+                    const valueEl = el.querySelector('.value');
+                    if (labelEl) labelEl.textContent = initial[i].label;
+                    if (valueEl) valueEl.textContent = initial[i].value;
+                });
+                statusIndex = 0;
+            }
+
+            function resetAll() {
+                resetVisualState();
+                currentState = State.IDLE;
+                scanCompleted = false;
+            }
+
+            // ============================================================
+            // СЦЕНАРИЙ: СКАНИРОВАНИЕ
+            // ============================================================
+            function startScan() {
+                if (currentState !== State.IDLE) return;
+                if (scanCompleted) return;
+
+                resetVisualState();
+
+                currentState = State.SCANNING;
+                scanCompleted = true;
+
+                // Получаем реальные размеры для мобильной версии
+                if (isMobile()) {
+                    const ticketRect = ticket.getBoundingClientRect();
+                    const scanRect = scanLine.getBoundingClientRect();
+                    // Исправление: компенсируем визуальное смещение из-за blur(1px),
+                    // уменьшая конечную позицию на 2 пикселя, чтобы линия не выходила за границу чека.
+                    scanMaxY = ticketRect.height - scanRect.height - 3;
+                    scanEndTransform = 'translate3d(0, ' + scanMaxY + 'px, 0)';
+                } else {
+                    scanMaxY = 0;
+                    scanEndTransform = '';
+                }
+
+                ticketHeight = ticket.clientHeight;
+                updateLinePositions();
+
+                envDots.classList.add('active');
+                envLines.classList.add('active');
+                digitalHeader.classList.add('active');
+                scanLine.classList.add('active');
+
+                scanStartTime = performance.now();
+                statusIndex = 0;
+
+                function animateScan(time) {
+                    const elapsed = time - scanStartTime;
+                    let progress = Math.min(elapsed / scanDuration, 1);
+                    const eased = progress;
+                    let y = eased * ticketHeight;
+
+                    // Для мобильной версии ограничиваем вычисленной координатой
+                    if (isMobile() && y > scanMaxY) {
+                        y = scanMaxY;
+                    }
+
+                    scanLine.style.transform = 'translate3d(0, ' + y + 'px, 0)';
+                    updateLines(y);
+
+                    const statusThresholds = [0.20, 0.45, 0.70, 0.90];
+                    while (statusIndex < statusThresholds.length && progress >= statusThresholds[statusIndex]) {
+                        const idx = statusIndex;
+                        const labels = ['SCAN', 'SERVER', 'AUTH', 'CRC'];
+                        const values = ['COMPLETE', 'ONLINE', 'SUCCESS', 'VERIFIED'];
+                        updateScanStatus(idx, labels[idx], values[idx], true);
+                        statusIndex++;
+                    }
+
+                    if (eased > 0.3) {
+                        const t = (eased - 0.3) / 0.7;
+                        if (t > 0.1 && !ticket.classList.contains('digital')) {
+                            ticket.classList.add('digital');
+                        }
+                    }
+
+                    if (eased > 0.35 && eased < 0.65) {
+                        ticketQr.classList.add('glow');
+                    } else {
+                        ticketQr.classList.remove('glow');
+                    }
+
+                    if (eased > 0.92 && !ticketQr.classList.contains('flash')) {
+                        ticketQr.classList.add('flash');
+                        setTimeout(() => ticketQr.classList.remove('flash'), 600);
+                    }
+
+                    if (progress < 1) {
+                        rafId = requestAnimationFrame(animateScan);
+                    } else {
+                        scanLine.classList.remove('active');
+                        // Используем вычисленную конечную позицию для мобильной версии
+                        if (isMobile()) {
+                            scanLine.style.transform = scanEndTransform;
+                        } else {
+                            scanLine.style.transform = 'translate3d(0, ' + ticketHeight + 'px, 0)';
+                        }
+                        ticketQr.classList.remove('glow', 'flash');
+
+                        linePositions.forEach(p => {
+                            if (!p.activated) {
+                                p.activated = true;
+                                const line = p.element;
+                                const codeSpan = line.querySelector('.line-code');
+                                line.classList.add('digital');
+                                if (codeSpan) {
+                                    codeSpan.style.opacity = '1';
+                                    codeSpan.style.transform = 'translateX(0)';
+                                    codeSpan.style.color = 'rgba(183,28,28,0.85)';
+                                }
+                            }
+                        });
+
+                        currentState = State.VERIFIED;
+
+                        showVerified();
+                        setTimeout(() => {
+                            startTransfer();
+                        }, 300);
+                    }
+                }
+
+                rafId = requestAnimationFrame(animateScan);
+            }
+
+            // ============================================================
+            // СЦЕНАРИЙ: ПОКАЗ BADGE
+            // ============================================================
+            function showVerified() {
+                badgeVerified.classList.add('visible');
+
+                const onBadgeShown = () => {
+                    badgeVerified.removeEventListener('transitionend', onBadgeShown);
+                    setTimeout(() => {
+                        badgeVerified.classList.remove('visible');
+                        badgeVerified.classList.add('hidden');
+                        setTimeout(() => {
+                            currentState = State.DETACHED;
+                            startDetach();
+                        }, 300);
+                    }, 1200);
+                };
+
+                badgeVerified.addEventListener('transitionend', onBadgeShown);
+
+                setTimeout(() => {
+                    if (badgeVerified.classList.contains('visible')) {
+                        badgeVerified.removeEventListener('transitionend', onBadgeShown);
+                        onBadgeShown();
+                    }
+                }, 1800);
+            }
+
+            // ============================================================
+            // СЦЕНАРИЙ: ОТРЫВ
+            // ============================================================
+            function startDetach() {
+                ticketBottom.classList.add('detached');
+
+                const onDetachEnd = () => {
+                    ticketBottom.removeEventListener('transitionend', onDetachEnd);
+                    ticketBottom.classList.add('activated');
+                    ticketBottom.classList.remove('detached');
+
+                    ticketBottom.onclick = function(e) {
+                        e.stopPropagation();
+                        window.open('https://lk.zabivaly.h15wear.ru/receipts', '_blank');
+                    };
+                    ctaBottom.onclick = function(e) {
+                        e.stopPropagation();
+                        window.open('https://lk.zabivaly.h15wear.ru/receipts', '_blank');
+                    };
+                };
+
+                ticketBottom.addEventListener('transitionend', onDetachEnd);
+
+                setTimeout(() => {
+                    if (!ticketBottom.classList.contains('activated')) {
+                        ticketBottom.removeEventListener('transitionend', onDetachEnd);
+                        onDetachEnd();
+                    }
+                }, 1000);
+            }
+
+            // ============================================================
+            // ЕДИНАЯ СИСТЕМА ПЕРЕДАЧИ
+            // ============================================================
+            let transferInterval = null;
+            let transferActive = false;
+            let activationIndex = 0;
+            const cabinetElements = [];
+
+            function startTransfer() {
+                if (transferActive) return;
+                transferActive = true;
+
+                updateChannelPosition();
+
+                cabinetElements.length = 0;
+                cabinetElements.push(cabinetTitle);
+                cabinetItems.forEach(el => cabinetElements.push(el));
+                cabinetElements.push(cabinetBtn);
+                activationIndex = 0;
+
+                dataChannel.innerHTML = '';
+                dataChannel.classList.add('active');
+
+                if (transferInterval) clearInterval(transferInterval);
+                transferInterval = setInterval(() => {
+                    if (!transferActive) return;
+                    createPulse();
+                }, 130);
+            }
+
+            function createPulse() {
+                const isMobileDevice = isMobile();
+
+                const pulse = document.createElement('div');
+                pulse.className = 'pulse';
+
+                const length = 12 + Math.random() * 6;
+                const duration = 700 + Math.random() * 400;
+                pulse.style.transition = 'transform ' + duration + 'ms linear';
+                pulse.style.opacity = 0.6 + Math.random() * 0.3;
+
+                if (isMobileDevice) {
+                    // Вертикальный канал — используем getBoundingClientRect для точной позиции
+                    pulse.style.top = '0';
+                    pulse.style.left = '50%';
+                    pulse.style.width = '2px';
+                    pulse.style.height = length + 'px';
+                    // начальная позиция: -10px от верха канала
+                    pulse.style.transform = 'translateX(-50%) translateY(-10px)';
+                    dataChannel.appendChild(pulse);
+
+                    // Вычисляем конечную позицию относительно карточки
+                    const channelRect = dataChannel.getBoundingClientRect();
+                    const cabinetRect = cabinetCard.getBoundingClientRect();
+                    // Расстояние от верха канала до верха карточки
+                    const distance = cabinetRect.top - channelRect.top;
+                    // Конечная позиция: нижний край импульса на 1px выше верха карточки
+                    const finalY = distance - length - 1;
+
+                    requestAnimationFrame(() => {
+                        pulse.style.transform = 'translateX(-50%) translateY(' + finalY + 'px)';
+                    });
+                } else {
+                    // Горизонтальный канал (десктоп) — без изменений
+                    pulse.style.width = length + 'px';
+                    pulse.style.height = '3px';
+                    pulse.style.top = '50%';
+                    pulse.style.left = '0';
+                    const startOffset = 5;
+                    pulse.style.transform = 'translateX(-' + (length + startOffset) + 'px)';
+                    dataChannel.appendChild(pulse);
+
+                    const channelWidth = dataChannel.offsetWidth || 200;
+                    const endX = channelWidth - length;
+                    requestAnimationFrame(() => {
+                        pulse.style.transform = 'translateX(' + endX + 'px)';
+                    });
+                }
+
+                const onFinish = (e) => {
+                    if (e.target !== pulse) return;
+                    pulse.removeEventListener('transitionend', onFinish);
+                    if (pulse.parentNode) pulse.parentNode.removeChild(pulse);
+
+                    handlePulseArrival();
+                };
+                pulse.addEventListener('transitionend', onFinish);
+            }
+
+            function handlePulseArrival() {
+                if (!transferActive) return;
+
+                // Подсветка границы
+                packetFlash.classList.remove('active');
+                void packetFlash.offsetWidth;
+                packetFlash.classList.add('active');
+
+                setTimeout(() => {
+                    if (activationIndex < cabinetElements.length) {
+                        const el = cabinetElements[activationIndex];
+                        el.classList.add('active');
+                        activationIndex++;
+
+                        if (activationIndex === cabinetElements.length) {
+                            setTimeout(() => {
+                                finishTransfer();
+                            }, 200);
+                        }
+                    }
+                }, 120);
+            }
+
+            function finishTransfer() {
+                if (!transferActive) return;
+                transferActive = false;
+
+                if (transferInterval) {
+                    clearInterval(transferInterval);
+                    transferInterval = null;
+                }
+
+                setTimeout(() => {
+                    dataChannel.style.transition = 'opacity 0.6s ease';
+                    dataChannel.style.opacity = '0';
+                    setTimeout(() => {
+                        dataChannel.classList.remove('active');
+                        dataChannel.innerHTML = '';
+                        dataChannel.style.opacity = '0';
+                        dataChannel.style.transition = '';
+                    }, 600);
+
+                    cabinetCard.classList.add('unlocked', 'idle');
+                    currentState = State.READY;
+                    console.log('Синхронизация завершена');
+                }, 300);
+            }
+
+            function stopTransfer() {
+                if (transferInterval) {
+                    clearInterval(transferInterval);
+                    transferInterval = null;
+                }
+                transferActive = false;
+                dataChannel.classList.remove('active');
+                dataChannel.innerHTML = '';
+                cabinetElements.forEach(el => el.classList.remove('active'));
+                activationIndex = 0;
+                cabinetElements.length = 0;
+                cabinetCard.classList.remove('unlocked', 'idle');
+                packetFlash.classList.remove('active');
+            }
+
+            // ============================================================
+            // ЗАПУСК СЦЕНАРИЯ
+            // ============================================================
+            const scanObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !scanCompleted) {
+                        setTimeout(() => {
+                            startScan();
+                        }, 300);
+                        scanObserver.unobserve(actReceipt);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            scanObserver.observe(actReceipt);
+
+            function checkInitialVisibility() {
+                if (scanCompleted) return;
+                const rect = actReceipt.getBoundingClientRect();
+                const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+                if (isVisible) {
+                    setTimeout(() => {
+                        startScan();
+                    }, 300);
+                    scanObserver.unobserve(actReceipt);
+                }
+            }
+
+            requestAnimationFrame(checkInitialVisibility);
+            setTimeout(checkInitialVisibility, 200);
+
+            // ============================================================
+            // ПОЯВЛЕНИЕ БЛОКА (fade-in)
+            // ============================================================
+            const fadeObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        actReceipt.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            fadeObserver.observe(actReceipt);
+
+            if (typeof window !== 'undefined') {
+                const rect = actReceipt.getBoundingClientRect();
+                if (rect.top < window.innerHeight * 0.8) {
+                    actReceipt.classList.add('visible');
+                }
+            }
+
+            // ============================================================
+            // ИНИЦИАЛИЗАЦИЯ
+            // ============================================================
+            const allElements = [cabinetTitle, ...cabinetItems, cabinetBtn];
+            allElements.forEach(el => el.classList.remove('active'));
+
+            window.resetReceipt = resetAll;
+
+            console.log('ACT V — Исправлена конечная координата сканера: компенсация blur');
+
+        })();
+    </script>
+
+</body>
+
+</html>

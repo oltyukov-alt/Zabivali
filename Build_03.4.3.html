@@ -1,0 +1,2060 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACT IV — Коллекционная карточка</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+    <style>
+        /* ============================================================
+           ROOT
+           ============================================================ */
+        :root { --scene-scale: 1; --bg-blur: 0px; }
+
+        /* ============================================================
+           RESET & BASE
+           ============================================================ */
+        *,
+        *::before,
+        *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #0a0a0a; color: #ece6e0; overflow-x: hidden; line-height: 1.5;
+        }
+        img { display: block; max-width: 100%; }
+
+        /* ============================================================
+           ACT IV
+           ============================================================ */
+        .act4 { position: relative; height: 100vh; background: #0a0a0a; overflow: hidden; }
+
+        /* ============================================================
+           STAGE
+           ============================================================ */
+        .stage {
+            position: sticky; top: 0; height: 100vh; width: 100%;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; background: #0a0a0a; will-change: transform; cursor: default;
+        }
+
+        /* ============================================================
+           BACKGROUND
+           ============================================================ */
+        .background {
+            position: absolute; inset: 0; z-index: 0; pointer-events: none;
+            will-change: opacity, filter;
+            filter: blur(var(--bg-blur));
+            transition: filter 0.3s ease;
+        }
+        .bg-layer1 {
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse at center, rgba(28,28,30,0.6) 0%, rgba(0,0,0,0.95) 100%);
+        }
+        .bg-layer2 {
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse at 30% 40%, rgba(40,40,45,0.2) 0%, transparent 60%);
+            opacity: 0.4;
+            transition: opacity 1s ease;
+        }
+        .bg-layer3 {
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%);
+            opacity: 0.5;
+        }
+        .bg-geometry {
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(210,170,95,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(210,170,95,0.03) 1px, transparent 1px);
+            background-size: 60px 60px; opacity: 0.2;
+            transition: opacity 2s ease;
+        }
+
+        /* ============================================================
+           PARTICLES
+           ============================================================ */
+        .particles {
+            position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden;
+        }
+        .particle {
+            position: absolute; width: 2px; height: 2px; background: rgba(255,255,255,0.06); border-radius: 50%;
+            animation: floatParticle 20s infinite alternate ease-in-out;
+        }
+        @keyframes floatParticle {
+            0% { transform: translate(0,0) scale(1); opacity: 0.1; }
+            100% { transform: translate(40px,-30px) scale(0.8); opacity: 0.5; }
+        }
+
+        /* ============================================================
+           WORLD
+           ============================================================ */
+        .world {
+            position: relative; z-index: 2; width: 100%; height: 100%;
+            perspective: 1600px; transform-style: preserve-3d;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* ============================================================
+           LIGHTING
+           ============================================================ */
+        .lighting {
+            position: absolute; inset: 0; z-index: 3; pointer-events: none; transform-style: preserve-3d;
+        }
+        .lighting>* {
+            position: absolute; inset: 0; mix-blend-mode: screen; pointer-events: none;
+            will-change: opacity, transform;
+        }
+        .light-ambient {
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 70%);
+            filter: blur(60px); opacity: 0.7;
+            transition: opacity 1s ease;
+        }
+        .light-key {
+            background: radial-gradient(ellipse at 25% 20%, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 60%);
+            filter: blur(40px); opacity: 0.8; transition: none;
+        }
+        .light-fill {
+            background: radial-gradient(ellipse at 75% 80%, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 55%);
+            filter: blur(50px); opacity: 0.6; transition: none;
+        }
+        .light-back {
+            background: radial-gradient(ellipse at 60% 30%, rgba(180,200,220,0.05) 0%, transparent 60%);
+            filter: blur(80px); opacity: 0.3;
+            transition: opacity 1s ease;
+        }
+
+        /* ============================================================
+           SCENE-SCALE
+           ============================================================ */
+        .scene-scale {
+            width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+            transform: scale(var(--scene-scale)); transform-origin: center center; will-change: transform;
+        }
+
+        /* ============================================================
+           SCENE
+           ============================================================ */
+        .scene {
+            position: relative; width: 100%; max-width: 1200px; padding: 20px 40px;
+            display: flex; flex-direction: row; align-items: center; justify-content: center;
+            gap: 140px; transform-style: preserve-3d;
+        }
+        @media (min-width:1600px) { .scene { gap:160px; max-width:1400px; } }
+        @media (max-width:1024px) { .scene { gap:100px; padding:20px 30px; } }
+        @media (max-width:768px) { .scene { flex-direction:column; gap:30px; padding:20px 16px; justify-content:center; text-align:center; } }
+
+        @media (min-width:1200px) and (max-width:1600px) and (min-height:700px) and (max-height:950px) { .scene { gap:190px; max-width:1280px; } }
+        @media (min-width:1366px) and (max-width:1600px) and (min-height:700px) and (max-height:920px) { .scene { gap:200px; max-width:1300px; } }
+        @media (min-width:1400px) and (max-width:1600px) and (min-height:750px) and (max-height:940px) { .scene { gap:210px; max-width:1320px; } }
+        @media (min-width:1280px) and (max-width:1440px) and (min-height:720px) and (max-height:900px) { .scene { gap:195px; max-width:1290px; } }
+
+        /* ============================================================
+           MUSEUM BACKDROP
+           ============================================================ */
+        .museum-backdrop {
+            position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+        }
+        .concentric-circles {
+            position: absolute; inset: 0;
+            background: repeating-radial-gradient(circle at center,
+                transparent 0px, transparent 60px,
+                rgba(210,170,95,0.04) 60px, rgba(210,170,95,0.04) 61px);
+            opacity: 0.6;
+            transition: opacity 2s ease;
+        }
+        .concentric-circles.finale { opacity: 0.9; }
+
+        .grid-overlay {
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(210,170,95,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(210,170,95,0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.3;
+            transition: opacity 2s ease;
+        }
+        .grid-overlay.finale { opacity: 0.5; }
+
+        .depth-guides {
+            position: absolute; inset: 0; pointer-events: none; z-index: 1;
+            opacity: 0; transition: opacity 2s ease;
+        }
+        .depth-guides.finale { opacity: 0.6; }
+        .depth-guides::before, .depth-guides::after {
+            content: ''; position: absolute; border: 1px solid rgba(210,170,95,0.1);
+        }
+        .depth-guides::before { top:10%; left:10%; right:10%; bottom:10%; border-radius:4px; }
+        .depth-guides::after { top:20%; left:20%; right:20%; bottom:20%; border-radius:4px; }
+
+        .depth-circles {
+            position: absolute; inset: 0; pointer-events: none; z-index: 1;
+            opacity: 0; transition: opacity 2s ease;
+        }
+        .depth-circles.finale { opacity: 0.5; }
+        .depth-circles::before, .depth-circles::after {
+            content: ''; position: absolute; top:50%; left:50%; border-radius:50%;
+            border: 1px solid rgba(210,170,95,0.06); transform: translate(-50%,-50%);
+        }
+        .depth-circles::before { width:140%; height:140%; }
+        .depth-circles::after { width:180%; height:180%; }
+
+        .tech-lines {
+            position: absolute; inset: 0; pointer-events: none; z-index: 1;
+            opacity: 0; transition: opacity 2s ease;
+        }
+        .tech-lines.finale { opacity: 0.3; }
+        .tech-lines::before, .tech-lines::after {
+            content: ''; position: absolute; left:5%; right:5%; height:1px;
+            background: linear-gradient(90deg, transparent, rgba(210,170,95,0.06), transparent);
+        }
+        .tech-lines::before { top:30%; }
+        .tech-lines::after { bottom:30%; }
+
+        /* ============================================================
+           CARD WRAPPER
+           ============================================================ */
+        .card-wrapper {
+            position: relative; flex: 0 0 42%; max-width: 520px; aspect-ratio: 3 / 4;
+            z-index: 10; will-change: transform; transform-style: preserve-3d;
+        }
+        @media (max-width:1600px) { .card-wrapper { max-width:480px; flex:0 0 40%; } }
+        @media (max-width:1024px) { .card-wrapper { flex:0 0 42%; max-width:420px; } }
+        @media (max-width:768px) { .card-wrapper { flex:0 0 auto; width:55%; max-width:380px; margin-bottom:24px; } }
+        @media (max-width:480px) { .card-wrapper { width:65%; max-width:280px; margin-bottom:20px; } }
+
+        /* ============================================================
+           CARD THICKNESS
+           ============================================================ */
+        .card-thickness {
+            position: absolute; inset: -1px;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .card-thickness img {
+            width: 100%; height: 100%; object-fit: contain;
+            filter: brightness(0.62) contrast(1.0) saturate(0.8);
+            opacity: 0.78;
+        }
+
+        /* ============================================================
+           GOLD BORDER
+           ============================================================ */
+        .card-gold-border {
+            position: absolute; inset: -1px;
+            pointer-events: none; z-index: 17;
+            border-radius: 4px;
+            border: 1.5px solid transparent;
+            background-image: linear-gradient(135deg, #f6e2ae 0%, #d2aa5f 40%, #9a6b2f 70%, #f2dc9d 100%);
+            background-clip: padding-box;
+            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.60;
+            transition: opacity 0.3s ease;
+            box-shadow: none;
+            will-change: opacity;
+        }
+        .card-gold-border-brdf {
+            position: absolute; inset: -1px;
+            pointer-events: none; z-index: 18;
+            border-radius: 4px;
+            border: 1.5px solid transparent;
+            background-image: linear-gradient(135deg, #f6e2ae 0%, #d2aa5f 40%, #9a6b2f 70%, #f2dc9d 100%);
+            background-clip: padding-box;
+            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.15;
+            mix-blend-mode: screen;
+            box-shadow: none;
+            will-change: opacity;
+            transition: opacity 0.2s ease;
+        }
+
+        /* ============================================================
+           GLASS PEDESTAL
+           ============================================================ */
+        .glass-pedestal {
+            position: absolute; bottom: -8%; left: 50%; width: 110%; height: 12%;
+            transform: translateX(-50%); pointer-events: none; z-index: 9;
+            opacity: 0; transition: opacity 2s ease;
+            border-radius: 4px;
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.04) 0%, transparent 80%);
+            box-shadow: 0 0 40px rgba(210,170,95,0.02), inset 0 0 30px rgba(210,170,95,0.02);
+            border: 1px solid rgba(210,170,95,0.05);
+            backdrop-filter: blur(2px);
+        }
+        .glass-pedestal.finale { opacity: 1; }
+        .glass-pedestal::before {
+            content: ''; position: absolute; inset: 0;
+            border: 1px solid rgba(210,170,95,0.1); border-radius: 4px;
+        }
+        .glass-pedestal::after {
+            content: ''; position: absolute; top:10%; left:15%; width:70%; height:20%;
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.03) 0%, transparent 70%);
+            border-radius: 50%; filter: blur(4px);
+        }
+        .glass-pedestal .refraction {
+            position: absolute; inset: 0; border-radius: 4px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* ============================================================
+           SHADOW
+           ============================================================ */
+        .card-shadow {
+            position: absolute; bottom: -4%; left: 50%; width: 80%; height: 6%;
+            transform: translateX(-50%);
+            pointer-events: none; z-index: 7;
+            opacity: 0; transition: opacity 1.5s ease;
+            background: radial-gradient(ellipse at center, rgba(0,0,0,0.6) 0%, transparent 70%);
+            filter: blur(18px);
+            will-change: transform, opacity;
+        }
+        .card-shadow.finale { opacity: 0.35; }
+
+        /* ============================================================
+           MUSEUM FRAME
+           ============================================================ */
+        .museum-frame {
+            position: absolute; inset: -8px; pointer-events: none; z-index: 15;
+            opacity: 0; transition: opacity 3s ease;
+            border-radius: 4px;
+            box-shadow: inset 0 0 40px rgba(210,170,95,0.04), 0 0 60px rgba(210,170,95,0.03);
+        }
+        .museum-frame.finale { opacity: 1; }
+        .museum-frame::before {
+            content: ''; position: absolute; inset: 0;
+            border: 1px solid rgba(210,170,95,0.12); border-radius: 4px;
+        }
+        .museum-frame::after {
+            content: ''; position: absolute; inset: 4px;
+            border: 1px solid rgba(210,170,95,0.05); border-radius: 3px;
+        }
+
+        /* ============================================================
+           FINAL GLOW
+           ============================================================ */
+        .final-glow {
+            position: absolute; inset: -20px; pointer-events: none; z-index: 14;
+            opacity: 0; transition: opacity 2.5s ease;
+            background: radial-gradient(ellipse at center, rgba(210,170,95,0.03) 0%, transparent 70%);
+            filter: blur(30px); border-radius: 8px;
+        }
+        .final-glow.finale { opacity: 1; }
+
+        /* ============================================================
+           LIGHT PASS
+           ============================================================ */
+        .final-light-pass {
+            position: absolute; inset: 0; pointer-events: none; z-index: 16;
+            border-radius: 4px;
+            background: linear-gradient(135deg,
+                transparent 0%, transparent 25%,
+                rgba(255,235,200,0.03) 40%,
+                rgba(255,235,200,0.06) 48%,
+                rgba(255,215,160,0.08) 52%,
+                rgba(255,235,200,0.04) 60%,
+                transparent 75%, transparent 100%);
+            background-size: 400% 400%;
+            background-position: 0% 0%;
+            mix-blend-mode: screen;
+            filter: blur(3px);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            will-change: background-position, opacity;
+            animation: museumLightPass 16s ease-in-out infinite;
+        }
+        .final-light-pass.active { opacity: 0.6; }
+        @keyframes museumLightPass {
+            0% { background-position: 0% 0%; opacity:0.1; }
+            20% { opacity:0.45; }
+            40% { background-position: 35% 25%; opacity:0.65; }
+            60% { background-position: 65% 60%; opacity:0.55; }
+            80% { background-position: 95% 90%; opacity:0.3; }
+            100% { background-position: 130% 130%; opacity:0.08; }
+        }
+
+        /* ============================================================
+           CARD MATERIAL
+           ============================================================ */
+        .card-material {
+            position: relative; width: 100%; height: 100%;
+            transform-style: preserve-3d; will-change: transform;
+            z-index: 10;
+            mask-image: url('https://eimage.sendsay.ru/image/x_1768223591756466/%D0%97%D0%B0%D0%B1%D0%B8%D0%B2%D0%B0%D0%BB%D1%8B%202.0/card%5Fcsecollege.png');
+            mask-mode: alpha; mask-size: contain; mask-repeat: no-repeat; mask-position: center;
+            -webkit-mask-image: url('https://eimage.sendsay.ru/image/x_1768223591756466/%D0%97%D0%B0%D0%B1%D0%B8%D0%B2%D0%B0%D0%BB%D1%8B%202.0/card%5Fcsecollege.png');
+            -webkit-mask-mode: alpha; -webkit-mask-size: contain; -webkit-mask-repeat: no-repeat; -webkit-mask-position: center;
+            transform: translateZ(0);
+        }
+        .card-material>* {
+            position: absolute; inset: 0; pointer-events: none;
+        }
+
+        .card-image {
+            width: 100%; height: 100%; object-fit: contain; pointer-events: none;
+            z-index: 1;
+        }
+        .card-texture {
+            position: absolute; inset: 0; z-index: 2;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            opacity: 0.08;
+            mix-blend-mode: overlay;
+            border-radius: 2px;
+        }
+        .card-shading {
+            z-index: 3;
+            background: radial-gradient(ellipse at 30% 40%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 100%);
+            mix-blend-mode: multiply; opacity: 0.6; transition: none;
+        }
+
+        /* ============================================================
+           SPECULAR LAYERS
+           ============================================================ */
+        .card-specular-layer1 {
+            position: absolute; inset: 0; z-index: 4;
+            pointer-events: none;
+            background: radial-gradient(ellipse at 50% 50%,
+                rgba(255,245,225,0.25) 0%,
+                rgba(255,245,225,0.08) 30%,
+                rgba(255,245,225,0.02) 60%,
+                transparent 75%);
+            background-size: 200% 200%;
+            background-position: 50% 50%;
+            mix-blend-mode: screen;
+            opacity: 0.28;
+            will-change: transform, background-position, background-size;
+            filter: blur(0.5px);
+            border-radius: 2px;
+            transition: none;
+        }
+        .card-specular-layer1.finale { opacity: 0.32; }
+
+        .card-specular-layer2 {
+            position: absolute; inset: 0; z-index: 5;
+            pointer-events: none;
+            background: radial-gradient(ellipse at 50% 50%,
+                rgba(255,245,225,0.60) 0%,
+                rgba(255,245,225,0.20) 30%,
+                transparent 60%);
+            background-size: 300% 300%;
+            background-position: 50% 50%;
+            mix-blend-mode: screen;
+            opacity: 0.20;
+            will-change: transform, background-position, background-size;
+            filter: blur(0px);
+            border-radius: 2px;
+            transition: none;
+        }
+        .card-specular-layer2.finale { opacity: 0.25; }
+
+        .card-reflection {
+            z-index: 6;
+            background: radial-gradient(ellipse at 70% 80%,
+                rgba(255,255,255,0.08) 0%,
+                rgba(255,255,255,0.03) 25%,
+                rgba(255,255,255,0) 50%);
+            mix-blend-mode: screen;
+            opacity: 0.25;
+            transition: none;
+            filter: blur(0.8px);
+            will-change: transform, background-position, background-size;
+        }
+
+        /* ============================================================
+           HOLOGRAM & VARNISH
+           ============================================================ */
+        .auth-hologram {
+            z-index: 7;
+            mix-blend-mode: screen;
+            background: radial-gradient(ellipse at 30% 35%, rgba(255,255,255,0.24) 0%, transparent 70%);
+            opacity: 0;
+            filter: blur(2px);
+            transition: opacity 0.4s ease;
+            will-change: transform, opacity;
+        }
+        .auth-hologram.active {
+            background: radial-gradient(ellipse at 30% 35%,
+                rgba(200,180,255,0.5) 0%,
+                rgba(100,255,200,0.35) 30%,
+                rgba(180,220,255,0.2) 60%,
+                transparent 80%);
+            animation: hologramShift 5s ease-in-out infinite alternate;
+        }
+        @keyframes hologramShift {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+
+        .auth-varnish {
+            z-index: 8;
+            mix-blend-mode: screen;
+            background: radial-gradient(ellipse at 50% 50%,
+                rgba(255,255,255,0.06) 0%,
+                rgba(255,255,255,0.02) 30%,
+                transparent 70%);
+            opacity: 0;
+            filter: blur(1px);
+            will-change: transform, opacity;
+        }
+
+        .auth-signature {
+            z-index: 9;
+            mix-blend-mode: overlay;
+            background: radial-gradient(ellipse at 78% 70%, rgba(255,215,150,0.4) 0%, transparent 60%);
+            opacity: 0;
+            filter: blur(0.8px) drop-shadow(0 1px 2px rgba(0,0,0,0.2));
+            transition: opacity 0.4s ease;
+            will-change: transform, opacity;
+        }
+
+        /* ============================================================
+           CORNER FRAMES
+           ============================================================ */
+        .corner-frame {
+            position: absolute; width: 20px; height: 20px;
+            border: 1px solid rgba(210,170,95,0.2);
+            pointer-events: none; z-index: 11;
+            transition: opacity 3s ease;
+        }
+        .corner-frame.finale { border-color: rgba(210,170,95,0.35); }
+        .corner-top-left { top:-4px; left:-4px; border-right:none; border-bottom:none; }
+        .corner-top-right { top:-4px; right:-4px; border-left:none; border-bottom:none; }
+        .corner-bottom-left { bottom:-4px; left:-4px; border-right:none; border-top:none; }
+        .corner-bottom-right { bottom:-4px; right:-4px; border-left:none; border-top:none; }
+
+        /* ============================================================
+           CALLOUTS
+           ============================================================ */
+        .callout {
+            position: absolute;
+            pointer-events: none;
+            z-index: 20;
+            opacity: 0;
+            transition: opacity 0.7s ease;
+        }
+        .callout.visible { opacity: 1; }
+
+        .callout-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .callout-line {
+            stroke: rgba(210, 170, 95, 0.4);
+            stroke-width: 1.2;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: stroke 1.5s ease;
+        }
+        .callout.finale .callout-line { stroke: rgba(210,170,95,0.7); }
+
+        .callout-dot {
+            fill: rgba(210,170,95,0.5);
+            transition: fill 1.5s ease;
+        }
+        .callout.finale .callout-dot { fill: rgba(210,170,95,0.8); }
+
+        .callout-label {
+            position: absolute;
+            font-size: 12px;
+            letter-spacing: 0.15em;
+            color: rgba(210, 170, 95, 0.6);
+            font-weight: 400;
+            white-space: normal;
+            line-height: 1.5;
+            font-family: 'Inter', sans-serif;
+            transition: color 1.5s ease, opacity 0.7s ease;
+            pointer-events: none;
+            text-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+        }
+        .callout.finale .callout-label { color: rgba(210,170,95,0.85); }
+
+        .callout-signature { left:12%; top:54%; transform:translate(-100%,-50%); width:28%; height:22%; }
+        .callout-signature .callout-dot { cx:100; cy:50; r:3; }
+        .callout-signature .callout-label { top:50%; left:5%; transform:translateY(-50%); width:100px; text-align:left; }
+
+        .callout-hologram { left:81.6%; top:67.3%; transform:translate(0%,-50%); width:28%; height:22%; }
+        .callout-hologram .callout-dot { cx:0; cy:50; r:3; }
+        .callout-hologram .callout-label { top:50%; right:5%; transform:translateY(-50%); width:100px; text-align:right; }
+
+        .callout-serial { left:92%; top:-4.8%; transform:translate(-50%,0%); width:22%; height:22%; }
+        .callout-serial .callout-dot { cx:50; cy:100; r:3; }
+        .callout-serial .callout-label { top:-28%; left:50%; transform:translateX(-50%); width:90px; text-align:center; }
+
+        .callout-elements { display:none !important; }
+
+        .gold-accent {
+            position: absolute;
+            bottom: -20px;
+            left: 10%;
+            width: 80%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(210,170,95,0.15), transparent);
+            z-index: 12;
+            pointer-events: none;
+            transition: opacity 3s ease;
+        }
+        .gold-accent.finale { background: linear-gradient(90deg, transparent, rgba(210,170,95,0.3), transparent); }
+
+        /* ============================================================
+           INSPECTION PANEL
+           ============================================================ */
+        .inspection-panel {
+            flex: 1 1 50%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: #ece6e0;
+            z-index: 5;
+            padding: 30px 0 10px 0;
+        }
+
+        .inspection-panel h2 {
+            position: relative;
+            font-family: 'Cormorant Garamond', serif;
+            margin: 0 0 4px 0;
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+            will-change: opacity, transform;
+            line-height: 1.1;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .inspection-panel h2.visible { opacity: 1; transform: translateY(0); }
+        .inspection-panel h2 .title-main {
+            display: inline-block;
+            font-weight: 700;
+            font-size: 64px;
+            letter-spacing: -0.02em;
+            line-height: 1.05;
+            background: linear-gradient(135deg, #f6e2ae 0%, #d2aa5f 40%, #9a6b2f 70%, #f2dc9d 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .inspection-panel h2 .title-sub {
+            display: block;
+            font-weight: 400;
+            font-size: 24px;
+            letter-spacing: 0.06em;
+            color: rgba(210,170,95,0.8);
+            margin-top: 6px;
+            -webkit-text-fill-color: initial;
+            background: none;
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0 24px 0;
+            opacity: 0;
+            transition: opacity 0.6s ease 0.3s;
+            width: 100%;
+        }
+        .divider.visible { opacity: 1; }
+        .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(210,170,95,0.2)); }
+        .divider-line:last-child { background: linear-gradient(90deg, rgba(210,170,95,0.2), transparent); }
+        .divider-diamond { width: 6px; height: 6px; background: rgba(210,170,95,0.3); transform: rotate(45deg); flex-shrink: 0; transition: background 1.5s ease; }
+        .divider-diamond.finale { background: rgba(210,170,95,0.5); }
+
+        .inspection-panel .subtitle {
+            font-size: 18px;
+            font-weight: 300;
+            color: rgba(236, 230, 224, 0.7);
+            margin: 0 0 32px 0;
+            line-height: 1.7;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+            letter-spacing: 0.01em;
+        }
+        .inspection-panel .subtitle.visible { opacity: 1; transform: translateY(0); }
+
+        .inspection-panel ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+        }
+        .inspection-panel ul::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(210,170,95,0.1), transparent);
+            opacity: 0.5;
+        }
+
+        .inspection-panel li {
+            font-size: 22px;
+            font-weight: 400;
+            color: rgba(236, 230, 224, 0.9);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.5s ease, transform 0.5s ease, filter 0.4s ease, opacity 0.4s ease;
+            min-height: 40px;
+            position: relative;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(210,170,95,0.05);
+            will-change: transform, opacity, filter;
+        }
+        .inspection-panel li:last-child { border-bottom: none; }
+        .inspection-panel li.visible { opacity: 1; transform: translateY(0); }
+
+        .inspection-panel li.dimmed {
+            opacity: 0.85 !important;
+            filter: brightness(0.92);
+            transition: opacity 0.4s ease, filter 0.4s ease;
+        }
+
+        .inspection-panel li .icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .inspection-panel li .icon svg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 30px;
+            fill: none;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: opacity 0.4s ease;
+        }
+        .inspection-panel li .icon .icon-idle,
+        .inspection-panel li .icon .icon-checking,
+        .inspection-panel li .icon .icon-confirmed { opacity: 0; pointer-events: none; }
+        .inspection-panel li .icon.idle .icon-idle { opacity: 1; }
+        .inspection-panel li .icon.checking .icon-checking { opacity: 1; }
+        .inspection-panel li .icon.confirmed .icon-confirmed { opacity: 1; }
+        .inspection-panel li .icon .icon-idle { stroke: rgba(210,170,95,0.35); }
+        .inspection-panel li .icon .icon-checking { stroke: #d2aa5f; }
+        .inspection-panel li .icon .icon-confirmed { stroke: #f6e2ae; filter: drop-shadow(0 0 6px rgba(210,170,95,0.25)); }
+
+        .inspection-panel li[data-step="3"] .icon.checking-custom .icon-checking {
+            opacity: 1 !important;
+            filter: drop-shadow(0 0 12px rgba(210,170,95,0.7));
+            transform: translate(-50%, -50%) scale(1.08);
+            transition: transform 0.4s ease, filter 0.4s ease;
+        }
+        .inspection-panel li[data-step="3"] .icon.checking-custom .icon-checking path,
+        .inspection-panel li[data-step="3"] .icon.checking-custom .icon-checking line {
+            stroke: #f6e2ae !important;
+        }
+
+        .inspection-panel li .icon .icon-checking .checking-path {
+            stroke-dasharray: 120;
+            stroke-dashoffset: 120;
+            animation: pulseStroke 1.2s ease-in-out infinite;
+        }
+        @keyframes pulseStroke {
+            0% { stroke-dashoffset: 120; }
+            50% { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: 120; }
+        }
+
+        .inspection-panel li .text {
+            font-family: 'Inter', sans-serif;
+            transition: color 0.4s ease, filter 0.4s ease, opacity 0.4s ease;
+        }
+        .inspection-panel li .text.active-text {
+            color: #f6e2ae;
+            animation: checkingPulse 1.8s ease-in-out infinite alternate;
+        }
+        .inspection-panel li .text.dim-text {
+            color: rgba(236, 230, 224, 0.5);
+        }
+        .inspection-panel li .text.confirmed-text {
+            color: rgba(236, 230, 224, 0.9);
+            animation: none;
+        }
+
+        @keyframes checkingPulse {
+            0% { opacity: 0.85; filter: brightness(0.9) drop-shadow(0 0 4px rgba(210,170,95,0.2)); }
+            100% { opacity: 1.0; filter: brightness(1.0) drop-shadow(0 0 12px rgba(210,170,95,0.5)); }
+        }
+
+        /* ============================================================
+           MOBILE — заголовок, подзаголовок и описание больше НЕ скрываются
+           ============================================================ */
+        @media (max-width:768px) {
+            .scene {
+                flex-direction: column;
+                gap: 24px;
+                padding: 16px 14px;
+                justify-content: flex-start;
+                text-align: center;
+                min-height: 100vh;
+                padding-top: 20px;
+            }
+
+            .card-wrapper {
+                flex: 0 0 auto;
+                width: 55%;
+                max-width: 340px;
+                margin-bottom: 20px;
+            }
+
+            /* Скрываем декоративные элементы */
+            .corner-frame,
+            .gold-accent,
+            .depth-guides,
+            .depth-circles,
+            .tech-lines,
+            .glass-pedestal,
+            .museum-frame,
+            .divider,
+            .particles {
+                display: none !important;
+            }
+
+            .concentric-circles { opacity: 0.15; }
+            .grid-overlay { opacity: 0.05; }
+
+            /* Выноски скрыты на мобильных — используется список */
+            .callout { display: none !important; }
+
+            /* Второстепенные отражения скрыты */
+            .card-reflection { display: none !important; }
+            .card-specular-layer2 { display: none !important; }
+
+            /* ПАНЕЛЬ — теперь заголовок и подзаголовок ВИДНЫ */
+            .inspection-panel {
+                flex: 1 1 auto;
+                max-width: 100%;
+                align-items: center;
+                text-align: center;
+                padding: 0 10px 16px 10px;
+                margin-top: 0;
+                width: 100%;
+            }
+
+            /* Заголовок — показываем, адаптируем размер */
+            .inspection-panel h2 {
+                display: flex !important;
+                flex-direction: column;
+                align-items: center;
+                margin-bottom: 6px;
+                opacity: 0;
+                transform: translateY(12px);
+                transition: opacity 0.6s ease, transform 0.6s ease;
+            }
+            .inspection-panel h2.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .inspection-panel h2 .title-main {
+                font-size: 30px;
+                letter-spacing: -0.01em;
+                line-height: 1.1;
+            }
+
+            .inspection-panel h2 .title-sub {
+                font-size: 18px;
+                margin-top: 2px;
+                letter-spacing: 0.04em;
+            }
+
+            /* Подзаголовок (subtitle) — показываем */
+            .inspection-panel .subtitle {
+                display: block !important;
+                font-size: 14px;
+                margin: 0 0 20px 0;
+                line-height: 1.5;
+                opacity: 0;
+                transform: translateY(10px);
+                transition: opacity 0.6s ease, transform 0.6s ease;
+                max-width: 100%;
+                padding: 0 4px;
+            }
+            .inspection-panel .subtitle.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            /* Список проверки — 3 элемента в колонку */
+            .inspection-panel ul {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                width: 100%;
+                max-width: 400px;
+                padding: 0;
+                margin: 0;
+            }
+
+            .inspection-panel ul::before { display: none; }
+
+            .inspection-panel li {
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-start;
+                gap: 12px;
+                padding: 0 14px;
+                height: 48px;
+                min-height: unset;
+                border: 1px solid rgba(210,170,95,0.15);
+                border-radius: 4px;
+                background: rgba(255,255,255,0.02);
+                font-size: 14px;
+                text-align: left;
+                margin: 0;
+                transition: none;
+                transform: translateY(0);
+                opacity: 0;
+                border-bottom: none;
+                box-sizing: border-box;
+            }
+
+            .inspection-panel li.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .inspection-panel li .icon {
+                width: 28px;
+                height: 28px;
+                flex-shrink: 0;
+                margin-bottom: 0;
+            }
+
+            .inspection-panel li .icon svg {
+                width: 24px;
+                height: 24px;
+            }
+
+            .inspection-panel li .text {
+                font-size: 14px;
+                line-height: 1.3;
+                max-width: 100%;
+                word-break: break-word;
+                text-align: left;
+            }
+
+            .inspection-panel li:last-child {
+                border-bottom: 1px solid rgba(210,170,95,0.15);
+            }
+
+            /* Отключаем dimmed на мобильных, чтобы не мешал читаемости */
+            .inspection-panel li.dimmed {
+                opacity: 1 !important;
+                filter: none !important;
+            }
+        }
+
+        @media (max-width:480px) {
+            .card-wrapper {
+                width: 65%;
+                max-width: 260px;
+                margin-bottom: 16px;
+            }
+
+            .scene {
+                gap: 18px;
+                padding: 12px 10px;
+                padding-top: 16px;
+            }
+
+            .inspection-panel h2 .title-main {
+                font-size: 24px;
+            }
+
+            .inspection-panel h2 .title-sub {
+                font-size: 16px;
+            }
+
+            .inspection-panel .subtitle {
+                font-size: 13px;
+                margin-bottom: 16px;
+            }
+
+            .inspection-panel li {
+                height: 44px;
+                padding: 0 12px;
+                font-size: 13px;
+                gap: 10px;
+            }
+
+            .inspection-panel li .icon {
+                width: 24px;
+                height: 24px;
+            }
+
+            .inspection-panel li .icon svg {
+                width: 20px;
+                height: 20px;
+            }
+
+            .inspection-panel li .text {
+                font-size: 13px;
+            }
+
+            .inspection-panel ul {
+                gap: 8px;
+            }
+        }
+
+        @media (max-width:380px) {
+            .card-wrapper {
+                width: 70%;
+                max-width: 220px;
+            }
+
+            .inspection-panel h2 .title-main {
+                font-size: 20px;
+            }
+
+            .inspection-panel h2 .title-sub {
+                font-size: 14px;
+            }
+
+            .inspection-panel .subtitle {
+                font-size: 12px;
+            }
+
+            .inspection-panel li {
+                height: 40px;
+                font-size: 12px;
+                padding: 0 10px;
+                gap: 8px;
+            }
+
+            .inspection-panel li .icon {
+                width: 20px;
+                height: 20px;
+            }
+
+            .inspection-panel li .icon svg {
+                width: 18px;
+                height: 18px;
+            }
+
+            .inspection-panel li .text {
+                font-size: 12px;
+            }
+        }
+
+        /* ============================================================
+           HEIGHT ADAPTATION
+           ============================================================ */
+        @media (max-height:1200px) { :root { --scene-scale:0.96; } .scene { gap:120px; } }
+        @media (max-height:1080px) { :root { --scene-scale:0.92; } .scene { gap:110px; } }
+        @media (max-height:980px) { :root { --scene-scale:0.88; } .scene { gap:100px; } }
+        @media (max-height:900px) { :root { --scene-scale:0.82; } .scene { gap:90px; } }
+        @media (max-height:800px) { :root { --scene-scale:0.76; } .scene { gap:80px; } .inspection-panel { padding:20px 0 5px 0; } }
+        @media (max-height:720px) { :root { --scene-scale:0.70; } .scene { gap:65px; } }
+        @media (max-height:650px) { :root { --scene-scale:0.64; } .scene { gap:50px; } }
+
+        /* Mobile height adaptation for small screens */
+        @media (max-width:768px) and (max-height:700px) {
+            .scene { gap:16px; padding-top:12px; }
+            .card-wrapper { width:45%; max-width:280px; margin-bottom:12px; }
+            .inspection-panel { padding:0 10px 12px 10px; }
+            .inspection-panel h2 .title-main { font-size:24px; }
+            .inspection-panel h2 .title-sub { font-size:16px; }
+            .inspection-panel .subtitle { font-size:13px; margin-bottom:14px; }
+            .inspection-panel li { height:40px; font-size:13px; padding:0 12px; }
+            .inspection-panel li .icon { width:24px; height:24px; }
+            .inspection-panel li .icon svg { width:20px; height:20px; }
+            .inspection-panel li .text { font-size:13px; }
+            .inspection-panel ul { gap:8px; }
+        }
+
+        @media (max-width:768px) and (max-height:600px) {
+            .scene { gap:12px; padding-top:8px; }
+            .card-wrapper { width:40%; max-width:220px; margin-bottom:8px; }
+            .inspection-panel h2 .title-main { font-size:20px; }
+            .inspection-panel h2 .title-sub { font-size:14px; }
+            .inspection-panel .subtitle { font-size:12px; margin-bottom:10px; }
+            .inspection-panel li { height:36px; font-size:12px; padding:0 10px; }
+            .inspection-panel li .icon { width:20px; height:20px; }
+            .inspection-panel li .icon svg { width:16px; height:16px; }
+            .inspection-panel li .text { font-size:12px; }
+            .inspection-panel ul { gap:6px; }
+        }
+
+        @media (min-width:1200px) and (max-width:1600px) and (min-height:700px) and (max-height:950px) { .scene { gap:190px !important; } }
+        @media (min-width:1366px) and (max-width:1600px) and (min-height:700px) and (max-height:920px) { .scene { gap:200px !important; } }
+        @media (min-width:1400px) and (max-width:1600px) and (min-height:750px) and (max-height:940px) { .scene { gap:210px !important; } }
+        @media (min-width:1280px) and (max-width:1440px) and (min-height:720px) and (max-height:900px) { .scene { gap:195px !important; } }
+
+        ::-webkit-scrollbar { width:4px; background:#0a0a0a; }
+        ::-webkit-scrollbar-thumb { background:#3d3d3d; border-radius:2px; }
+        ::-webkit-scrollbar-thumb:hover { background:#6a6a6a; }
+    </style>
+</head>
+<body>
+    <section class="act4" id="act4">
+        <div class="stage" id="stage">
+            <div class="background" id="background">
+                <div class="bg-layer1"></div>
+                <div class="bg-layer2" id="bgLayer2"></div>
+                <div class="bg-layer3"></div>
+                <div class="bg-geometry" id="bgGeometry"></div>
+            </div>
+            <div class="particles" id="particles"></div>
+            <div class="world" id="world">
+                <div class="lighting" id="lighting">
+                    <div class="light-ambient" id="lightAmbient"></div>
+                    <div class="light-key" id="lightKey"></div>
+                    <div class="light-fill" id="lightFill"></div>
+                    <div class="light-back" id="lightBack"></div>
+                </div>
+                <div class="depth-guides" id="depthGuides"></div>
+                <div class="depth-circles" id="depthCircles"></div>
+                <div class="tech-lines" id="techLines"></div>
+                <div class="scene-scale" id="sceneScale">
+                    <div class="scene" id="scene">
+                        <div class="museum-backdrop">
+                            <div class="concentric-circles" id="concentricCircles"></div>
+                            <div class="grid-overlay" id="gridOverlay"></div>
+                        </div>
+                        <div class="card-wrapper" id="cardWrapper">
+                            <div class="card-thickness" id="cardThickness"><img src="https://eimage.sendsay.ru/image/x_1768223591756466/%D0%97%D0%B0%D0%B1%D0%B8%D0%B2%D0%B0%D0%BB%D1%8B%202.0/card%5Fcsecollege.png" alt="" loading="eager" decoding="async" /></div>
+                            <div class="glass-pedestal" id="glassPedestal"><div class="refraction"></div></div>
+                            <div class="card-shadow" id="cardShadow"></div>
+                            <div class="card-material" id="cardMaterial">
+                                <img class="card-image" id="cardImage" src="https://eimage.sendsay.ru/image/x_1768223591756466/%D0%97%D0%B0%D0%B1%D0%B8%D0%B2%D0%B0%D0%BB%D1%8B%202.0/card%5Fcsecollege.png" alt="Коллекционная карточка" loading="eager" decoding="async" />
+                                <div class="card-texture" id="cardTexture"></div>
+                                <div class="card-shading" id="cardShading"></div>
+                                <div class="card-specular-layer1" id="specularLayer1"></div>
+                                <div class="card-specular-layer2" id="specularLayer2"></div>
+                                <div class="card-reflection" id="cardReflection"></div>
+                                <div class="auth-hologram" id="authHologram"></div>
+                                <div class="auth-varnish" id="authVarnish"></div>
+                                <div class="auth-signature" id="authSignature"></div>
+                            </div>
+                            <div class="card-gold-border" id="cardGoldBorder"></div>
+                            <div class="card-gold-border-brdf" id="cardGoldBorderBrdf"></div>
+                            <div class="museum-frame" id="museumFrame"></div>
+                            <div class="final-glow" id="finalGlow"></div>
+                            <div class="final-light-pass" id="finalLightPass"></div>
+                            <div class="corner-frame corner-top-left" id="cornerTL"></div>
+                            <div class="corner-frame corner-top-right" id="cornerTR"></div>
+                            <div class="corner-frame corner-bottom-left" id="cornerBL"></div>
+                            <div class="corner-frame corner-bottom-right" id="cornerBR"></div>
+                            <div class="gold-accent" id="goldAccent"></div>
+                            <div class="callout callout-signature" id="calloutSignature">
+                                <svg class="callout-svg" viewBox="0 0 100 100" preserveAspectRatio="none"><polyline class="callout-line" points="100,50 0,50 0,20" /><circle class="callout-dot" cx="100" cy="50" r="3" /></svg>
+                                <span class="callout-label">Подлинный<br>автограф</span>
+                            </div>
+                            <div class="callout callout-hologram" id="calloutHologram">
+                                <svg class="callout-svg" viewBox="0 0 100 100" preserveAspectRatio="none"><polyline class="callout-line" points="0,50 100,50 100,20" /><circle class="callout-dot" cx="0" cy="50" r="3" /></svg>
+                                <span class="callout-label">Голограмма<br>подлинности</span>
+                            </div>
+                            <div class="callout callout-serial" id="calloutSerial">
+                                <svg class="callout-svg" viewBox="0 0 100 100" preserveAspectRatio="none"><polyline class="callout-line" points="50,100 50,0 20,0" /><circle class="callout-dot" cx="50" cy="100" r="3" /></svg>
+                                <span class="callout-label">Ограниченный<br>тираж</span>
+                            </div>
+                            <div class="callout callout-elements" id="calloutElements" style="display:none !important;"></div>
+                        </div>
+                        <div class="inspection-panel" id="inspectionPanel">
+                            <h2 id="panelTitle"><span class="title-main">Коллекционный экземпляр</span><span class="title-sub">с подлинным автографом</span></h2>
+                            <div class="divider" id="divider"><span class="divider-line"></span><span class="divider-diamond" id="dividerDiamond"></span><span class="divider-line"></span></div>
+                            <p class="subtitle" id="panelSubtitle">Карточка из Редкого Артефакта с подлинным автографом игрока.<br>Именно такие экземпляры становятся самыми ценными в коллекции.</p>
+                            <ul>
+                                <li data-threshold="0.42" data-delay="0.52" data-callout="calloutSignature" data-step="0">
+                                    <span class="icon idle">
+                                        <svg class="icon-idle" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 20 L8 16 L12 12 L16 8 L20 4"/><path d="M12 12 L14 10 L16 12 L14 14 Z"/></svg>
+                                        <svg class="icon-checking" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path class="checking-path" d="M4 20 L8 16 L12 12 L16 8 L20 4 M12 12 L14 10 L16 12 L14 14 Z"/></svg>
+                                        <svg class="icon-confirmed" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 20 L8 16 L12 12 L16 8 L20 4" stroke-width="2"/><path d="M12 12 L14 10 L16 12 L14 14 Z" stroke-width="2"/></svg>
+                                    </span>
+                                    <span class="text">Подлинный автограф</span>
+                                </li>
+                                <li data-threshold="0.55" data-delay="0.62" data-callout="calloutHologram" data-step="1">
+                                    <span class="icon idle">
+                                        <svg class="icon-idle" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12,3 20,8 20,16 12,21 4,16 4,8"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="4" y1="8" x2="20" y2="16"/><line x1="4" y1="16" x2="20" y2="8"/></svg>
+                                        <svg class="icon-checking" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon class="checking-path" points="12,3 20,8 20,16 12,21 4,16 4,8"/><line class="checking-path" x1="12" y1="3" x2="12" y2="21"/><line class="checking-path" x1="4" y1="8" x2="20" y2="16"/><line class="checking-path" x1="4" y1="16" x2="20" y2="8"/></svg>
+                                        <svg class="icon-confirmed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,3 20,8 20,16 12,21 4,16 4,8"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="4" y1="8" x2="20" y2="16"/><line x1="4" y1="16" x2="20" y2="8"/></svg>
+                                    </span>
+                                    <span class="text">Голограмма подлинности</span>
+                                </li>
+                                <li data-threshold="0.68" data-delay="0.72" data-callout="calloutSerial" data-step="2">
+                                    <span class="icon idle">
+                                        <svg class="icon-idle" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="5" y="5" width="14" height="14" rx="2"/><text x="12" y="16" font-size="10" text-anchor="middle" fill="currentColor" stroke="none">#</text></svg>
+                                        <svg class="icon-checking" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect class="checking-path" x="5" y="5" width="14" height="14" rx="2"/><text x="12" y="16" font-size="10" text-anchor="middle" fill="currentColor" stroke="none">#</text></svg>
+                                        <svg class="icon-confirmed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="5" width="14" height="14" rx="2"/><text x="12" y="16" font-size="10" text-anchor="middle" fill="currentColor" stroke="none">#</text></svg>
+                                    </span>
+                                    <span class="text">Ограниченный тираж</span>
+                                </li>
+                                <li data-threshold="0.81" data-delay="0.90" data-callout="calloutElements" data-step="3">
+                                    <span class="icon idle">
+                                        <svg class="icon-idle" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3 L3 9 L3 19 L12 23 L21 19 L21 9 Z"/><line x1="12" y1="6" x2="12" y2="18"/><line x1="7.5" y1="10.5" x2="16.5" y2="15"/><line x1="7.5" y1="15" x2="16.5" y2="10.5"/></svg>
+                                        <svg class="icon-checking" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3 L3 9 L3 19 L12 23 L21 19 L21 9 Z"/><line x1="12" y1="6" x2="12" y2="18"/><line x1="7.5" y1="10.5" x2="16.5" y2="15"/><line x1="7.5" y1="15" x2="16.5" y2="10.5"/></svg>
+                                        <svg class="icon-confirmed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 L3 9 L3 19 L12 23 L21 19 L21 9 Z"/><line x1="12" y1="6" x2="12" y2="18"/><line x1="7.5" y1="10.5" x2="16.5" y2="15"/><line x1="7.5" y1="15" x2="16.5" y2="10.5"/></svg>
+                                    </span>
+                                    <span class="text">Защитные элементы</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ============================================================
+            // CONFIG
+            // ============================================================
+            var CONFIG = {
+                scaleStart: 0.90,
+                scaleEnd: 1.15,
+                zStart: -100,
+                zEnd: 40,
+                y: 0,
+                smoothness: 0.12,
+                fps: 0.016,
+                finaleStart: 0.88
+            };
+
+            // ============================================================
+            // ENGINE
+            // ============================================================
+            var ENGINE = {
+                progress: 0,
+                targetProgress: 0,
+                lastProgress: 0,
+                delta: 0,
+                time: 0
+            };
+
+            // ============================================================
+            // DOM CACHE
+            // ============================================================
+            var section = document.getElementById('act4');
+            var cardWrapper = document.getElementById('cardWrapper');
+            var panelTitle = document.getElementById('panelTitle');
+            var panelSubtitle = document.getElementById('panelSubtitle');
+            var divider = document.getElementById('divider');
+            var dividerDiamond = document.getElementById('dividerDiamond');
+
+            var cardShading = document.getElementById('cardShading');
+            var specularLayer1 = document.getElementById('specularLayer1');
+            var specularLayer2 = document.getElementById('specularLayer2');
+            var cardReflection = document.getElementById('cardReflection');
+            var authHologram = document.getElementById('authHologram');
+            var authVarnish = document.getElementById('authVarnish');
+            var authSignature = document.getElementById('authSignature');
+            var cardGoldBorder = document.getElementById('cardGoldBorder');
+            var cardGoldBorderBrdf = document.getElementById('cardGoldBorderBrdf');
+            var cardShadow = document.getElementById('cardShadow');
+
+            var lightKey = document.getElementById('lightKey');
+            var lightFill = document.getElementById('lightFill');
+            var lightAmbient = document.getElementById('lightAmbient');
+            var lightBack = document.getElementById('lightBack');
+
+            var museumFrame = document.getElementById('museumFrame');
+            var glassPedestal = document.getElementById('glassPedestal');
+            var finalGlow = document.getElementById('finalGlow');
+            var finalLightPass = document.getElementById('finalLightPass');
+            var concentricCircles = document.getElementById('concentricCircles');
+            var gridOverlay = document.getElementById('gridOverlay');
+            var depthGuides = document.getElementById('depthGuides');
+            var depthCircles = document.getElementById('depthCircles');
+            var techLines = document.getElementById('techLines');
+            var goldAccent = document.getElementById('goldAccent');
+
+            var cornerFrames = [
+                document.getElementById('cornerTL'),
+                document.getElementById('cornerTR'),
+                document.getElementById('cornerBL'),
+                document.getElementById('cornerBR')
+            ];
+
+            var callouts = [
+                document.getElementById('calloutSignature'),
+                document.getElementById('calloutHologram'),
+                document.getElementById('calloutSerial'),
+                document.getElementById('calloutElements')
+            ];
+
+            var bgLayer2 = document.getElementById('bgLayer2');
+            var bgGeometry = document.getElementById('bgGeometry');
+
+            // ============================================================
+            // INSPECTION NODES CACHE
+            // ============================================================
+            var inspectionNodes = [];
+
+            // ============================================================
+            // STATE
+            // ============================================================
+            var InspectionState = {
+                phase: 'intro',
+                currentStep: -1,
+                stepProgress: 0,
+                finale: false,
+                museum: false,
+                completed: false,
+                readyForExit: false,
+                museumStartTime: 0,
+                stepStatus: [],
+                activeIndex: -1,
+                pauseEnd: 0,
+                lastStep: -1
+            };
+
+            // ============================================================
+            // PARTICLES
+            // ============================================================
+            var particlesContainer = document.getElementById('particles');
+            for (var i = 0; i < 15; i++) {
+                var p = document.createElement('div');
+                p.className = 'particle';
+                var x = Math.random() * 100;
+                var y = Math.random() * 100;
+                var size = 1 + Math.random() * 1.5;
+                var duration = 15 + Math.random() * 20;
+                var delay = Math.random() * 20;
+                p.style.cssText = 'left:' + x + '%; top:' + y + '%; width:' + size + 'px; height:' + size +
+                    'px; animation-duration:' + duration + 's; animation-delay:' + delay + 's;';
+                particlesContainer.appendChild(p);
+            }
+
+            // ============================================================
+            // STEPS
+            // ============================================================
+            var STEPS = [
+                { threshold: 0.42, delay: 0.52, authEl: authSignature, callout: callouts[0] },
+                { threshold: 0.55, delay: 0.62, authEl: authHologram, callout: callouts[1] },
+                { threshold: 0.68, delay: 0.72, authEl: null, callout: callouts[2] },
+                { threshold: 0.81, delay: 0.90, authEl: null, callout: callouts[3] }
+            ];
+
+            // ============================================================
+            // HELPERS
+            // ============================================================
+            function clamp(v, min, max) { return Math.min(max, Math.max(min, v)); }
+            function easeInOutCubic(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+            function lerp(a, b, t) { return a + (b - a) * t; }
+
+            // ============================================================
+            // SCROLL
+            // ============================================================
+            function getSceneProgress() {
+                if (!section) return 0;
+                var rect = section.getBoundingClientRect();
+                var windowHeight = window.innerHeight;
+                var sectionTop = rect.top + window.scrollY;
+                var startScroll = sectionTop - windowHeight;
+                var endScroll = sectionTop;
+                var currentScroll = window.scrollY;
+                if (currentScroll <= startScroll) return 0;
+                if (currentScroll >= endScroll) return 1;
+                return (currentScroll - startScroll) / (endScroll - startScroll);
+            }
+
+            function updateScroll() {
+                ENGINE.targetProgress = getSceneProgress();
+            }
+
+            // ============================================================
+            // CAMERA
+            // ============================================================
+            function getCameraState(progress) {
+                var t = easeInOutCubic(progress);
+                return {
+                    scale: lerp(CONFIG.scaleStart, CONFIG.scaleEnd, t),
+                    z: lerp(CONFIG.zStart, CONFIG.zEnd, t * 0.8),
+                    y: CONFIG.y
+                };
+            }
+
+            // ============================================================
+            // INERTIA
+            // ============================================================
+            var inertiaState = {
+                rotX: 0, rotY: 0, rotZ: 0,
+                swayX: 0, swayY: 0,
+                prevRotX: 0, prevRotY: 0
+            };
+
+            var mouse = { x: 0, y: 0 };
+            var isMobile = window.innerWidth <= 768;
+
+            // ============================================================
+            // CENTRALIZED CSS CLASS HELPERS
+            // ============================================================
+            function setInspectionStatus(node, status, step) {
+                var icon = node.icon;
+                var text = node.text;
+                icon.className = 'icon';
+                text.classList.remove('active-text', 'dim-text', 'confirmed-text');
+                node.item.classList.remove('dimmed');
+
+                if (status === 'not-started') {
+                    icon.classList.add('idle');
+                    text.classList.add('dim-text');
+                    node.item.classList.add('dimmed');
+                } else if (status === 'checking') {
+                    if (step === 3) {
+                        icon.classList.add('checking-custom');
+                    } else {
+                        icon.classList.add('checking');
+                    }
+                    text.classList.add('active-text');
+                } else if (status === 'confirmed') {
+                    icon.classList.add('confirmed');
+                    text.classList.add('confirmed-text');
+                    if (step === 3) {
+                        icon.classList.remove('checking-custom');
+                    }
+                }
+            }
+
+            function setInspectionVisibility(node, visible) {
+                if (visible) {
+                    node.item.classList.add('visible');
+                } else {
+                    node.item.classList.remove('visible');
+                }
+            }
+
+            // ============================================================
+            // CENTRALIZED INLINE STYLE HELPERS
+            // ============================================================
+            function setOpacity(el, value) { el.style.opacity = value; }
+            function setTransform(el, value) { el.style.transform = value; }
+            function setFilter(el, value) { el.style.filter = value; }
+            function setBackground(el, value) { el.style.background = value; }
+            function setBackgroundPosition(el, value) { el.style.backgroundPosition = value; }
+            function setBackgroundSize(el, value) { el.style.backgroundSize = value; }
+
+            // ============================================================
+            // MATERIAL FRAME STATE (хранит вычисленные значения для материалов)
+            // ============================================================
+            var MaterialFrame = {
+                lightX: 50,
+                lightY: 50,
+                lifeMaster: 1,
+                time: 0,
+                progress: 0,
+                isFinale: false,
+                rotX: 0,
+                rotY: 0
+            };
+
+            // ============================================================
+            // INSPECTION STATE — подфункции
+            // ============================================================
+            function updateInspectionStepState() {
+                var progress = clamp(ENGINE.progress, 0, 1);
+                var idealIndex = -1;
+                for (var i = 0; i < STEPS.length; i++) {
+                    if (progress >= STEPS[i].threshold) idealIndex = i;
+                    else break;
+                }
+
+                var canAdvance = true;
+                if (InspectionState.currentStep >= 0 && InspectionState.currentStep < STEPS.length) {
+                    if (InspectionState.stepProgress >= 1 && InspectionState.currentStep === InspectionState.lastStep) {
+                        if (ENGINE.time < InspectionState.pauseEnd) {
+                            canAdvance = false;
+                        }
+                    }
+                }
+
+                if (canAdvance && idealIndex > InspectionState.currentStep) {
+                    var nextIndex = InspectionState.currentStep + 1;
+                    if (progress >= STEPS[nextIndex].threshold) {
+                        if (InspectionState.currentStep >= 0 && InspectionState.stepProgress >= 1) {
+                            InspectionState.pauseEnd = ENGINE.time + 0.2;
+                            InspectionState.lastStep = InspectionState.currentStep;
+                        }
+                        InspectionState.currentStep = nextIndex;
+                        InspectionState.stepProgress = 0;
+                    }
+                }
+
+                if (InspectionState.currentStep >= 0 && InspectionState.currentStep < STEPS.length) {
+                    var step = STEPS[InspectionState.currentStep];
+                    var start = step.threshold;
+                    var end = step.delay + 0.05;
+                    if (progress >= start && progress < end) {
+                        var t = (progress - start) / (end - start);
+                        InspectionState.stepProgress = clamp(t, 0, 1);
+                    } else if (progress >= end) {
+                        InspectionState.stepProgress = 1;
+                    } else {
+                        InspectionState.stepProgress = 0;
+                    }
+                } else {
+                    InspectionState.stepProgress = 0;
+                }
+            }
+
+            function updateInspectionStatuses() {
+                var progress = clamp(ENGINE.progress, 0, 1);
+                var statuses = [];
+                var activeIdx = -1;
+                for (var i = 0; i < STEPS.length; i++) {
+                    var th = STEPS[i].threshold;
+                    var dl = STEPS[i].delay;
+                    var status;
+                    if (progress < th) status = 'not-started';
+                    else if (progress >= th && progress < dl) status = 'checking';
+                    else status = 'confirmed';
+                    statuses.push(status);
+                    if (status === 'checking') activeIdx = i;
+                }
+                InspectionState.stepStatus = statuses;
+                InspectionState.activeIndex = activeIdx;
+
+                var allDone = true;
+                for (var k = 0; k < statuses.length; k++) {
+                    if (statuses[k] !== 'confirmed') { allDone = false; break; }
+                }
+                InspectionState.completed = allDone;
+            }
+
+            function updateFinalState() {
+                var progress = clamp(ENGINE.progress, 0, 1);
+                if (progress >= CONFIG.finaleStart && !InspectionState.finale) {
+                    InspectionState.finale = true;
+                    glassPedestal.classList.add('finale');
+                    museumFrame.classList.add('finale');
+                    finalGlow.classList.add('finale');
+                    cardGoldBorder.classList.add('finale');
+                    concentricCircles.classList.add('finale');
+                    gridOverlay.classList.add('finale');
+                    depthGuides.classList.add('finale');
+                    depthCircles.classList.add('finale');
+                    techLines.classList.add('finale');
+                    cornerFrames.forEach(function(el) { el.classList.add('finale'); });
+                    goldAccent.classList.add('finale');
+                    dividerDiamond.classList.add('finale');
+                    callouts.forEach(function(el) { if (el) el.classList.add('finale'); });
+                    specularLayer1.classList.add('finale');
+                    specularLayer2.classList.add('finale');
+                    cardShadow.classList.add('finale');
+                    finalLightPass.classList.add('active');
+                    InspectionState.museumStartTime = ENGINE.time + 1.0;
+                }
+            }
+
+            function updateMuseumState() {
+                if (InspectionState.finale && !InspectionState.museum) {
+                    if (ENGINE.time >= InspectionState.museumStartTime) {
+                        InspectionState.museum = true;
+                    }
+                }
+                if (InspectionState.completed && InspectionState.museum) {
+                    InspectionState.readyForExit = true;
+                }
+            }
+
+            function updateAuthentication() {
+                var step = InspectionState.currentStep;
+                var prog = InspectionState.stepProgress;
+                if (step === 1 && prog > 0 && prog < 0.3) {
+                    var flash = Math.sin(prog / 0.3 * Math.PI);
+                    setOpacity(authHologram, 0.6 + 0.4 * flash);
+                    setFilter(authHologram, 'brightness(1.3)');
+                } else if (step === 1 && prog >= 0.3) {
+                    setOpacity(authHologram, 0.4);
+                    setFilter(authHologram, '');
+                } else if (step > 1) {
+                    setOpacity(authHologram, 0.4);
+                    setFilter(authHologram, '');
+                }
+
+                for (var i = 0; i < STEPS.length; i++) {
+                    var s = STEPS[i];
+                    if (s.authEl && i !== 1) {
+                        var accent = 0;
+                        if (i === InspectionState.currentStep && InspectionState.stepProgress > 0) {
+                            var accT = InspectionState.stepProgress;
+                            accent = Math.sin(accT * Math.PI) * 0.9;
+                        }
+                        setOpacity(s.authEl, accent);
+                    }
+                }
+            }
+
+            function updateCallouts() {
+                var progress = clamp(ENGINE.progress, 0, 1);
+                for (var i = 0; i < STEPS.length; i++) {
+                    var s = STEPS[i];
+                    if (s.callout) {
+                        if (progress >= s.threshold) {
+                            s.callout.classList.add('visible');
+                        } else {
+                            s.callout.classList.remove('visible');
+                        }
+                    }
+                }
+            }
+
+            function updateInspectionState() {
+                updateInspectionStepState();
+                updateInspectionStatuses();
+                updateFinalState();
+                updateMuseumState();
+                updateAuthentication();
+                updateCallouts();
+            }
+
+            // ============================================================
+            // PANEL — разбита на подфункции (допустимо по ТЗ)
+            // ============================================================
+            function updatePanelHeader(progress) {
+                if (progress >= 0.25) panelTitle.classList.add('visible');
+                else panelTitle.classList.remove('visible');
+
+                if (progress >= 0.33) panelSubtitle.classList.add('visible');
+                else panelSubtitle.classList.remove('visible');
+
+                if (progress >= 0.25) divider.classList.add('visible');
+                else divider.classList.remove('visible');
+            }
+
+            function updatePanelItems(progress) {
+                for (var i = 0; i < inspectionNodes.length; i++) {
+                    var node = inspectionNodes[i];
+                    var status = InspectionState.stepStatus[i] || 'not-started';
+                    var threshold = parseFloat(node.item.getAttribute('data-threshold')) || 1;
+                    var step = parseInt(node.item.getAttribute('data-step')) || 0;
+
+                    setInspectionVisibility(node, progress >= threshold);
+                    setInspectionStatus(node, status, step);
+                }
+            }
+
+            function updatePanelFocus() {
+                if (!isMobile) {
+                    var activeIdx = InspectionState.activeIndex;
+                    if (activeIdx !== -1) {
+                        for (var j = 0; j < inspectionNodes.length; j++) {
+                            if (j !== activeIdx) {
+                                inspectionNodes[j].item.classList.add('dimmed');
+                            } else {
+                                inspectionNodes[j].item.classList.remove('dimmed');
+                            }
+                        }
+                    } else {
+                        for (var k = 0; k < inspectionNodes.length; k++) {
+                            var st = InspectionState.stepStatus[k];
+                            if (st === 'confirmed') {
+                                inspectionNodes[k].item.classList.remove('dimmed');
+                            }
+                        }
+                    }
+                }
+            }
+
+            function updatePanelFinalState() {
+                if (InspectionState.completed) {
+                    for (var p = 0; p < inspectionNodes.length; p++) {
+                        var node = inspectionNodes[p];
+                        node.item.classList.remove('dimmed');
+                        var txt = node.text;
+                        txt.classList.remove('active-text');
+                        txt.classList.add('confirmed-text');
+                        var icon = node.icon;
+                        icon.classList.remove('checking-custom');
+                    }
+                }
+            }
+
+            function updatePanel() {
+                var progress = clamp(ENGINE.progress, 0, 1);
+                updatePanelHeader(progress);
+                updatePanelItems(progress);
+                updatePanelFocus();
+                updatePanelFinalState();
+            }
+
+            // ============================================================
+            // CARD TRANSFORM
+            // ============================================================
+            function updateCardTransform(progress, time) {
+                var state = getCameraState(progress);
+                var scale = state.scale;
+                var z = state.z;
+                var y = state.y;
+                var translateY = y * window.innerHeight / 100;
+                var translateZ = z;
+
+                var lifeRotation = easeInOutCubic(clamp((progress - 0.18) / 0.24, 0, 1));
+                var lifeMaster = easeInOutCubic(clamp((progress - 0.42) / 0.20, 0, 1));
+                var lifeMouse = lifeMaster;
+
+                if (isMobile) {
+                    var autoAngle = time * 0.008;
+                    mouse.x = Math.sin(autoAngle) * 0.5;
+                    mouse.y = Math.cos(autoAngle * 0.7) * 0.3;
+                }
+
+                var freqMult = InspectionState.finale ? 0.92 : 1.0;
+                var ampMult = InspectionState.finale ? 0.90 : 1.0;
+                var t = time * freqMult;
+
+                var master = Math.sin(t * 0.32 + progress * 1.6);
+                var master2 = Math.sin(t * 0.26 + progress * 1.2 + 0.8);
+                var master3 = Math.cos(t * 0.20 + progress * 0.9 + 1.3);
+
+                var targetRotX = (master * 7.5 + master2 * 2.2 + master3 * 0.75) * ampMult * lifeMaster;
+                var targetRotY = (master2 * 11.2 + master3 * 3.0 + master * 1.2) * ampMult * lifeMaster;
+                var targetRotZ = (master3 * 1.5 + master * 0.45) * ampMult * lifeMaster;
+                var targetSwayX = (master * 4.2 + master2 * 1.8 + master3 * 0.9) * ampMult * lifeMaster;
+                var targetSwayY = (master2 * 5.2 + master3 * 2.7 + master * 1.2) * ampMult * lifeMaster;
+
+                var museumDriftX = 0,
+                    museumDriftY = 0;
+                if (InspectionState.finale) {
+                    museumDriftX = Math.sin(time * 0.045) * 0.35 + Math.cos(time * 0.031) * 0.22;
+                    museumDriftY = Math.cos(time * 0.041) * 0.28 + Math.sin(time * 0.027) * 0.18;
+                }
+
+                var inertia = 0.12;
+                inertiaState.rotX += (targetRotX - inertiaState.rotX) * inertia;
+                inertiaState.rotY += (targetRotY - inertiaState.rotY) * inertia;
+                inertiaState.rotZ += (targetRotZ - inertiaState.rotZ) * inertia;
+                inertiaState.swayX += (targetSwayX - inertiaState.swayX) * inertia;
+                inertiaState.swayY += (targetSwayY - inertiaState.swayY) * inertia;
+
+                var mx = mouse.x || 0;
+                var my = mouse.y || 0;
+                var mouseInfluence = lifeMouse;
+                var rotX = inertiaState.rotX - my * 3.0 * mouseInfluence;
+                var rotY = inertiaState.rotY + mx * 4.0 * mouseInfluence;
+                var rotZ = inertiaState.rotZ;
+
+                var swayMult = InspectionState.finale ? 0.88 : 1.0;
+                var swayX = (inertiaState.swayX + museumDriftX * 0.4) * swayMult;
+                var swayY = (inertiaState.swayY + museumDriftY * 0.4) * swayMult;
+
+                if (InspectionState.currentStep >= 0 && InspectionState.currentStep < 3) {
+                    var accentIntensity = easeInOutCubic(InspectionState.stepProgress) * lifeMaster;
+                    var targetRY = 0;
+                    if (InspectionState.currentStep === 0) targetRY = 10;
+                    else if (InspectionState.currentStep === 1) targetRY = -8;
+                    else if (InspectionState.currentStep === 2) targetRY = 3;
+                    rotY += targetRY * accentIntensity * 0.3;
+                    rotX += targetRY * 0.12 * accentIntensity;
+                }
+
+                var cardTransform =
+                    'translate3d(' + swayX + 'px, ' + (translateY + swayY) + 'px, ' + translateZ + 'px) ' +
+                    'scale(' + scale + ') ' +
+                    'rotateX(' + rotX + 'deg) ' +
+                    'rotateY(' + rotY + 'deg) ' +
+                    'rotateZ(' + rotZ + 'deg)';
+                cardWrapper.style.transform = cardTransform;
+
+                var speedX = Math.abs(rotX - inertiaState.prevRotX);
+                var speedY = Math.abs(rotY - inertiaState.prevRotY);
+                var blurAmount = Math.min(0.8, (speedX + speedY) * 0.6);
+                document.documentElement.style.setProperty('--bg-blur', blurAmount + 'px');
+                inertiaState.prevRotX = rotX;
+                inertiaState.prevRotY = rotY;
+
+                MaterialFrame.rotX = rotX;
+                MaterialFrame.rotY = rotY;
+
+                return { rotX: rotX, rotY: rotY, lifeMaster: lifeMaster };
+            }
+
+            // ============================================================
+            // CARD SHADOW
+            // ============================================================
+            function updateCardShadow(rotX, rotY, lifeMaster) {
+                var shadowShiftX = -rotY * 0.18 * lifeMaster;
+                var shadowShiftY = rotX * 0.12 + 4;
+                shadowShiftX = clamp(shadowShiftX, -15, 15);
+                shadowShiftY = clamp(shadowShiftY, -10, 18);
+                cardShadow.style.transform = 'translateX(calc(-50% + ' + shadowShiftX + 'px)) translateY(' + shadowShiftY +
+                'px)';
+            }
+
+            // ============================================================
+            // CARD LIGHTING — вычисляет позицию света и BRDF
+            // ============================================================
+            function updateCardLighting(rotX, rotY, time, lifeMaster) {
+                var offsetX = rotY * 0.035 * lifeMaster;
+                var offsetY = rotX * 0.035 * lifeMaster;
+                offsetX = clamp(offsetX, -0.6, 0.6);
+                offsetY = clamp(offsetY, -0.6, 0.6);
+                var driftX = 0.08 * Math.sin(time * 0.04 + 1.2) * lifeMaster;
+                var driftY = 0.08 * Math.cos(time * 0.035 + 0.7) * lifeMaster;
+                var posX = 50 + (offsetX + driftX) * 50;
+                var posY = 50 + (offsetY + driftY) * 50;
+
+                MaterialFrame.lightX = posX;
+                MaterialFrame.lightY = posY;
+
+                var normX = Math.sin(rotY * Math.PI / 180) * 0.3;
+                var normY = Math.sin(rotX * Math.PI / 180) * 0.3;
+                var lightDirX = (posX - 50) / 50;
+                var lightDirY = (posY - 50) / 50;
+                var dot = normX * lightDirX + normY * lightDirY + 0.65;
+                dot = clamp(dot, 0.25, 1.0);
+                cardGoldBorderBrdf.style.opacity = 0.15 + 0.30 * dot;
+            }
+
+            // ============================================================
+            // CARD MATERIALS — разделённые подфункции, используют MaterialFrame
+            // ============================================================
+            function updateSpecularLayers() {
+                var posX = MaterialFrame.lightX;
+                var posY = MaterialFrame.lightY;
+                var time = MaterialFrame.time;
+                var lifeMaster = MaterialFrame.lifeMaster;
+                var isFinale = MaterialFrame.isFinale;
+
+                setBackgroundPosition(specularLayer1, posX + '% ' + posY + '%');
+                var l1Scale = 1.0 + 0.2 * (0.5 + 0.5 * Math.sin(time * 0.05 + 0.3)) * lifeMaster;
+                setBackgroundSize(specularLayer1, (180 * l1Scale) + '% ' + (180 * l1Scale) + '%');
+                var l1Opacity = isFinale ? 0.28 + 0.10 * (0.5 + 0.5 * Math.sin(time * 0.06 + 1.1)) :
+                    0.22 + 0.12 * (0.5 + 0.5 * Math.sin(time * 0.06 + 1.1));
+                setOpacity(specularLayer1, l1Opacity);
+
+                setBackgroundPosition(specularLayer2, posX + '% ' + posY + '%');
+                var l2Scale = 0.8 + 0.3 * (0.5 + 0.5 * Math.sin(time * 0.07 + 0.8)) * lifeMaster;
+                setBackgroundSize(specularLayer2, (120 * l2Scale) + '% ' + (120 * l2Scale) + '%');
+                var l2Opacity = isFinale ? 0.22 + 0.12 * (0.5 + 0.5 * Math.sin(time * 0.08 + 2.0)) :
+                    0.18 + 0.14 * (0.5 + 0.5 * Math.sin(time * 0.08 + 2.0));
+                setOpacity(specularLayer2, l2Opacity);
+            }
+
+            function updateReflection() {
+                var posX = MaterialFrame.lightX;
+                var posY = MaterialFrame.lightY;
+                var time = MaterialFrame.time;
+                var lifeMaster = MaterialFrame.lifeMaster;
+
+                var refX = posX + 15 * Math.sin(time * 0.03 + 1.0) * lifeMaster;
+                var refY = posY + 12 * Math.cos(time * 0.025 + 0.5) * lifeMaster;
+                setBackgroundPosition(cardReflection, refX + '% ' + refY + '%');
+                var refScale = 0.85 + 0.15 * (0.5 + 0.5 * Math.sin(time * 0.04 + 0.9)) * lifeMaster;
+                setBackgroundSize(cardReflection, (140 * refScale) + '% ' + (140 * refScale) + '%');
+                var refOpacity = 0.20 + 0.08 * (0.5 + 0.5 * Math.sin(time * 0.05 + 0.6));
+                setOpacity(cardReflection, refOpacity);
+            }
+
+            function updateHologramAndVarnish() {
+                var posX = MaterialFrame.lightX;
+                var posY = MaterialFrame.lightY;
+                var lifeMaster = MaterialFrame.lifeMaster;
+
+                var holoShiftX = (posX - 50) * 0.3 * lifeMaster;
+                var holoShiftY = (posY - 50) * 0.3 * lifeMaster;
+                setTransform(authHologram, 'translate(' + holoShiftX + 'px, ' + holoShiftY + 'px)');
+                setTransform(authVarnish, 'translate(' + (holoShiftX * 0.7) + 'px, ' + (holoShiftY * 0.7) + 'px)');
+            }
+
+            function updateCardShading() {
+                var time = MaterialFrame.time;
+                var shadePulse = 0.5 + 0.5 * Math.sin(time * 0.12 + ENGINE.progress * 0.4 + 0.01);
+                setOpacity(cardShading, 0.50 + 0.18 * shadePulse);
+            }
+
+            function updateBorderLighting() {
+                var time = MaterialFrame.time;
+                var borderGlow = 0.60 + 0.05 * Math.sin(time * 0.08 + ENGINE.progress * 0.3);
+                setOpacity(cardGoldBorder, borderGlow);
+            }
+
+            // ============================================================
+            // CARD COORDINATOR
+            // ============================================================
+            function updateCard() {
+                var progress = clamp(ENGINE.progress, 0, 1);
+                var time = ENGINE.time;
+
+                var transformData = updateCardTransform(progress, time);
+                var rotX = transformData.rotX;
+                var rotY = transformData.rotY;
+                var lifeMaster = transformData.lifeMaster;
+
+                MaterialFrame.lifeMaster = lifeMaster;
+                MaterialFrame.time = time;
+                MaterialFrame.progress = progress;
+                MaterialFrame.isFinale = InspectionState.finale;
+
+                updateCardShadow(rotX, rotY, lifeMaster);
+                updateCardLighting(rotX, rotY, time, lifeMaster);
+
+                updateSpecularLayers();
+                updateReflection();
+                updateHologramAndVarnish();
+                updateCardShading();
+                updateBorderLighting();
+            }
+
+            // ============================================================
+            // LIGHTING — разбита на подфункции (допустимо по ТЗ)
+            // ============================================================
+            function updateBaseLighting(time) {
+                var keyX = 25 + 5 * Math.sin(time * 0.03 + 0.5);
+                var keyY = 15 + 4 * Math.cos(time * 0.025 + 0.3);
+                var keyInt = 0.6 + 0.2 * (0.5 + 0.5 * Math.sin(time * 0.05 + 0.7));
+                setBackground(lightKey, 'radial-gradient(ellipse at ' + keyX + '% ' + keyY +
+                    '%, rgba(255,240,200,' + keyInt * 0.35 + ') 0%, rgba(255,240,200,0.05) 60%, rgba(255,240,200,0) 80%)');
+
+                var fillX = 75 + 6 * Math.sin(time * 0.02 + 1.2);
+                var fillY = 80 + 5 * Math.cos(time * 0.018 + 0.8);
+                var fillInt = 0.4 + 0.15 * (0.5 + 0.5 * Math.sin(time * 0.04 + 1.4));
+                setBackground(lightFill, 'radial-gradient(ellipse at ' + fillX + '% ' + fillY +
+                    '%, rgba(180,220,255,' + fillInt * 0.15 + ') 0%, rgba(180,220,255,0.02) 55%, rgba(180,220,255,0) 75%)');
+                setOpacity(lightFill, fillInt * 0.8);
+
+                setBackground(lightAmbient,
+                    'radial-gradient(ellipse at center, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.01) 50%, transparent 80%)');
+                setBackground(lightBack,
+                    'radial-gradient(ellipse at 60% 30%, rgba(180,200,220,0.05) 0%, transparent 60%)');
+            }
+
+            function updateMuseumLighting(time) {
+                if (!InspectionState.finale) {
+                    setOpacity(lightKey, 0.8 * 0.9);
+                    setOpacity(lightAmbient, 0.7);
+                    setOpacity(lightBack, 0.3);
+                    return;
+                }
+
+                var museumProgress = 0;
+                if (InspectionState.museumStartTime > 0) {
+                    var elapsed = time - InspectionState.museumStartTime;
+                    museumProgress = clamp(elapsed / 1.5, 0, 1);
+                }
+
+                setOpacity(lightKey, lerp(0.8 * 0.9, 0.72, museumProgress));
+                setOpacity(lightAmbient, lerp(0.7, 0.75, museumProgress));
+                setOpacity(lightBack, lerp(0.3, 0.38, museumProgress));
+
+                if (InspectionState.museum) {
+                    setOpacity(museumFrame, lerp(1.0, 1.08, museumProgress));
+                }
+            }
+
+            function updateLight() {
+                var time = ENGINE.time;
+                updateBaseLighting(time);
+                updateMuseumLighting(time);
+            }
+
+            // ============================================================
+            // TIMELINE
+            // ============================================================
+            function updateTimeline() {
+                var diff = ENGINE.targetProgress - ENGINE.progress;
+                ENGINE.progress += diff * CONFIG.smoothness;
+                if (Math.abs(diff) < 0.0001) {
+                    ENGINE.progress = ENGINE.targetProgress;
+                }
+                ENGINE.delta = ENGINE.progress - ENGINE.lastProgress;
+                ENGINE.lastProgress = ENGINE.progress;
+                ENGINE.time += CONFIG.fps;
+            }
+
+            // ============================================================
+            // RENDER
+            // ============================================================
+            function render() {
+                updateTimeline();
+                updateInspectionState();
+                updateCard();
+                updateLight();
+                updatePanel();
+                requestAnimationFrame(render);
+            }
+
+            // ============================================================
+            // MOUSE
+            // ============================================================
+            var stage = document.getElementById('stage');
+
+            function handleMouseMove(e) {
+                var rect = stage.getBoundingClientRect();
+                var cx = rect.left + rect.width / 2;
+                var cy = rect.top + rect.height / 2;
+                mouse.x = (e.clientX - cx) / (rect.width / 2);
+                mouse.y = (e.clientY - cy) / (rect.height / 2);
+            }
+
+            if (!isMobile) {
+                stage.addEventListener('mousemove', handleMouseMove);
+            }
+
+            // ============================================================
+            // EVENTS
+            // ============================================================
+            function onScroll() { updateScroll(); }
+            function onResize() { updateScroll(); }
+
+            // ============================================================
+            // INIT
+            // ============================================================
+            function init() {
+                var listItems = document.querySelectorAll('.inspection-panel li');
+                for (var i = 0; i < listItems.length; i++) {
+                    var item = listItems[i];
+                    var icon = item.querySelector('.icon');
+                    var text = item.querySelector('.text');
+                    if (icon && text) {
+                        inspectionNodes.push({
+                            item: item,
+                            icon: icon,
+                            text: text
+                        });
+                    }
+                }
+
+                updateScroll();
+                render();
+                window.addEventListener('scroll', onScroll, { passive: true });
+                window.addEventListener('resize', onResize, { passive: true });
+            }
+
+            document.addEventListener('DOMContentLoaded', init);
+
+            window.addEventListener('beforeunload', function() {
+                window.removeEventListener('scroll', onScroll);
+                window.removeEventListener('resize', onResize);
+            });
+
+        })();
+    </script>
+</body>
+</html>

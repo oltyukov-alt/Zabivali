@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+
+<head>
+
+<meta charset="UTF-8" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+<title>PROJECT ZABIVALY — FAQ</title>
+
+<style>
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: #0a0a0a;
+  color: #ece6e0;
+  overflow-x: hidden;
+  line-height: 1.4;
+  margin: 0;
+  padding: 0;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+/* ============================================================
+   FAQ BLOCK
+   ============================================================ */
+.faq-block {
+  position: relative;
+  width: 100%;
+  min-height: 100dvh;
+  background: #090909;
+  padding: 60px 40px 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.9s cubic-bezier(0.23, 1, 0.32, 1),
+              transform 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.faq-block.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.faq-block__inner {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* --------- Заголовок --------- */
+.faq-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.faq-header__title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.8rem, 6vw, 4.4rem);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: #ece6e0;
+  line-height: 1.05;
+}
+
+.faq-header__title .highlight {
+  color: #b71c1c;
+}
+
+.faq-header__sub {
+  font-size: clamp(1rem, 1.2vw, 1.25rem);
+  font-weight: 300;
+  color: rgba(236, 230, 224, 0.55);
+  margin-top: 6px;
+  letter-spacing: 0.02em;
+}
+
+.faq-header__line {
+  width: 3em;
+  height: 3px;
+  background: #b71c1c;
+  margin: 12px auto 0;
+  border-radius: 2px;
+}
+
+/* --------- Аккордеон --------- */
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.faq-item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition: border-color 0.3s ease;
+}
+
+.faq-question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 20px 0;
+  min-height: 72px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  text-align: left;
+  color: #ece6e0;
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(1.1rem, 1.5vw, 1.6rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: color 0.3s ease;
+  gap: 16px;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  padding-top: 18px;
+  padding-bottom: 18px;
+  min-height: 60px;
+}
+
+.faq-question:hover {
+  color: #ffffff;
+}
+
+.faq-question .icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 300;
+  color: rgba(236, 230, 224, 0.3);
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.faq-item.active .faq-question .icon {
+  transform: rotate(45deg);
+  color: #b71c1c;
+}
+
+.faq-answer {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.4s ease, padding 0.4s ease;
+  padding: 0 0 0 0;
+  color: rgba(236, 230, 224, 0.7);
+  font-size: clamp(0.95rem, 1.1vw, 1.1rem);
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+.faq-item.active .faq-answer {
+  max-height: 500px;
+  opacity: 1;
+  padding: 0 0 24px 0;
+}
+
+/* ============================================================
+   АДАПТИВНОСТЬ
+   ============================================================ */
+@media (max-width: 1024px) {
+  .faq-block {
+    padding: 40px 24px 40px;
+  }
+  .faq-question {
+    font-size: clamp(1rem, 1.4vw, 1.3rem);
+    min-height: 64px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+  .faq-answer {
+    font-size: clamp(0.9rem, 1vw, 1rem);
+  }
+}
+
+@media (max-width: 768px) {
+  .faq-block {
+    padding: 28px 16px 32px;
+  }
+  .faq-header__title {
+    font-size: clamp(2.2rem, 7vw, 3rem);
+  }
+  .faq-header__sub {
+    font-size: 0.95rem;
+  }
+  .faq-question {
+    font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+    min-height: 56px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    gap: 12px;
+  }
+  .faq-question .icon {
+    width: 24px;
+    height: 24px;
+    font-size: 1.4rem;
+  }
+  .faq-answer {
+    font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+    line-height: 1.6;
+  }
+  .faq-item.active .faq-answer {
+    padding-bottom: 16px;
+  }
+}
+
+@media (max-width: 420px) {
+  .faq-block {
+    padding: 20px 12px 24px;
+  }
+  .faq-question {
+    font-size: 0.9rem;
+    min-height: 48px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+  .faq-question .icon {
+    font-size: 1.2rem;
+    width: 20px;
+    height: 20px;
+  }
+  .faq-answer {
+    font-size: 0.8rem;
+  }
+}
+
+/* ============================================================
+   АНИМАЦИЯ ПОЯВЛЕНИЯ БЛОКА
+   ============================================================ */
+.faq-block {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.9s cubic-bezier(0.23, 1, 0.32, 1),
+              transform 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.faq-block.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 4px;
+  background: #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #3d3d3d;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #6a6a6a;
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- ==========================================================
+     ЧАСТЫЕ ВОПРОСЫ
+     ========================================================== -->
+<section class="faq-block" id="faqBlock">
+  <div class="faq-block__inner">
+
+    <!-- Заголовок -->
+    <div class="faq-header">
+      <h2 class="faq-header__title">
+        <span class="highlight">ЧАСТЫЕ ВОПРОСЫ</span>
+      </h2>
+      <p class="faq-header__sub">Ответы на самые популярные вопросы.</p>
+      <div class="faq-header__line"></div>
+    </div>
+
+    <!-- Аккордеон -->
+    <div class="faq-list" id="faqList">
+
+      <!-- Вопрос 1 -->
+      <div class="faq-item">
+        <button class="faq-question" data-target="answer1">
+          <span>Как получить Артефакт?</span>
+          <span class="icon">+</span>
+        </button>
+        <div class="faq-answer" id="answer1">
+          Покупайте товары H15 или участвующие товары CCM по условиям акции. Артефакт выдается сразу при покупке.
+        </div>
+      </div>
+
+      <!-- Вопрос 2 -->
+      <div class="faq-item">
+        <button class="faq-question" data-target="answer2">
+          <span>Зачем регистрировать чек?</span>
+          <span class="icon">+</span>
+        </button>
+        <div class="faq-answer" id="answer2">
+          Регистрация чека дает возможность участвовать в розыгрыше лимитированных Редких Артефактов с оригинальными автографами игроков. Получение Артефакта не зависит от регистрации чека.
+        </div>
+      </div>
+
+      <!-- Вопрос 3 -->
+      <div class="faq-item">
+        <button class="faq-question" data-target="answer3">
+          <span>Что находится в Редком Артефакте?</span>
+          <span class="icon">+</span>
+        </button>
+        <div class="faq-answer" id="answer3">
+          Точная мини-копия клюшки игрока и карточка с его оригинальным автографом. Редкие Артефакты выпускаются ограниченным тиражом и разыгрываются среди участников акции.
+        </div>
+      </div>
+
+      <!-- Вопрос 4 -->
+      <div class="faq-item">
+        <button class="faq-question" data-target="answer4">
+          <span>Можно ли выбрать игрока?</span>
+          <span class="icon">+</span>
+        </button>
+        <div class="faq-answer" id="answer4">
+          Нет. Каждый Артефакт содержит случайную карточку игрока. Какой именно игрок окажется внутри, заранее неизвестно.
+        </div>
+      </div>
+
+      <!-- Вопрос 5 -->
+      <div class="faq-item">
+        <button class="faq-question" data-target="answer5">
+          <span>Можно ли зарегистрировать несколько чеков?</span>
+          <span class="icon">+</span>
+        </button>
+        <div class="faq-answer" id="answer5">
+          Да. Каждый чек можно зарегистрировать отдельно, если он соответствует условиям акции.
+        </div>
+      </div>
+
+      <!-- Вопрос 6 (ссылка) -->
+      <div class="faq-item">
+        <button class="faq-question" data-target="answer6">
+          <span>Где посмотреть полные правила?</span>
+          <span class="icon">+</span>
+        </button>
+        <div class="faq-answer" id="answer6">
+          <a href="https://zabivaly.h15wear.ru/ffffff#" target="_blank" rel="noopener">
+            Перейти к полным правилам акции →
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+(function() {
+  'use strict';
+
+  // ============================================================
+  // АККОРДЕОН
+  // ============================================================
+  const faqItems = document.querySelectorAll('.faq-item');
+
+  faqItems.forEach(item => {
+    const button = item.querySelector('.faq-question');
+    const targetId = button.getAttribute('data-target');
+    const answer = document.getElementById(targetId);
+    if (!answer) return;
+
+    button.addEventListener('click', function(e) {
+      faqItems.forEach(other => {
+        if (other !== item && other.classList.contains('active')) {
+          other.classList.remove('active');
+        }
+      });
+      item.classList.toggle('active');
+    });
+  });
+
+  // ============================================================
+  // ПОЯВЛЕНИЕ БЛОКА
+  // ============================================================
+  const faqBlock = document.getElementById('faqBlock');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        faqBlock.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+  observer.observe(faqBlock);
+
+  if (typeof window !== 'undefined') {
+    const rect = faqBlock.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.8) {
+      faqBlock.classList.add('visible');
+    }
+  }
+
+  console.log('FAQ загружен');
+})();
+</script>
+
+</body>
+</html>

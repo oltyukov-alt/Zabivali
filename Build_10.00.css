@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>PROJECT ZABIVALY — Footer</title>
+    <style>
+        /* ============================================================
+               RESET & BASE
+               ============================================================ */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #0a0a0a;
+            color: #ece6e0;
+            overflow-x: hidden;
+            line-height: 1.4;
+            margin: 0;
+            padding: 0;
+        }
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* ============================================================
+               FOOTER
+               ============================================================ */
+        .site-footer {
+            background: #0b0b0b;
+            padding: 48px 40px 28px;
+            width: 100%;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1),
+                        transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .site-footer.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .site-footer__inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        /* ——— Основная сетка (3 колонки) ——— */
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        /* ——— Колонка логотипов ——— */
+        .footer-col--logos {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .footer-logos {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .footer-logos .logo-link {
+            display: inline-flex;
+            align-items: center;
+            transition: opacity 0.3s ease;
+        }
+        .footer-logos .logo-link:hover {
+            opacity: 0.7;
+        }
+        .footer-logos .logo-link img {
+            display: block;
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+        }
+        .footer-logos .logo-divider {
+            font-size: 1.6rem;
+            font-weight: 300;
+            color: rgba(236, 230, 224, 0.2);
+            line-height: 1;
+            padding: 0 4px;
+        }
+        .footer-logos .logo-link--h15 img {
+            filter: invert(1);
+        }
+
+        /* ——— Общие стили колонок ——— */
+        .footer-col {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .footer-col__title {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #ece6e0;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .footer-col__text {
+            font-size: 0.95rem;
+            font-weight: 300;
+            color: rgba(236, 230, 224, 0.6);
+            line-height: 1.6;
+        }
+        .footer-col__text strong {
+            color: rgba(236, 230, 224, 0.85);
+            font-weight: 500;
+        }
+        .footer-col__link {
+            font-size: 0.95rem;
+            font-weight: 300;
+            color: rgba(236, 230, 224, 0.5);
+            transition: color 0.3s ease;
+            display: inline-block;
+            padding: 2px 0;
+            line-height: 1.6;
+        }
+        .footer-col__link:hover {
+            color: #ece6e0;
+        }
+
+        /* Список документов (вертикальный) */
+        .footer-docs {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .footer-docs .footer-col__link {
+            padding: 3px 0;
+        }
+
+        /* ——— Разделитель ——— */
+        .footer-divider {
+            width: 100%;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.06);
+            border: none;
+        }
+
+        /* ——— Нижняя часть (копирайт) ——— */
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px 20px;
+        }
+        .footer-copy {
+            font-size: 0.85rem;
+            font-weight: 300;
+            color: rgba(236, 230, 224, 0.35);
+            letter-spacing: 0.01em;
+        }
+        .footer-copy .org-name {
+            color: rgba(236, 230, 224, 0.5);
+        }
+        .footer-bottom-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .footer-bottom-links a {
+            font-size: 0.8rem;
+            font-weight: 300;
+            color: rgba(236, 230, 224, 0.3);
+            transition: color 0.3s ease;
+            padding: 4px 0;
+        }
+        .footer-bottom-links a:hover {
+            color: rgba(236, 230, 224, 0.6);
+        }
+
+        /* ============================================================
+               АДАПТИВНОСТЬ
+               ============================================================ */
+        @media (max-width: 1024px) {
+            .site-footer {
+                padding: 40px 32px 24px;
+            }
+            .footer-grid {
+                gap: 30px;
+            }
+            .footer-logos .logo-link img {
+                height: 34px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 28px 32px;
+            }
+            .footer-col--logos {
+                grid-column: 1 / -1;
+                flex-direction: row;
+                align-items: center;
+                justify-content: center;
+                gap: 24px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            }
+            .footer-logos {
+                gap: 16px;
+            }
+            .footer-logos .logo-link img {
+                height: 36px;
+            }
+            .footer-col__title {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .site-footer {
+                padding: 32px 20px 20px;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            .footer-col--logos {
+                flex-direction: column;
+                align-items: center;
+                border-bottom: none;
+                padding-bottom: 0;
+                gap: 12px;
+            }
+            .footer-logos .logo-link img {
+                height: 32px;
+            }
+            .footer-col {
+                align-items: center;
+                text-align: center;
+            }
+            .footer-docs {
+                align-items: center;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 8px;
+            }
+            .footer-bottom-links {
+                justify-content: center;
+                gap: 14px;
+            }
+            .footer-col__text {
+                font-size: 0.9rem;
+            }
+            .footer-col__link {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .site-footer {
+                padding: 24px 14px 16px;
+            }
+            .footer-grid {
+                gap: 18px;
+            }
+            .footer-logos .logo-link img {
+                height: 28px;
+            }
+            .footer-logos .logo-divider {
+                font-size: 1.2rem;
+            }
+            .footer-col__title {
+                font-size: 0.9rem;
+            }
+            .footer-col__text {
+                font-size: 0.85rem;
+            }
+            .footer-col__link {
+                font-size: 0.85rem;
+                padding: 4px 0;
+                min-height: 44px;
+                display: inline-flex;
+                align-items: center;
+            }
+            .footer-docs .footer-col__link {
+                min-height: 44px;
+                padding: 4px 0;
+            }
+            .footer-copy {
+                font-size: 0.75rem;
+            }
+            .footer-bottom-links a {
+                font-size: 0.75rem;
+                min-height: 44px;
+                display: inline-flex;
+                align-items: center;
+            }
+        }
+
+        /* ============================================================
+               АНИМАЦИЯ ПОЯВЛЕНИЯ
+               ============================================================ */
+        .site-footer {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1),
+                        transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .site-footer.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ============================================================
+               SCROLLBAR
+               ============================================================ */
+        ::-webkit-scrollbar {
+            width: 4px;
+            background: #0a0a0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3d3d3d;
+            border-radius: 2px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6a6a6a;
+        }
+    </style>
+</head>
+<body>
+    <!-- ==========================================================
+    FOOTER
+    ========================================================== -->
+    <footer class="site-footer" id="siteFooter">
+        <div class="site-footer__inner">
+            <!-- Основная сетка -->
+            <div class="footer-grid">
+                <!-- Колонка 1: Логотипы -->
+                <div class="footer-col footer-col--logos">
+                    <div class="footer-logos">
+                        <a href="https://h15wear.ru/" target="_blank" rel="noopener noreferrer" class="logo-link logo-link--h15">
+                            <img src="https://h15wear.ru/local/templates/isak/images/logo.svg" alt="H15" />
+                        </a>
+                        <span class="logo-divider">×</span>
+                        <a href="https://ccm.ru/" target="_blank" rel="noopener noreferrer" class="logo-link">
+                            <img src="https://ccm.ru/local/templates/ccm_newdis/assets/img/logo-header.svg" alt="CCM" />
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Колонка 2: Контакты -->
+                <div class="footer-col">
+                    <div class="footer-col__title">Контакты</div>
+                    <div class="footer-col__text">
+                        <strong>ООО «Спортконцепт»</strong>
+                    </div>
+                    <a href="mailto:info@sportconcept.ru" class="footer-col__link">info@sportconcept.ru</a>
+                    <a href="tel:+74950000000" class="footer-col__link">+7 495 000-00-00</a>
+                    <div class="footer-col__text" style="font-size:0.85rem; color:rgba(236,230,224,0.4);">
+                        115093, г. Москва, ул. Большая Серпуховская, д. 44, пом. 3/1/3
+                    </div>
+                </div>
+
+                <!-- Колонка 3: Документы -->
+                <div class="footer-col">
+                    <div class="footer-col__title">Документы</div>
+                    <div class="footer-docs">
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="footer-col__link">Правила акции</a>
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="footer-col__link">Политика обработки персональных данных</a>
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="footer-col__link">Пользовательское соглашение</a>
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="footer-col__link">Согласие на обработку персональных данных</a>
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="footer-col__link">Реквизиты организатора</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Разделитель -->
+            <hr class="footer-divider" />
+
+            <!-- Нижняя часть -->
+            <div class="footer-bottom">
+                <div class="footer-copy">
+                    © 2026 <span class="org-name">ООО «Спортконцепт»</span>
+                    <span style="opacity:0.4;">·</span>
+                    <span style="opacity:0.5;">Все права защищены.</span>
+                </div>
+                <div class="footer-bottom-links">
+                    <a href="#" target="_blank" rel="noopener noreferrer">Правила акции</a>
+                    <a href="#" target="_blank" rel="noopener noreferrer">Политика конфиденциальности</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ============================================================
+            // ПОЯВЛЕНИЕ БЛОКА
+            // ============================================================
+            const footer = document.getElementById('siteFooter');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        footer.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            observer.observe(footer);
+
+            // Если футер уже виден при загрузке
+            if (typeof window !== 'undefined') {
+                const rect = footer.getBoundingClientRect();
+                if (rect.top < window.innerHeight * 0.8) {
+                    footer.classList.add('visible');
+                }
+            }
+
+            // ============================================================
+            // КОНФИГУРАЦИЯ (для быстрой замены данных)
+            // ============================================================
+            // Все контактные данные и ссылки вынесены в разметку.
+            // Для обновления достаточно изменить соответствующие элементы в HTML.
+
+            console.log('Footer загружен');
+        })();
+    </script>
+</body>
+</html>

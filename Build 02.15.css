@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>PROJECT ZABIVALY — ACT III</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================================
+               RESET & BASE
+               ============================================================ */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            height: 100%;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #0a0a0a;
+            color: #ece6e0;
+            overflow-x: hidden;
+            line-height: 1.4;
+            height: 100%;
+            margin: 0;
+        }
+        img {
+            display: block;
+            max-width: 100%;
+        }
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        button {
+            border: none;
+            background: none;
+            cursor: pointer;
+            font: inherit;
+            color: inherit;
+        }
+        @font-face {
+            font-family: 'Benton Sans Extra Comp Black';
+            src: local('Benton Sans Extra Comp Black'), local('BentonSansExtraComp-Black');
+            font-weight: 900;
+            font-style: normal;
+            font-display: swap;
+        }
+        .accent-font {
+            font-family: 'Benton Sans Extra Comp Black', Impact, 'Arial Black', sans-serif;
+            letter-spacing: 0.02em;
+        }
+
+        /* ============================================================
+               TOKENS
+               ============================================================ */
+        :root {
+            --color-black: #0a0a0a;
+            --color-black-soft: #121212;
+            --color-red: #b71c1c;
+            --color-red-glow: rgba(183, 28, 28, 0.3);
+            --color-white: #ece6e0;
+            --color-cream: #ded8d0;
+            --color-gray: #3d3d3d;
+            --color-gray-light: #6a6a6a;
+            --space-sm: 16px;
+            --space-md: 32px;
+            --space-lg: 64px;
+            --max-width: 1200px;
+        }
+
+        /* ============================================================
+               ГЛОБАЛЬНАЯ ТИПОГРАФИКА
+               ============================================================ */
+        .z-heading-lg {
+            font-family: 'Benton Sans Extra Comp Black', Impact, 'Arial Black', sans-serif;
+            font-size: clamp(2.2rem, 5.5vw, 4.2rem);
+            font-weight: 900;
+            letter-spacing: 0.02em;
+            line-height: 1.1;
+            text-transform: uppercase;
+            color: var(--color-white);
+        }
+        .z-body {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(1rem, 1.2vw, 1.2rem);
+            font-weight: 400;
+            line-height: 1.6;
+            color: var(--color-cream);
+        }
+        .z-body-sm {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(0.85rem, 0.9vw, 1rem);
+            font-weight: 400;
+            line-height: 1.5;
+            color: var(--color-gray-light);
+        }
+
+        /* ============================================================
+               ACT II — КОЛЛЕКЦИЯ v7.3 (фикс центрирования на мобильных)
+               ============================================================ */
+        .collection-act {
+            background: var(--color-black-soft);
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: clamp(8px, 1.5vh, 24px) var(--space-md);
+            margin: 0;
+            width: 100%;
+        }
+
+        .collection-act__inner {
+            max-width: 1200px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: clamp(6px, 1.2vh, 20px);
+            z-index: 1;
+            position: relative;
+            padding: clamp(4px, 1vh, 20px) 0;
+            height: 100%;
+            justify-content: center;
+        }
+
+        .collection-act__header {
+            text-align: center;
+            max-width: 800px;
+            width: 90%;
+            z-index: 2;
+            flex-shrink: 0;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .collection-act__header.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .collection-act__header .z-body {
+            margin-top: 0.5rem;
+        }
+        .collection-act__header .z-heading-lg {
+            white-space: nowrap;
+        }
+
+        /* ----- Карусель (track — статичный контейнер, но анимируется временно) ----- */
+        .carousel-wrapper {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: pan-y;
+            opacity: 0;
+            transition: opacity 0.8s ease 0.3s;
+            flex-shrink: 0;
+            pointer-events: auto;
+        }
+        .carousel-wrapper.visible {
+            opacity: 1;
+        }
+
+        .carousel-track {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: clamp(12px, 1.5vw, 24px);
+            padding: 24px 0;
+            position: relative;
+            pointer-events: auto;
+            touch-action: none !important;
+            will-change: transform;
+        }
+
+        /* ----- Слоты (каждый анимируется самостоятельно) ----- */
+        .card-slot {
+            flex: 0 0 auto;
+            width: calc((100% - (5 - 1) * clamp(12px, 1.5vw, 24px)) / 5);
+            max-width: 260px;
+            aspect-ratio: 3 / 4;
+            perspective: 1000px;
+            -webkit-perspective: 1000px;
+            transform-style: preserve-3d;
+            -webkit-transform-style: preserve-3d;
+            will-change: transform, opacity, filter;
+            transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1),
+                        opacity 0.45s ease,
+                        filter 0.45s ease;
+            cursor: pointer;
+            opacity: 0;
+            position: relative;
+            pointer-events: auto !important;
+            visibility: visible;
+        }
+        .card-slot * {
+            pointer-events: none !important;
+        }
+        .card-slot.pos-hidden {
+            pointer-events: none !important;
+            opacity: 0 !important;
+            visibility: hidden;
+            transform: scale(0.8) rotateY(0deg);
+            filter: brightness(80%);
+            z-index: 0;
+            transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1), filter 0.45s ease;
+        }
+        .card-slot:not(.pos-hidden) {
+            pointer-events: auto !important;
+            visibility: visible;
+        }
+
+        .card-slot.revealed {
+            opacity: 1;
+        }
+
+        /* Позиции (десктоп) */
+        .card-slot.pos-center {
+            transform: scale(1.15) rotateY(0deg);
+            opacity: 1;
+            filter: brightness(100%);
+            z-index: 10;
+        }
+        .card-slot.pos-center .card-inner {
+            box-shadow: 0 0 40px rgba(183, 28, 28, 0.25), 0 12px 40px rgba(0,0,0,0.6);
+        }
+
+        .card-slot.pos-left1 {
+            transform: scale(1) rotateY(6deg);
+            opacity: 0.9;
+            filter: brightness(95%);
+            z-index: 5;
+        }
+        .card-slot.pos-left1 .card-inner {
+            box-shadow: 0 10px 35px rgba(0,0,0,0.55), 0 0 18px rgba(183,28,28,0.08);
+        }
+
+        .card-slot.pos-right1 {
+            transform: scale(1) rotateY(-6deg);
+            opacity: 0.9;
+            filter: brightness(95%);
+            z-index: 5;
+        }
+        .card-slot.pos-right1 .card-inner {
+            box-shadow: 0 10px 35px rgba(0,0,0,0.55), 0 0 18px rgba(183,28,28,0.08);
+        }
+
+        .card-slot.pos-left2 {
+            transform: scale(0.95) rotateY(8deg);
+            opacity: 0.75;
+            filter: brightness(90%);
+            z-index: 3;
+        }
+        .card-slot.pos-left2 .card-inner {
+            box-shadow: 0 10px 35px rgba(0,0,0,0.55), 0 0 18px rgba(183,28,28,0.05);
+        }
+
+        .card-slot.pos-right2 {
+            transform: scale(0.95) rotateY(-8deg);
+            opacity: 0.75;
+            filter: brightness(90%);
+            z-index: 3;
+        }
+        .card-slot.pos-right2 .card-inner {
+            box-shadow: 0 10px 35px rgba(0,0,0,0.55), 0 0 18px rgba(183,28,28,0.05);
+        }
+
+        .card-slot.pos-hidden {
+            transform: scale(0.8) rotateY(0deg);
+            opacity: 0;
+            filter: brightness(80%);
+            pointer-events: none !important;
+            z-index: 0;
+            visibility: hidden;
+        }
+
+        /* ----- Карточка (внутренняя) — 3D-контейнер ----- */
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
+            transform-style: preserve-3d;
+            -webkit-transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1), box-shadow 0.4s ease;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+            will-change: transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+        }
+        .card-inner.flipped {
+            transform: rotateY(180deg) translateZ(0);
+            -webkit-transform: rotateY(180deg) translateZ(0);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #1a1a1a;
+            border: 2px solid rgba(255,255,255,0.05);
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+        }
+
+        .card-front {
+            transform: rotateY(180deg) translateZ(0);
+            -webkit-transform: rotateY(180deg) translateZ(0);
+            background: #0f0f0f;
+            border-color: rgba(255,0,0,0.2);
+        }
+        .card-front img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 8px;
+            background: #0f0f0f;
+        }
+        .card-front .player-name {
+            display: none;
+        }
+
+        .card-back {
+            background: radial-gradient(circle at 30% 30%, #2e2e2e, #0a0a0a);
+            border-color: rgba(255,0,0,0.2);
+            border-width: 2px;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.6);
+        }
+        .card-back .back-design {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+            height: 100%;
+            padding: 12%;
+            position: relative;
+            background:
+                repeating-linear-gradient(45deg, rgba(255,0,0,0.05) 0px, rgba(255,0,0,0.05) 2px, transparent 2px, transparent 6px),
+                repeating-linear-gradient(-45deg, rgba(255,0,0,0.05) 0px, rgba(255,0,0,0.05) 2px, transparent 2px, transparent 6px);
+            box-shadow: inset 0 0 60px rgba(0,0,0,0.5);
+            border-radius: 14px;
+            border: 1px solid rgba(255,0,0,0.08);
+        }
+        .card-back .back-design::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 14px;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.12'/%3E%3C/svg%3E");
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .card-back .back-design::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 50%, rgba(255,255,255,0.03) 100%);
+            pointer-events: none;
+            z-index: 2;
+        }
+        .card-back .back-design .brand {
+            font-family: 'Benton Sans Extra Comp Black', Impact, sans-serif;
+            font-size: clamp(1.8rem, 3vw, 2.8rem);
+            color: rgba(255,0,0,0.3);
+            letter-spacing: 0.05em;
+            text-align: center;
+            line-height: 1.1;
+            position: relative;
+            z-index: 3;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.1em;
+        }
+        .card-back .back-design .brand .first {
+            color: rgba(255,255,255,0.25);
+            font-size: 0.7em;
+        }
+        .card-back .back-design .brand .second {
+            color: rgba(255,255,255,0.15);
+            font-size: 0.5em;
+        }
+        .card-back .back-design .brand .sep {
+            color: rgba(255,255,255,0.1);
+            font-size: 0.5em;
+        }
+        .card-back .back-design .divider {
+            width: 50%;
+            height: 2px;
+            background: repeating-linear-gradient(90deg, rgba(255,0,0,0.2) 0px, rgba(255,0,0,0.2) 8px, transparent 8px, transparent 12px);
+            border-radius: 2px;
+            margin: 2px 0;
+            z-index: 3;
+        }
+        .card-back .back-design .question-mark {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            color: rgba(255,255,255,0.12);
+            font-weight: 100;
+            line-height: 1;
+            z-index: 3;
+        }
+        .card-back .back-design .hint-text {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(0.5rem, 0.6vw, 0.65rem);
+            color: rgba(255,255,255,0.6);
+            letter-spacing: 0.04em;
+            text-align: center;
+            margin-top: 2px;
+            opacity: 0.8;
+            transition: opacity 0.8s ease;
+            z-index: 3;
+            font-weight: 400;
+            text-transform: none;
+            line-height: 1.3;
+        }
+        .card-back .back-design .hint-text.hidden {
+            opacity: 0;
+        }
+
+        /* Плашка при перевороте */
+        .flip-notice {
+            position: absolute;
+            bottom: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,0,0,0.2);
+            color: var(--color-white);
+            font-size: clamp(0.65rem, 0.8vw, 0.9rem);
+            font-weight: 500;
+            letter-spacing: 0.03em;
+            white-space: normal;
+            width: calc(100% - 24px);
+            max-width: 90%;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 5;
+            line-height: 1.3;
+        }
+        .flip-notice.show {
+            opacity: 1;
+        }
+
+        .card-inner.glow {
+            box-shadow: 0 0 40px rgba(183, 28, 28, 0.4), 0 0 80px rgba(183, 28, 28, 0.1);
+            transition: box-shadow 0.8s ease;
+        }
+
+        /* ----- Микроанимации (без трансформаций на :hover) ----- */
+        @keyframes breathe {
+            0%, 100% { box-shadow: 0 0 20px rgba(183,28,28,0.1), 0 12px 40px rgba(0,0,0,0.6); }
+            50% { box-shadow: 0 0 40px rgba(183,28,28,0.25), 0 12px 40px rgba(0,0,0,0.6); }
+        }
+        .card-slot.pos-center .card-inner:not(.flipped) {
+            animation: breathe 4s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .card-back .back-design::after {
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%, transparent 100%);
+            background-size: 200% 100%;
+            animation: shimmer 10s linear infinite;
+        }
+
+        .card-slot:not(.pos-center) .card-inner:hover {
+            box-shadow: 0 16px 50px rgba(183, 28, 28, 0.2), 0 0 30px rgba(183, 28, 28, 0.05);
+            transition: box-shadow 0.2s ease;
+        }
+        .card-slot.pos-center .card-inner:hover {
+            box-shadow: 0 0 50px rgba(183, 28, 28, 0.3), 0 12px 40px rgba(0,0,0,0.6);
+            transition: box-shadow 0.2s ease;
+        }
+
+        /* ----- Навигация ----- */
+        .carousel-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            width: 100%;
+            padding: 4px 0;
+            opacity: 0;
+            transition: opacity 0.6s ease 0.6s;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .carousel-nav.visible {
+            opacity: 1;
+        }
+
+        .carousel-nav .arrow {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: rgba(255,255,255,0.5);
+            transition: all 0.25s ease;
+            cursor: pointer;
+            flex-shrink: 0;
+            z-index: 5;
+        }
+        .carousel-nav .arrow:hover {
+            background: rgba(255,0,0,0.12);
+            border-color: rgba(255,0,0,0.3);
+            color: #fff;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(183, 28, 28, 0.2);
+        }
+        .carousel-nav .arrow:active {
+            transform: scale(0.92);
+        }
+        .carousel-nav .arrow.disabled {
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .carousel-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+        .carousel-indicators .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.12);
+            transition: background 0.3s ease, transform 0.3s ease;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .carousel-indicators .dot.active {
+            background: var(--color-red);
+            transform: scale(1.3);
+            box-shadow: 0 0 12px rgba(183, 28, 28, 0.4);
+        }
+
+        /* ----- Прогресс ----- */
+        .collection-progress {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-sm);
+            width: 100%;
+            max-width: 500px;
+            z-index: 2;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            flex-shrink: 0;
+            margin-top: 4px;
+        }
+        .collection-progress.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .collection-progress__label {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(0.95rem, 1.2vw, 1.2rem);
+            color: var(--color-cream);
+            letter-spacing: 0.04em;
+        }
+        .collection-progress__label span {
+            font-weight: 600;
+            color: var(--color-white);
+        }
+        .collection-progress__bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .collection-progress__fill {
+            height: 100%;
+            background: var(--color-red);
+            border-radius: 4px;
+            transition: width 1s ease;
+            width: 0%;
+        }
+        .collection-progress__sub {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(0.85rem, 0.9vw, 1rem);
+            color: var(--color-gray-light);
+            margin-top: 0.25rem;
+        }
+        .collection-progress__cta {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(0.75rem, 0.8vw, 0.9rem);
+            color: rgba(255,255,255,0.5);
+            margin-top: 4px;
+            letter-spacing: 0.02em;
+            text-align: center;
+        }
+
+        /* ============================================================
+               DESKTOP / LAPTOP / TABLET
+               ============================================================ */
+        .card-slot { display: block; }
+
+        @media (min-width: 1024px) and (max-width: 1439px) {
+            .carousel-track {
+                gap: clamp(10px, 1.2vw, 18px);
+                padding: 20px 0;
+            }
+            .card-slot {
+                width: calc((100% - (5 - 1) * clamp(10px, 1.2vw, 18px)) / 5);
+                max-width: 220px;
+            }
+        }
+
+        /* Планшет: скрываем дальние слоты, но сохраняем их место через невидимость */
+        @media (max-width: 1023px) {
+            .card-slot.pos-left2,
+            .card-slot.pos-right2 {
+                display: none; /* на планшете скрываем полностью, чтобы 3 слота были центрированы */
+            }
+            .carousel-track {
+                gap: clamp(10px, 1.5vw, 16px);
+                padding: 18px 0;
+            }
+            .card-slot {
+                width: calc((100% - (3 - 1) * clamp(10px, 1.5vw, 16px)) / 3);
+                max-width: 220px;
+            }
+            .collection-act__header .z-heading-lg {
+                white-space: normal;
+            }
+            .collection-act__inner {
+                gap: clamp(4px, 1vh, 14px);
+            }
+            .collection-progress__cta {
+                font-size: 0.75rem;
+            }
+            .carousel-nav .arrow {
+                width: 36px;
+                height: 36px;
+                font-size: 1.2rem;
+            }
+        }
+
+        /* ============================================================
+               MOBILE — Cover Flow (исправленное центрирование)
+               ============================================================ */
+        @media (max-width: 767px) {
+            .carousel-track {
+                padding: 20px 0;
+                gap: 0;
+            }
+
+            /* Переопределяем для мобильных: скрываем дальние слоты, но сохраняем их место (не display:none) */
+            .card-slot.pos-left2,
+            .card-slot.pos-right2 {
+                display: block !important;   /* отменяем display:none от планшета */
+                opacity: 0 !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
+                /* сохраняем ширину */
+                width: 60%;
+                max-width: 260px;
+            }
+
+            .card-slot {
+                width: 60%;
+                max-width: 260px;
+                flex-shrink: 0;
+                margin: 0 !important;
+                transform-origin: center center;
+                transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                            opacity 0.4s ease,
+                            filter 0.4s ease;
+            }
+
+            .card-slot.pos-center {
+                transform: scale(1.15) rotateY(0deg);
+                opacity: 1;
+                filter: brightness(100%);
+                z-index: 10;
+            }
+            .card-slot.pos-center .card-inner {
+                box-shadow: 0 0 50px rgba(183, 28, 28, 0.3), 0 12px 40px rgba(0,0,0,0.6);
+            }
+
+            .card-slot.pos-left1 {
+                transform: scale(0.85) rotateY(6deg);
+                opacity: 0.8;
+                filter: brightness(90%);
+                z-index: 5;
+            }
+            .card-slot.pos-left1 .card-inner {
+                box-shadow: 0 10px 35px rgba(0,0,0,0.55), 0 0 18px rgba(183,28,28,0.08);
+            }
+
+            .card-slot.pos-right1 {
+                transform: scale(0.85) rotateY(-6deg);
+                opacity: 0.8;
+                filter: brightness(90%);
+                z-index: 5;
+            }
+            .card-slot.pos-right1 .card-inner {
+                box-shadow: 0 10px 35px rgba(0,0,0,0.55), 0 0 18px rgba(183,28,28,0.08);
+            }
+
+            .card-slot.pos-hidden {
+                transform: scale(0.8) rotateY(0deg);
+                opacity: 0 !important;
+                pointer-events: none !important;
+                z-index: 0;
+                visibility: hidden;
+            }
+
+            .collection-act__header .z-heading-lg {
+                white-space: normal;
+                font-size: clamp(1.8rem, 7vw, 2.4rem);
+            }
+            .carousel-nav .arrow {
+                width: 32px;
+                height: 32px;
+                font-size: 1rem;
+            }
+            .collection-progress__cta {
+                font-size: 0.7rem;
+            }
+            .carousel-nav {
+                gap: 10px;
+            }
+            .collection-act__inner {
+                gap: clamp(8px, 1.5vh, 16px);
+                padding: clamp(8px, 2vh, 16px) 0;
+            }
+            .collection-progress {
+                margin-top: 8px;
+            }
+        }
+
+        @media (max-width: 479px) {
+            .carousel-track {
+                padding: 16px 0;
+            }
+            .card-slot {
+                width: 70%;
+                max-width: 200px;
+            }
+            .card-slot.pos-center {
+                transform: scale(1.1) rotateY(0deg);
+            }
+            .card-slot.pos-left1 {
+                transform: scale(0.8) rotateY(6deg);
+                opacity: 0.7;
+                filter: brightness(85%);
+            }
+            .card-slot.pos-right1 {
+                transform: scale(0.8) rotateY(-6deg);
+                opacity: 0.7;
+                filter: brightness(85%);
+            }
+            .collection-act__header .z-heading-lg {
+                font-size: 1.8rem;
+            }
+            .carousel-nav .arrow {
+                width: 28px;
+                height: 28px;
+                font-size: 0.9rem;
+            }
+            .collection-act__inner {
+                gap: 12px;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+            background: #0a0a0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3d3d3d;
+            border-radius: 2px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6a6a6a;
+        }
+    </style>
+</head>
+<body>
+
+<div class="z-site">
+
+    <!-- ==========================================================
+    ACT II — КОЛЛЕКЦИЯ v7.3 (фикс центрирования на мобильных)
+    ========================================================== -->
+    <section class="collection-act" id="collectionAct">
+        <div class="collection-act__inner">
+
+            <div class="collection-act__header" id="header">
+                <h2 class="z-heading-lg">СОБЕРИ ВСЮ КОЛЛЕКЦИЮ</h2>
+                <p class="z-body">Ваша коллекция начинается с первой карточки, но редко заканчивается на ней.</p>
+            </div>
+
+            <div class="carousel-wrapper" id="carouselWrapper">
+                <div class="carousel-track" id="carouselTrack">
+                    <!-- 5 слотов создаются JS -->
+                </div>
+            </div>
+
+            <div class="carousel-nav" id="carouselNav">
+                <button class="arrow" id="prevArrow" aria-label="Назад">‹</button>
+                <div class="carousel-indicators" id="indicators"></div>
+                <button class="arrow" id="nextArrow" aria-label="Вперед">›</button>
+            </div>
+
+            <div class="collection-progress" id="collectionProgress">
+                <div class="collection-progress__label">
+                    Коллекция: <span id="collectedCount">0</span> из <span id="totalCount">11</span> карточек
+                </div>
+                <div class="collection-progress__bar">
+                    <div class="collection-progress__fill" id="progressFill"></div>
+                </div>
+                <div class="collection-progress__sub" id="progressSub">До полной коллекции осталось 11 карточек</div>
+                <div class="collection-progress__cta">Загрузи чек и получи возможность выиграть Редкий лиитированный артефакт с оригинальным автографом игрока.</div>
+            </div>
+
+        </div>
+    </section>
+
+</div>
+
+<script>
+    /* ================================================================
+       PROJECT ZABIVALY — ACT II v7.3 (фикс центрирования на мобильных)
+       - Исправлен updateSlotPositions: не скрываем невалидные слоты через display:none,
+         только через класс pos-hidden (visibility:hidden, opacity:0)
+       - Центрирование сохраняется при любом индексе на мобильных устройствах
+       ================================================================ */
+
+    (function() {
+        'use strict';
+
+        // ----- Данные -----
+        const PLAYERS = [
+            { name: 'Егор Сурин', img: 'https://eimage.sendsay.ru/image/x_1768223591756466/%D0%97%D0%B0%D0%B1%D0%B8%D0%B2%D0%B0%D0%BB%D1%8B%202.0/%D0%98%D0%B3%D1%80%D0%BE%D0%BA%D0%B8%20%D0%BA%D0%B0%D1%80%D1%82%D0%BE%D1%87%D0%BA%D0%B8/%D0%A1%D1%83%D1%80%D0%B8%D0%BD%20%D0%95%D0%B3%D0%BE%D1%80.webp' },
+            { name: 'Прохор Полтапов', img: 'https://eimage.sendsay.ru/image/x_1768223591756466/%D0%97%D0%B0%D0%B1%D0%B8%D0%B2%D0%B0%D0%BB%D1%8B%202.0/%D0%98%D0%B3%D1%80%D0%BE%D0%BA%D0%B8%20%D0%BA%D0%B0%D1%80%D1%82%D0%BE%D1%87%D0%BA%D0%B8/%D0%9F%D1%80%D0%BE%D1%85%D0%BE%D0%B2%20%D0%9F%D0%BE%D0%BB%D1%82%D0%B0%D0%BF%D0%BE%D0%B2.webp' },
+            { name: 'Павел Карнаухов', img: 'https://eimage.sendsay.ru/image/x_1768223591756466/%D0%97%D0%B0%D0%B1%D0%B8%D0%B2%D0%B0%D0%BB%D1%8B%202.0/%D0%98%D0%B3%D1%80%D0%BE%D0%BA%D0%B8%20%D0%BA%D0%B0%D1%80%D1%82%D0%BE%D1%87%D0%BA%D0%B8/%D0%9F%D0%B0%D0%B2%D0%B5%D0%BB%20%D0%9A%D0%B0%D1%80%D0%BD%D0%B0%D1%83%D1%85%D0%BE%D0%B2.webp' },
+            { name: 'Алексей Марченко', img: 'https://eimage.sendsay.ru/image/x_1768223591756466/%D0%97%D0%B0%D0%B1%D0%B8%D0%B2%D0%B0%D0%BB%D1%8B%202.0/%D0%98%D0%B3%D1%80%D0%BE%D0%BA%D0%B8%20%D0%BA%D0%B0%D1%80%D1%82%D0%BE%D1%87%D0%BA%D0%B8/%D0%90%D0%BB%D0%B5%D0%BA%D1%81%D0%B5%D0%B9%20%D0%9C%D0%B0%D1%80%D1%87%D0%B5%D0%BD%D0%BA%D0%BE.webp' },
+            { name: 'Юрий Паутов', img: 'https://eimage.sendsay.ru/image/x_1768223591756466/%D0%97%D0%B0%D0%B1%D0%B8%D0%B2%D0%B0%D0%BB%D1%8B%202.0/%D0%98%D0%B3%D1%80%D0%BE%D0%BA%D0%B8%20%D0%BA%D0%B0%D1%80%D1%82%D0%BE%D1%87%D0%BA%D0%B8/%D0%AE%D1%80%D0%B8%D0%B9%20%D0%9F%D0%B0%D1%83%D1%82%D0%BE%D0%B2.webp' },
+            { name: 'Владимир Грудинин', img: 'https://eimage.sendsay.ru/image/x_1768223591756466/%D0%97%D0%B0%D0%B1%D0%B8%D0%B2%D0%B0%D0%BB%D1%8B%202.0/%D0%98%D0%B3%D1%80%D0%BE%D0%BA%D0%B8%20%D0%BA%D0%B0%D1%80%D1%82%D0%BE%D1%87%D0%BA%D0%B8/%D0%92%D0%BB%D0%B0%D0%B4%D0%B8%D0%BC%D0%B8%D1%80%20%D0%93%D1%80%D1%83%D0%B4%D0%B8%D0%BD%D0%B8%D0%BD.webp' },
+            { name: 'Павел Дацюк', img: 'https://eimage.sendsay.ru/image/x_1768223591756466/%D0%97%D0%B0%D0%B1%D0%B8%D0%B2%D0%B0%D0%BB%D1%8B%202.0/%D0%98%D0%B3%D1%80%D0%BE%D0%BA%D0%B8%20%D0%BA%D0%B0%D1%80%D1%82%D0%BE%D1%87%D0%BA%D0%B8/%D0%9F%D0%B0%D0%B2%D0%B5%D0%BB%20%D0%94%D0%B0%D1%86%D1%8E%D0%BA.webp' },
+            { name: 'Андрей Миронов', img: 'https://eimage.sendsay.ru/image/x_1768223591756466/%D0%97%D0%B0%D0%B1%D0%B8%D0%B2%D0%B0%D0%BB%D1%8B%202.0/%D0%98%D0%B3%D1%80%D0%BE%D0%BA%D0%B8%20%D0%BA%D0%B0%D1%80%D1%82%D0%BE%D1%87%D0%BA%D0%B8/%D0%90%D0%BD%D0%B4%D1%80%D0%B5%D0%B9%20%D0%9C%D0%B8%D1%80%D0%BE%D0%BD%D0%BE%D0%B2.webp' },
+            { name: 'Дамир Шарипзянов', img: 'https://eimage.sendsay.ru/image/x_1768223591756466/%D0%97%D0%B0%D0%B1%D0%B8%D0%B2%D0%B0%D0%BB%D1%8B%202.0/%D0%98%D0%B3%D1%80%D0%BE%D0%BA%D0%B8%20%D0%BA%D0%B0%D1%80%D1%82%D0%BE%D1%87%D0%BA%D0%B8/%D0%94%D0%B0%D0%BC%D0%B8%D1%80%20%D0%A8%D0%B0%D1%80%D0%B8%D0%BF%D0%B7%D1%8F%D0%BD%D0%BE%D0%B2.webp' },
+            { name: 'Дмитрий Силантьев', img: 'https://eimage.sendsay.ru/image/x_1768223591756466/%D0%97%D0%B0%D0%B1%D0%B8%D0%B2%D0%B0%D0%BB%D1%8B%202.0/%D0%98%D0%B3%D1%80%D0%BE%D0%BA%D0%B8%20%D0%BA%D0%B0%D1%80%D1%82%D0%BE%D1%87%D0%BA%D0%B8/%D0%94%D0%BC%D0%B8%D1%82%D1%80%D0%B8%D0%B9%20%D0%A1%D0%B8%D0%BB%D0%B0%D0%BD%D1%82%D1%8C%D0%B5%D0%B2.webp' },
+            { name: 'Дмитрий Рашевский', img: 'https://eimage.sendsay.ru/image/x_1768223591756466/%D0%97%D0%B0%D0%B1%D0%B8%D0%B2%D0%B0%D0%BB%D1%8B%202.0/%D0%98%D0%B3%D1%80%D0%BE%D0%BA%D0%B8%20%D0%BA%D0%B0%D1%80%D1%82%D0%BE%D1%87%D0%BA%D0%B8/%D0%94%D0%BC%D0%B8%D1%82%D1%80%D0%B8%D0%B9%20%D0%A0%D0%B0%D1%88%D0%B5%D0%B2%D1%81%D0%BA%D0%B8%D0%B9.webp' }
+        ];
+
+        // 3 случайные полученные карточки
+        function getRandomIndices(count, total) {
+            const indices = Array.from({ length: total }, (_, i) => i);
+            for (let i = indices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [indices[i], indices[j]] = [indices[j], indices[i]];
+            }
+            return indices.slice(0, count);
+        }
+        const COLLECTED_INDICES = getRandomIndices(3, PLAYERS.length);
+
+        // ----- DOM -----
+        const actSection = document.getElementById('collectionAct');
+        const track = document.getElementById('carouselTrack');
+        const wrapper = document.getElementById('carouselWrapper');
+        const indicators = document.getElementById('indicators');
+        const prevArrow = document.getElementById('prevArrow');
+        const nextArrow = document.getElementById('nextArrow');
+        const navContainer = document.getElementById('carouselNav');
+        const progressFill = document.getElementById('progressFill');
+        const collectedSpan = document.getElementById('collectedCount');
+        const totalSpan = document.getElementById('totalCount');
+        const progressSub = document.getElementById('progressSub');
+        const progressWrapper = document.getElementById('collectionProgress');
+        const header = document.getElementById('header');
+        totalSpan.textContent = PLAYERS.length;
+
+        // ----- Состояние -----
+        let currentIndex = 0;
+        let animating = false;
+        let flipTimer = null;
+        let demoDone = false;
+        let hintHidden = false;
+        let userInteracted = true;
+        let introStarted = false;
+        let isDragging = false;
+        let isTouchDragging = false;
+        let startX = 0;
+        let velocity = 0;
+        let lastMoveTime = 0;
+        let lastMoveX = 0;
+        let isAnimatingSlide = false;
+        let touchStartX = 0, touchStartY = 0;
+
+        // ----- Хранилище слотов -----
+        let slots = [];
+
+        // ----- Установка высоты блока -----
+        function setActHeight() {
+            if (!actSection) return;
+            const height = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+            actSection.style.height = height + 'px';
+            actSection.style.minHeight = height + 'px';
+        }
+
+        let resizeTimer;
+        function handleResize() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                setActHeight();
+                // При ресайзе пересчитываем позиции (без анимации)
+                updateSlotPositions(false);
+            }, 200);
+        }
+
+        // ----- Построение слотов (с привязкой обработчиков) -----
+        function buildSlots() {
+            track.innerHTML = '';
+            slots = [];
+            const positions = ['pos-left2', 'pos-left1', 'pos-center', 'pos-right1', 'pos-right2'];
+            for (let i = 0; i < 5; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'card-slot';
+                slot.dataset.slotIndex = i;
+                const inner = document.createElement('div');
+                inner.className = 'card-inner';
+                // Задняя сторона
+                const back = document.createElement('div');
+                back.className = 'card-face card-back';
+                back.innerHTML = `
+                    <div class="back-design">
+                        <div class="brand">
+                            <span class="first">H15</span>
+                            <span class="sep">×</span>
+                            <span class="second">CCM</span>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="question-mark">?</div>
+                        <div class="hint-text">Нажми чтобы открыть</div>
+                    </div>
+                `;
+                const front = document.createElement('div');
+                front.className = 'card-face card-front';
+                const img = document.createElement('img');
+                img.alt = 'Игрок';
+                img.loading = 'lazy';
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'player-name';
+                front.appendChild(img);
+                front.appendChild(nameDiv);
+
+                const notice = document.createElement('div');
+                notice.className = 'flip-notice';
+                notice.textContent = 'Найди эту карточку в одной из коробок';
+                front.appendChild(notice);
+
+                inner.appendChild(back);
+                inner.appendChild(front);
+                slot.appendChild(inner);
+
+                // Прямой обработчик клика на слоте
+                slot.addEventListener('click', function(e) {
+                    if (isDragging || isTouchDragging) return;
+                    if (this.classList.contains('pos-hidden')) return;
+                    handleCardClick(this);
+                });
+
+                track.appendChild(slot);
+                slots.push(slot);
+            }
+        }
+
+        // ----- Обновление позиций (только классы, без смены содержимого) -----
+        function updateSlotPositions(animate = true) {
+            const total = PLAYERS.length;
+            // Для каждого слота вычисляем индекс игрока, который должен быть в нём
+            const indices = [
+                currentIndex - 2,
+                currentIndex - 1,
+                currentIndex,
+                currentIndex + 1,
+                currentIndex + 2
+            ];
+            const posClasses = ['pos-left2', 'pos-left1', 'pos-center', 'pos-right1', 'pos-right2'];
+
+            slots.forEach((slot, i) => {
+                const idx = indices[i];
+                const isValid = idx >= 0 && idx < total;
+
+                // Если анимация выключена, убираем transition на время смены класса
+                if (!animate) {
+                    slot.style.transition = 'none';
+                }
+
+                if (isValid) {
+                    slot.className = 'card-slot ' + posClasses[i];
+                    // Убедимся, что слот видим и принимает события
+                    slot.style.display = 'block';
+                    slot.style.pointerEvents = 'auto';
+                    slot.style.visibility = 'visible';
+                } else {
+                    // Невалидный слот: скрываем через pos-hidden, но не удаляем из потока
+                    slot.className = 'card-slot pos-hidden';
+                    // Не трогаем display, оставляем block, чтобы сохранить место
+                    slot.style.pointerEvents = 'none';
+                    slot.style.visibility = 'hidden';
+                }
+
+                // Возвращаем transition, если он был отключён
+                if (!animate) {
+                    void slot.offsetHeight;
+                    slot.style.transition = '';
+                }
+
+                if (!slot.classList.contains('revealed')) {
+                    slot.classList.add('revealed');
+                }
+            });
+
+            updateIndicators();
+            updateArrows();
+            updateProgress();
+        }
+
+        // ----- Обновление содержимого слотов (изображения, имена, состояния) с отключением transition -----
+        function updateSlotContent() {
+            const total = PLAYERS.length;
+            const indices = [
+                currentIndex - 2,
+                currentIndex - 1,
+                currentIndex,
+                currentIndex + 1,
+                currentIndex + 2
+            ];
+
+            slots.forEach((slot, i) => {
+                const idx = indices[i];
+                const isValid = idx >= 0 && idx < total;
+                const player = isValid ? PLAYERS[idx] : null;
+                const isCollected = isValid ? COLLECTED_INDICES.includes(idx) : false;
+
+                const inner = slot.querySelector('.card-inner');
+                const front = inner.querySelector('.card-front');
+                const img = front.querySelector('img');
+                const nameDiv = front.querySelector('.player-name');
+                const back = inner.querySelector('.card-back');
+                const hint = back.querySelector('.hint-text');
+                const notice = front.querySelector('.flip-notice');
+
+                // Отключаем transition у card-inner, чтобы изменение класса flipped не анимировалось
+                inner.style.transition = 'none';
+                void inner.offsetHeight;
+
+                if (isValid) {
+                    if (img.src !== player.img) {
+                        img.src = player.img;
+                    }
+                    img.alt = player.name;
+                    nameDiv.textContent = '';
+
+                    if (isCollected) {
+                        inner.classList.add('flipped');
+                        slot.dataset.collected = 'true';
+                        slot.classList.add('collected');
+                        if (hint) hint.classList.add('hidden');
+                    } else {
+                        inner.classList.remove('flipped');
+                        slot.dataset.collected = 'false';
+                        slot.classList.remove('collected');
+                        if (!hintHidden && hint) hint.classList.remove('hidden');
+                        else if (hint) hint.classList.add('hidden');
+                    }
+                    if (notice) notice.classList.remove('show');
+                    inner.classList.remove('glow');
+                } else {
+                    img.src = '';
+                    img.alt = '';
+                    nameDiv.textContent = '';
+                    inner.classList.remove('flipped', 'glow');
+                    slot.dataset.collected = '';
+                    slot.classList.remove('collected');
+                    if (hint) hint.classList.add('hidden');
+                    if (notice) notice.classList.remove('show');
+                }
+
+                inner.style.transition = '';
+            });
+        }
+
+        // ----- slideTo — единый метод смены позиции с анимацией -----
+        function slideTo(newIndex) {
+            if (animating || isAnimatingSlide) return;
+            const clamped = Math.max(0, Math.min(newIndex, PLAYERS.length - 1));
+            if (clamped === currentIndex) {
+                return;
+            }
+
+            // Устанавливаем флаги блокировки
+            animating = true;
+            isAnimatingSlide = true;
+            let finished = false;
+
+            // Функция завершения
+            const finish = () => {
+                if (finished) return;
+                finished = true;
+                track.removeEventListener('transitionend', onTrackTransitionEnd);
+                clearTimeout(timeoutId);
+
+                // Сброс track
+                track.style.transition = 'none';
+                track.style.transform = 'translateX(0)';
+                void track.offsetHeight;
+
+                // Обновляем содержимое
+                updateSlotContent();
+
+                // Снимаем блокировку
+                isAnimatingSlide = false;
+                animating = false;
+                userInteracted = true;
+            };
+
+            // Обработчик transitionend на track
+            const onTrackTransitionEnd = (e) => {
+                if (e.propertyName === 'transform') {
+                    finish();
+                }
+            };
+
+            // Таймер-запасной вариант (600 мс)
+            const timeoutId = setTimeout(finish, 600);
+
+            // Вычисляем направление и шаг
+            const firstSlot = slots.find(s => s.style.display !== 'none');
+            if (!firstSlot) {
+                finish();
+                return;
+            }
+            const slotWidth = firstSlot.offsetWidth;
+            const gap = parseFloat(getComputedStyle(track).gap) || 0;
+            const step = slotWidth + gap;
+            const direction = clamped > currentIndex ? 1 : -1;
+            const shift = direction * step;
+
+            // Применяем анимацию track
+            track.style.transition = 'transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1)';
+            track.style.transform = `translateX(-${shift}px)`;
+
+            // Меняем индекс и позиции слотов (запускается их анимация)
+            currentIndex = clamped;
+            updateSlotPositions(true);
+
+            // Добавляем слушатель на track
+            track.addEventListener('transitionend', onTrackTransitionEnd);
+        }
+
+        function goTo(index) { slideTo(index); }
+        function next() { if (currentIndex < PLAYERS.length - 1) slideTo(currentIndex + 1); }
+        function prev() { if (currentIndex > 0) slideTo(currentIndex - 1); }
+
+        function updateIndicators() {
+            const dots = indicators.querySelectorAll('.dot');
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentIndex);
+            });
+        }
+
+        function updateArrows() {
+            prevArrow.classList.toggle('disabled', currentIndex === 0);
+            nextArrow.classList.toggle('disabled', currentIndex === PLAYERS.length - 1);
+        }
+
+        function updateProgress() {
+            const collected = COLLECTED_INDICES.length;
+            const percent = (collected / PLAYERS.length) * 100;
+            progressFill.style.width = percent + '%';
+            collectedSpan.textContent = collected;
+            const remaining = PLAYERS.length - collected;
+            progressSub.textContent = `До полной коллекции осталось ${remaining} карточек`;
+            if (remaining === 0) {
+                progressSub.textContent = '🎉 Коллекция завершена!';
+            }
+        }
+
+        function hideAllHints() {
+            const hints = track.querySelectorAll('.hint-text');
+            hints.forEach(h => h.classList.add('hidden'));
+            hintHidden = true;
+        }
+
+        // ----- Обработка клика по карточке (flip) -----
+        function handleCardClick(slot) {
+            if (!slot || slot.dataset.collected === undefined || slot.dataset.collected === '') return;
+            const isCollected = slot.dataset.collected === 'true';
+
+            if (!hintHidden) hideAllHints();
+
+            if (isCollected) {
+                slot.style.transform = 'scale(1.03)';
+                setTimeout(() => { slot.style.transform = ''; }, 200);
+                return;
+            }
+
+            const inner = slot.querySelector('.card-inner');
+            if (inner.classList.contains('flipped')) return;
+
+            inner.style.transition = 'none';
+            void inner.offsetHeight;
+            inner.classList.add('flipped');
+            inner.style.transition = '';
+
+            const notice = slot.querySelector('.flip-notice');
+            if (notice) notice.classList.add('show');
+
+            const hint = slot.querySelector('.hint-text');
+            if (hint) hint.classList.add('hidden');
+
+            if (flipTimer) clearTimeout(flipTimer);
+            flipTimer = setTimeout(() => {
+                inner.style.transition = 'none';
+                void inner.offsetHeight;
+                inner.classList.remove('flipped');
+                inner.style.transition = '';
+                if (notice) notice.classList.remove('show');
+                inner.classList.add('glow');
+                setTimeout(() => { inner.classList.remove('glow'); }, 800);
+                flipTimer = null;
+            }, 2500);
+        }
+
+        // ----- Автодемонстрация -----
+        function autoDemo() {
+            if (demoDone) return;
+            let targetSlot = null;
+            for (let i = 0; i < slots.length; i++) {
+                const slot = slots[i];
+                if (slot.dataset.collected === 'false' && !slot.classList.contains('pos-hidden')) {
+                    targetSlot = slot;
+                    break;
+                }
+            }
+            if (!targetSlot) return;
+
+            const inner = targetSlot.querySelector('.card-inner');
+            if (inner.classList.contains('flipped')) return;
+
+            inner.style.transition = 'none';
+            void inner.offsetHeight;
+            inner.classList.add('flipped');
+            inner.style.transition = '';
+
+            const notice = targetSlot.querySelector('.flip-notice');
+            if (notice) notice.classList.add('show');
+            const hint = targetSlot.querySelector('.hint-text');
+            if (hint) hint.classList.add('hidden');
+
+            setTimeout(() => {
+                inner.style.transition = 'none';
+                void inner.offsetHeight;
+                inner.classList.remove('flipped');
+                inner.style.transition = '';
+                if (notice) notice.classList.remove('show');
+                inner.classList.add('glow');
+                setTimeout(() => { inner.classList.remove('glow'); }, 800);
+                demoDone = true;
+                if (!hintHidden) hideAllHints();
+            }, 2000);
+        }
+
+        // ----- Инициализация событий (единый pipeline) -----
+        function initEvents() {
+            prevArrow.addEventListener('click', () => {
+                prev();
+                if (!hintHidden) hideAllHints();
+            });
+            nextArrow.addEventListener('click', () => {
+                next();
+                if (!hintHidden) hideAllHints();
+            });
+
+            const dots = indicators.querySelectorAll('.dot');
+            dots.forEach(dot => {
+                dot.addEventListener('click', () => {
+                    const idx = parseInt(dot.dataset.index);
+                    goTo(idx);
+                    if (!hintHidden) hideAllHints();
+                });
+            });
+
+            // ----- Mouse drag -----
+            const DRAG_THRESHOLD = 8;
+            let dragStartX = 0;
+            let dragStartY = 0;
+
+            track.addEventListener('mousedown', (e) => {
+                if (e.button !== 0) return;
+                isDragging = false;
+                dragStartX = e.clientX;
+                dragStartY = e.clientY;
+                startX = e.clientX;
+                velocity = 0;
+                lastMoveTime = 0;
+                lastMoveX = dragStartX;
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+
+            function onMouseMove(e) {
+                const deltaX = e.clientX - dragStartX;
+                const deltaY = e.clientY - dragStartY;
+                if (!isDragging) {
+                    if (Math.abs(deltaX) > DRAG_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY) * 1.2) {
+                        isDragging = true;
+                    } else if (Math.abs(deltaY) > DRAG_THRESHOLD) {
+                        document.removeEventListener('mousemove', onMouseMove);
+                        document.removeEventListener('mouseup', onMouseUp);
+                        return;
+                    }
+                }
+                if (!isDragging) return;
+                e.preventDefault();
+
+                const now = performance.now();
+                if (now - lastMoveTime > 30) {
+                    velocity = (e.clientX - lastMoveX) / (now - lastMoveTime);
+                    lastMoveX = e.clientX;
+                    lastMoveTime = now;
+                }
+            }
+
+            function onMouseUp(e) {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+                if (isDragging) {
+                    const deltaX = e.clientX - dragStartX;
+                    const absVelocity = Math.abs(velocity);
+                    let targetIndex = currentIndex;
+
+                    if (absVelocity > 0.3) {
+                        if (velocity < 0) targetIndex = currentIndex + 1;
+                        else if (velocity > 0) targetIndex = currentIndex - 1;
+                    } else if (Math.abs(deltaX) > 30) {
+                        if (deltaX < 0) targetIndex = currentIndex + 1;
+                        else targetIndex = currentIndex - 1;
+                    }
+                    targetIndex = Math.max(0, Math.min(targetIndex, PLAYERS.length - 1));
+                    slideTo(targetIndex);
+                }
+                setTimeout(() => { isDragging = false; }, 50);
+            }
+
+            // ----- Touch drag -----
+            track.addEventListener('touchstart', (e) => {
+                const touch = e.touches[0];
+                touchStartX = touch.clientX;
+                touchStartY = touch.clientY;
+                isTouchDragging = false;
+                startX = touch.clientX;
+                velocity = 0;
+                lastMoveTime = 0;
+                lastMoveX = touch.clientX;
+            }, { passive: true });
+
+            track.addEventListener('touchmove', (e) => {
+                const touch = e.touches[0];
+                const deltaX = touch.clientX - touchStartX;
+                const deltaY = touch.clientY - touchStartY;
+                if (!isTouchDragging) {
+                    if (Math.abs(deltaX) > DRAG_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY) * 1.2) {
+                        isTouchDragging = true;
+                        e.preventDefault();
+                    } else if (Math.abs(deltaY) > DRAG_THRESHOLD) {
+                        return;
+                    }
+                }
+                if (!isTouchDragging) return;
+                e.preventDefault();
+
+                const now = performance.now();
+                if (now - lastMoveTime > 30) {
+                    velocity = (touch.clientX - lastMoveX) / (now - lastMoveTime);
+                    lastMoveX = touch.clientX;
+                    lastMoveTime = now;
+                }
+            }, { passive: false });
+
+            track.addEventListener('touchend', (e) => {
+                if (isTouchDragging) {
+                    const deltaX = e.changedTouches[0].clientX - touchStartX;
+                    const absVelocity = Math.abs(velocity);
+                    let targetIndex = currentIndex;
+
+                    if (absVelocity > 0.3) {
+                        if (velocity < 0) targetIndex = currentIndex + 1;
+                        else if (velocity > 0) targetIndex = currentIndex - 1;
+                    } else if (Math.abs(deltaX) > 30) {
+                        if (deltaX < 0) targetIndex = currentIndex + 1;
+                        else targetIndex = currentIndex - 1;
+                    }
+                    targetIndex = Math.max(0, Math.min(targetIndex, PLAYERS.length - 1));
+                    slideTo(targetIndex);
+                }
+                setTimeout(() => { isTouchDragging = false; }, 50);
+            }, { passive: true });
+
+            window.addEventListener('resize', handleResize);
+            window.addEventListener('orientationchange', () => {
+                setTimeout(handleResize, 300);
+            });
+        }
+
+        // ----- Появление блока -----
+        function startIntro() {
+            header.classList.add('visible');
+            setTimeout(() => {
+                if (!wrapper.classList.contains('visible')) {
+                    wrapper.classList.add('visible');
+                }
+            }, 300);
+            setTimeout(() => {
+                navContainer.classList.add('visible');
+            }, 600);
+            setTimeout(() => {
+                progressWrapper.classList.add('visible');
+            }, 800);
+
+            setTimeout(() => {
+                if (!demoDone) {
+                    autoDemo();
+                }
+            }, 1500 + 300 + 200 + 5 * 80 + 200);
+        }
+
+        // ----- Инициализация (с исправленным начальным индексом) -----
+        function init() {
+            setActHeight();
+            buildSlots();
+
+            // Начинаем с индекса 2, чтобы сразу были видны все 5 карточек (для мобильных 3)
+            currentIndex = Math.min(2, PLAYERS.length - 1);
+
+            // Скрываем подсказки сразу
+            hintHidden = true;
+
+            indicators.innerHTML = '';
+            for (let i = 0; i < PLAYERS.length; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                dot.dataset.index = i;
+                dot.addEventListener('click', () => {
+                    goTo(i);
+                    if (!hintHidden) hideAllHints();
+                });
+                indicators.appendChild(dot);
+            }
+
+            // Сначала обновляем позиции без анимации
+            updateSlotPositions(false);
+            // Затем обновляем содержимое
+            updateSlotContent();
+            // Показываем wrapper
+            wrapper.classList.add('visible');
+
+            // Инициализируем события
+            initEvents();
+
+            // Обновляем индикаторы и стрелки
+            updateIndicators();
+            updateArrows();
+            updateProgress();
+
+            setTimeout(() => {
+                startIntro();
+                observeVisibility();
+            }, 50);
+        }
+
+        function observeVisibility() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !introStarted) {
+                        introStarted = true;
+                        if (!header.classList.contains('visible')) {
+                            header.classList.add('visible');
+                            if (!wrapper.classList.contains('visible')) {
+                                wrapper.classList.add('visible');
+                            }
+                            navContainer.classList.add('visible');
+                            progressWrapper.classList.add('visible');
+                            setTimeout(() => {
+                                if (!demoDone) {
+                                    autoDemo();
+                                }
+                            }, 1500);
+                        }
+                    }
+                });
+            }, { threshold: 0.2 });
+            const target = document.getElementById('collectionAct');
+            if (target) observer.observe(target);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+    })();
+</script>
+
+</body>
+</html>

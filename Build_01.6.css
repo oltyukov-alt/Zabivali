@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>PROJECT ZABIVALY — ACT I & II</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================================
+               RESET & BASE
+               ============================================================ */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #0a0a0a;
+            color: #ece6e0;
+            overflow-x: hidden;
+            line-height: 1.4;
+            margin: 0;
+            padding: 0;
+        }
+        img {
+            display: block;
+            max-width: 100%;
+        }
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        button {
+            border: none;
+            background: none;
+            cursor: pointer;
+            font: inherit;
+            color: inherit;
+        }
+        @font-face {
+            font-family: 'Benton Sans Extra Comp Black';
+            src: local('Benton Sans Extra Comp Black'), local('BentonSansExtraComp-Black');
+            font-weight: 900;
+            font-style: normal;
+            font-display: swap;
+        }
+        .accent-font {
+            font-family: 'Benton Sans Extra Comp Black', Impact, 'Arial Black', sans-serif;
+            letter-spacing: 0.02em;
+        }
+
+        /* ============================================================
+               TOKENS
+               ============================================================ */
+        :root {
+            --color-black: #0a0a0a;
+            --color-red: #b71c1c;
+            --color-red-glow: rgba(183, 28, 28, 0.3);
+            --color-white: #ece6e0;
+            --color-cream: #ded8d0;
+            --color-gray-light: #6a6a6a;
+            --space-xs: 8px;
+            --space-sm: 16px;
+            --space-md: 32px;
+            --space-lg: 64px;
+            --max-width: 1200px;
+        }
+
+        /* ============================================================
+               ГЛОБАЛЬНАЯ ТИПОГРАФИКА
+               ============================================================ */
+        .z-heading-xl {
+            font-family: 'Benton Sans Extra Comp Black', Impact, 'Arial Black', sans-serif;
+            font-size: clamp(2.4rem, 8vw, 5rem);
+            font-weight: 900;
+            letter-spacing: 0.02em;
+            line-height: 0.95;
+            text-transform: uppercase;
+            color: var(--color-white);
+            text-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        }
+        .z-heading-xl .highlight {
+            color: var(--color-red);
+        }
+        .z-heading-lg {
+            font-family: 'Benton Sans Extra Comp Black', Impact, 'Arial Black', sans-serif;
+            font-size: clamp(2.2rem, 7vw, 4.5rem);
+            font-weight: 900;
+            letter-spacing: 0.02em;
+            line-height: 1.05;
+            text-transform: uppercase;
+            color: var(--color-white);
+            position: relative;
+            display: inline-block;
+            text-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        }
+        .z-heading-lg::after {
+            content: '';
+            display: block;
+            width: 2.5em;
+            height: 4px;
+            background: var(--color-red);
+            margin-top: 0.3rem;
+            border-radius: 2px;
+        }
+        .z-body {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(0.9rem, 1.2vw, 1.2rem);
+            font-weight: 400;
+            line-height: 1.6;
+            color: var(--color-cream);
+        }
+
+        /* ============================================================
+               ACT I — HERO (последняя утверждённая версия, без изменений)
+               ============================================================ */
+        .first-act-wrapper {
+            position: relative;
+            height: 100dvh;
+            width: 100%;
+            background: var(--color-black);
+            overflow: hidden;
+            z-index: 10;
+        }
+        .first-act {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            position: relative;
+            background: var(--color-black);
+        }
+        .first-act__glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            will-change: opacity;
+            opacity: 0.4;
+            z-index: 0;
+            background: var(--color-red-glow);
+            width: 70vmax;
+            height: 70vmax;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: opacity 0.1s;
+        }
+        .first-act__halftone {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.03;
+            background-image: radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .scene-hero {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+        .scene-hero.visible {
+            opacity: 1;
+        }
+
+        .hero-composition {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-xs);
+            padding: 12px 0;
+            width: 100%;
+            max-width: var(--max-width);
+            margin: 0 auto;
+            height: 100%;
+            flex-shrink: 0;
+        }
+
+        .hero-logos {
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+            flex-shrink: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            will-change: opacity, transform;
+            padding: 0 var(--space-md);
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+            row-gap: 8px;
+            flex: 0 0 auto;
+        }
+        .hero-logos img {
+            height: clamp(32px, 4vh, 48px);
+            width: auto;
+            opacity: 0.85;
+        }
+        .hero-logos .logo-h15 {
+            filter: invert(1);
+        }
+        .hero-logos .login-link {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(0.8rem, 1vw, 1rem);
+            font-weight: 400;
+            color: rgba(236, 230, 224, 0.9);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+            letter-spacing: 0.04em;
+            transition: color 0.3s, opacity 0.3s;
+            margin-left: auto;
+            padding-right: var(--space-md);
+            white-space: nowrap;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .hero-title {
+            text-align: center;
+            max-width: 800px;
+            width: 90%;
+            flex-shrink: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            will-change: opacity, transform;
+            margin-bottom: 0;
+            flex: 0 0 auto;
+        }
+        .hero-intro {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(0.9rem, 1.1vw, 1.1rem);
+            font-weight: 400;
+            color: #a8a8a8;
+            letter-spacing: 0.06em;
+            margin-bottom: 0.25rem;
+            text-transform: none;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .hero-title .z-heading-xl {
+            font-size: clamp(2rem, 6vw, 4.5rem);
+        }
+        .hero-sub {
+            margin-top: var(--space-xs);
+            font-size: clamp(0.8rem, 1vw, 1rem);
+            color: rgba(236, 230, 224, 0.8);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            font-weight: 300;
+        }
+
+        .box-wrapper {
+            position: relative;
+            width: min(90%, 820px);
+            max-height: 55vh;
+            aspect-ratio: 1 / 0.85;
+            flex: 0 0 auto;
+            perspective: 1200px;
+            margin: 0;
+            will-change: transform;
+        }
+        .box-wrapper-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .box-wrapper-inner img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+        }
+        .box-closed {
+            z-index: 2;
+            filter: drop-shadow(0 20px 60px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 80px rgba(183, 28, 28, 0.2));
+            transform: scale(1);
+            opacity: 1;
+        }
+        .box-open {
+            z-index: 1;
+            filter: drop-shadow(0 20px 60px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 60px rgba(183, 28, 28, 0.08));
+            transform: scale(0.85);
+            opacity: 0;
+        }
+        .box-glow {
+            position: absolute;
+            inset: -20%;
+            background: radial-gradient(ellipse at center, rgba(183, 28, 28, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.6;
+            will-change: opacity;
+            z-index: 0;
+        }
+
+        .hero-scroll {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-sm);
+            flex-shrink: 0;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            margin-top: var(--space-xs);
+            pointer-events: none;
+            will-change: transform, opacity;
+            animation: none;
+            overflow: visible;
+            flex: 0 0 auto;
+        }
+        .hero-scroll.hidden {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: none;
+        }
+
+        .scroll-indicator {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 24px;
+            height: 80px;
+            flex-shrink: 0;
+        }
+        .scroll-line {
+            width: 2px;
+            height: 100%;
+            background: var(--color-red);
+            border-radius: 1px;
+            flex-shrink: 0;
+        }
+        .scroll-puck {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #6a6a6a, #1a1a1a 80%);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.8), inset 0 -1px 2px rgba(0, 0, 0, 0.6);
+            animation: puckMove 2.2s ease-in-out infinite;
+            will-change: top;
+        }
+        @keyframes puckMove {
+            0% { top: 0; }
+            50% { top: calc(100% - 18px); }
+            100% { top: 0; }
+        }
+        .scroll-text {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(0.8rem, 1vw, 1rem);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(236, 230, 224, 0.7);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            font-weight: 300;
+            margin-top: var(--space-xs);
+            transition: color 0.3s;
+        }
+
+        /* ============================================================
+               СЦЕНА ОТКРЫТИЯ — ACT II (исправленная версия)
+               ============================================================ */
+        .scene-reveal-top {
+            position: absolute;
+            top: 6%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            width: 90%;
+            max-width: 900px;
+            text-align: center;
+            z-index: 4;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .scene-reveal-top.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+        .scene-reveal-top .z-heading-lg {
+            font-size: clamp(2rem, 7vw, 4.5rem);
+            line-height: 1.05;
+            white-space: nowrap;
+        }
+        .scene-reveal-top .z-heading-lg::after {
+            width: 2.5em;
+            height: 4px;
+            margin: 0.3rem auto 0;
+        }
+        .scene-reveal-preamble {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(1rem, 1.2vw, 1.3rem);
+            font-weight: 400;
+            color: #c8c8c8;
+            letter-spacing: 0.02em;
+            line-height: 1.6;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+            max-width: 700px;
+            margin: 16px auto 0;
+            padding: 0 20px;
+        }
+
+        .scene-reveal-bottom {
+            position: absolute;
+            bottom: 2%;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            width: 90%;
+            max-width: 700px;
+            text-align: center;
+            z-index: 4;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .scene-reveal-bottom.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+        .scene-reveal-bottom .z-body {
+            display: none;
+        }
+        .scene-reveal-bottom .reveal-items {
+            display: flex;
+            gap: var(--space-md);
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 0;
+        }
+        .scene-reveal-bottom .reveal-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 4px;
+            padding: 6px 14px 6px 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(0.8rem, 0.9vw, 1rem);
+            color: var(--color-cream);
+            white-space: nowrap;
+        }
+        .scene-reveal-bottom .reveal-item .emoji {
+            font-size: 1.2rem;
+        }
+        .scene-reveal-bottom .reveal-item .rare {
+            color: var(--color-red);
+            font-weight: 600;
+        }
+
+        /* Адаптация для ноутбуков (700–900px) – увеличенный шрифт преамбулы и контейнер */
+        @media (max-height: 900px) and (min-height: 700px) and (min-width: 768px) {
+            .scene-reveal-top {
+                top: 5%;
+            }
+            .scene-reveal-top .z-heading-lg {
+                font-size: clamp(1.6rem, 5vw, 3.2rem);
+            }
+            .scene-reveal-preamble {
+                font-size: clamp(1rem, 1.1vw, 1.1rem);
+                margin-top: 12px;
+                max-width: 600px;
+            }
+            .scene-reveal-bottom {
+                bottom: 3%;
+            }
+            .scene-reveal-bottom .reveal-item {
+                font-size: 0.8rem;
+                padding: 4px 10px;
+            }
+            .box-wrapper {
+                max-height: 72vh;
+            }
+        }
+
+        @media (max-height: 820px) and (min-width: 768px) {
+            .scene-reveal-top {
+                top: 4%;
+            }
+            .scene-reveal-top .z-heading-lg {
+                font-size: clamp(1.4rem, 4.5vw, 2.8rem);
+            }
+            .scene-reveal-preamble {
+                font-size: 1rem;
+                margin-top: 8px;
+            }
+            .scene-reveal-bottom {
+                bottom: 1%;
+            }
+            .scene-reveal-bottom .reveal-item {
+                font-size: 0.7rem;
+                padding: 4px 8px;
+            }
+            .scene-reveal-bottom .reveal-items {
+                gap: var(--space-sm);
+            }
+            .box-wrapper {
+                max-height: 66vh;
+            }
+        }
+
+        /* Мобильные устройства – увеличенный шрифт преамбулы, но масштаб изображения возвращён к исходному через JS */
+        @media (max-width: 767px) {
+            .scene-reveal-top {
+                top: 8% !important;
+                max-width: 95%;
+            }
+            .scene-reveal-top .z-heading-lg {
+                white-space: normal;
+                font-size: clamp(1.6rem, 6vw, 2.8rem);
+            }
+            .scene-reveal-preamble {
+                font-size: 1rem;
+                margin-top: 10px;
+                padding: 0 10px;
+            }
+            .scene-reveal-bottom {
+                bottom: 2% !important;
+                padding: 0 5% !important;
+                width: 95% !important;
+            }
+            .scene-reveal-bottom .reveal-items {
+                gap: var(--space-sm);
+                flex-wrap: wrap;
+            }
+            .scene-reveal-bottom .reveal-item {
+                white-space: normal;
+                font-size: 0.8rem;
+                padding: 4px 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .scene-reveal-top .z-heading-lg {
+                font-size: clamp(1.4rem, 5vw, 2.2rem);
+            }
+            .scene-reveal-preamble {
+                font-size: 0.95rem;
+            }
+            .scene-reveal-bottom .reveal-item {
+                font-size: 0.75rem;
+                padding: 4px 6px;
+            }
+            .box-wrapper {
+                max-height: 45vh;
+            }
+        }
+
+        /* ============================================================
+               ДОПОЛНИТЕЛЬНЫЕ ПРАВКИ ПО ТЗ
+               ============================================================ */
+
+        /* Монитор 27" FullHD — плашки в одну строку + подняты */
+        @media (min-width: 1200px) {
+            .scene-reveal-bottom {
+                max-width: 1000px;
+                bottom: 6%;
+            }
+            .scene-reveal-bottom .reveal-items {
+                flex-wrap: nowrap;
+                gap: 2rem;
+            }
+            .scene-reveal-bottom .reveal-item {
+                flex: 0 0 auto;
+                white-space: nowrap;
+            }
+        }
+
+        /* Корректировки Hero (без изменений) */
+        @media (max-height: 820px) and (min-width: 768px) {
+            .hero-logos img {
+                height: clamp(24px, 3vh, 32px);
+            }
+            .hero-logos {
+                gap: var(--space-md);
+                padding: 0 var(--space-sm);
+            }
+            .hero-title .z-heading-xl {
+                font-size: clamp(1.8rem, 5vw, 3.2rem);
+            }
+            .hero-sub {
+                font-size: 0.8rem;
+                margin-top: 4px;
+            }
+            .hero-intro {
+                font-size: 0.8rem;
+                margin-bottom: 0.1rem;
+            }
+            .box-wrapper {
+                max-width: 600px;
+                max-height: 45vh;
+            }
+            .hero-composition {
+                gap: 4px;
+                padding: 8px 0;
+            }
+            .hero-scroll {
+                margin-top: 4px;
+            }
+            .scroll-indicator {
+                height: 60px;
+                width: 20px;
+            }
+            .scroll-puck {
+                width: 14px;
+                height: 14px;
+            }
+            @keyframes puckMove {
+                0% { top: 0; }
+                50% { top: calc(100% - 14px); }
+                100% { top: 0; }
+            }
+            .scroll-text {
+                font-size: 0.7rem;
+                margin-top: 4px;
+            }
+        }
+        @media (max-width: 1024px) {
+            .box-wrapper {
+                max-width: 700px;
+                max-height: 50vh;
+            }
+        }
+        @media (max-width: 767px) {
+            .hero-logos {
+                gap: var(--space-md);
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .hero-logos .login-link {
+                margin-left: 0;
+                padding-right: 0;
+                font-size: 0.85rem;
+                width: 100%;
+                text-align: center;
+                margin-top: 4px;
+            }
+            .hero-logos img {
+                height: clamp(24px, 3vh, 32px);
+            }
+            .box-wrapper {
+                max-width: 560px;
+                max-height: 45vh;
+            }
+            .hero-intro {
+                font-size: 0.8rem;
+                margin-bottom: 0.1rem;
+            }
+            .scroll-indicator {
+                height: 60px;
+                width: 20px;
+            }
+            .scroll-puck {
+                width: 14px;
+                height: 14px;
+            }
+            @keyframes puckMove {
+                0% { top: 0; }
+                50% { top: calc(100% - 14px); }
+                100% { top: 0; }
+            }
+        }
+        @media (max-height: 900px) and (min-height: 700px) and (min-width: 768px) {
+            .scene-reveal-top {
+                top: 5% !important;
+            }
+            .scene-reveal-bottom {
+                bottom: 3% !important;
+            }
+        }
+        @media (max-width: 767px) {
+            .scene-reveal-top {
+                top: 8% !important;
+            }
+            .scene-reveal-bottom {
+                bottom: 2% !important;
+            }
+        }
+        @media (max-width: 480px) {
+            .box-wrapper {
+                max-width: 420px;
+                max-height: 40vh;
+            }
+            .hero-title .z-heading-xl {
+                font-size: clamp(1.6rem, 6vw, 2.8rem);
+            }
+            .hero-intro {
+                font-size: 0.7rem;
+                margin-bottom: 0.1rem;
+            }
+            .scroll-indicator {
+                height: 50px;
+                width: 18px;
+            }
+            .scroll-puck {
+                width: 12px;
+                height: 12px;
+            }
+            @keyframes puckMove {
+                0% { top: 0; }
+                50% { top: calc(100% - 12px); }
+                100% { top: 0; }
+            }
+        }
+        @media (max-width: 380px) {
+            .box-wrapper {
+                max-width: 340px;
+            }
+            .scene-reveal-bottom .reveal-items {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        @media (min-height: 700px) and (max-height: 900px) {
+            .hero-intro {
+                margin-bottom: 14px;
+            }
+        }
+        @media (min-height: 901px) {
+            .hero-logos {
+                transform: translateY(45px);
+            }
+            .hero-scroll {
+                transform: translateY(-20px);
+            }
+            .hero-title .z-heading-xl {
+                font-size: clamp(1.85rem, 5.4vw, 4.05rem);
+            }
+        }
+
+        /* ============================================================
+               БЛОКИРОВКА СКРОЛЛА
+               ============================================================ */
+        body.no-scroll {
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+        }
+        html.no-scroll {
+            overflow: hidden;
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+            background: #0a0a0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3d3d3d;
+            border-radius: 2px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6a6a6a;
+        }
+    </style>
+</head>
+<body>
+    <div class="z-site">
+
+        <!-- ============================================================
+        ACT I — HERO (без изменений, утверждённая версия)
+        ============================================================ -->
+        <div class="first-act-wrapper" id="firstActWrapper">
+            <section class="first-act" id="firstAct">
+                <div class="first-act__glow" id="sceneGlow"></div>
+                <div class="first-act__halftone"></div>
+
+                <div class="scene-hero" id="sceneHero">
+                    <div class="hero-composition" id="heroComposition">
+                        <div class="hero-logos" id="actLogos">
+                            <img src="https://h15wear.ru/local/templates/isak/images/logo.svg" alt="H15" class="logo-h15" loading="eager" />
+                            <img src="https://ccm.ru/local/templates/ccm_newdis/assets/img/logo-header.svg" alt="CCM" loading="eager" />
+                            <a href="https://lk.zabivaly.h15wear.ru/profile" target="_blank" class="login-link">Личный кабинет</a>
+                        </div>
+
+                        <div class="hero-title" id="actTitles">
+                            <div class="hero-intro">«Забивалы» — Коллекционный хоккейный проект H15 × CCM</div>
+                            <h1 class="z-heading-xl">ОТКРОЙ СВОЙ<br /><span class="highlight">ПЕРВЫЙ АРТЕФАКТ</span></h1>
+                            <div class="hero-sub" id="actSub">
+                                <p class="z-body">Ваш первый шаг к Артефакту — покупка продукции H15 или CCM.</p>
+                            </div>
+                        </div>
+
+                        <div class="box-wrapper" id="sceneContainer">
+                            <div class="box-wrapper-inner" id="boxWrapper">
+                                <div class="box-glow" id="boxGlow"></div>
+                                <img class="box-closed" id="boxClosed"
+                                src="https://eimage.sendsay.ru/image/x_1768223591756466/%D0%97%D0%B0%D0%B1%D0%B8%D0%B2%D0%B0%D0%BB%D1%8B%202.0/red%2002.2.png"
+                                alt="Закрытый Артефакт" loading="eager" />
+                                <img class="box-open" id="boxOpen"
+                                src="https://clck.ru/3UxsSL"
+                                alt="Открытый Артефакт" loading="eager" />
+                            </div>
+                        </div>
+
+                        <div class="hero-scroll" id="actScroll">
+                            <div class="scroll-indicator">
+                                <div class="scroll-line"></div>
+                                <div class="scroll-puck"></div>
+                            </div>
+                            <div class="scroll-text">ПРОКРУТИТЕ ВНИЗ</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================================
+                ACT II — СЦЕНА ОТКРЫТИЯ (исправленная)
+                ============================================================ -->
+                <div class="scene-reveal-top" id="sceneRevealTop">
+                    <h2 class="z-heading-lg">ЧТО ВНУТРИ АРТЕФАКТА</h2>
+                    <p class="scene-reveal-preamble">
+                        Каждый Артефакт скрывает карточку игрока и точную мини-копию его клюшки. <br>Кто окажется внутри следующего?
+                    </p>
+                </div>
+
+                <div class="scene-reveal-bottom" id="sceneRevealBottom">
+                    <div class="reveal-items">
+                        <span class="reveal-item"><span class="emoji">🏒</span> Мини-клюшка</span>
+                        <span class="reveal-item"><span class="emoji">🃏</span> Карточка игрока</span>
+                        <span class="reveal-item"><span class="emoji">⭐</span> Предметы коллекции
+                    </div>
+                </div>
+
+            </section>
+        </div>
+
+    </div>
+
+    <script>
+        /* ================================================================
+               PROJECT ZABIVALY — SCROLL FIX v1.0
+               ================================================================ */
+
+        (function() {
+            'use strict';
+
+            // ============================================================
+            // 1. ЭЛЕМЕНТЫ
+            // ============================================================
+            const wrapper = document.getElementById('firstActWrapper');
+            const sceneHero = document.getElementById('sceneHero');
+            const sceneRevealTop = document.getElementById('sceneRevealTop');
+            const sceneRevealBottom = document.getElementById('sceneRevealBottom');
+            const boxClosed = document.getElementById('boxClosed');
+            const boxOpen = document.getElementById('boxOpen');
+            const boxWrapper = document.getElementById('boxWrapper');
+            const boxGlow = document.getElementById('boxGlow');
+            const sceneGlow = document.getElementById('sceneGlow');
+            const actLogos = document.getElementById('actLogos');
+            const actTitles = document.getElementById('actTitles');
+            const actSub = document.getElementById('actSub');
+            const actScroll = document.getElementById('actScroll');
+
+            // ============================================================
+            // 2. СОСТОЯНИЕ
+            // ============================================================
+            const state = {
+                progress: 0,
+                heroActive: false,
+                animationInProgress: false,
+                isFinished: false,
+            };
+
+            let scrollBlocked = false;
+
+            // ============================================================
+            // 3. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+            // ============================================================
+            function smoothstep(edge0, edge1, x) {
+                const t = Math.max(0, Math.min(1, (x - edge0) / (edge1 - edge0)));
+                return t * t * (3 - 2 * t);
+            }
+
+            // Определяем, является ли текущее устройство ноутбуком (15.6")
+            function isLaptop() {
+                const w = window.innerWidth;
+                const h = window.innerHeight;
+                return (w >= 768 && h >= 700 && h <= 900);
+            }
+
+            // ============================================================
+            // 4. УПРАВЛЕНИЕ БЛОКИРОВКОЙ СКРОЛЛА
+            // ============================================================
+            function updateScrollBlock() {
+                const shouldBlock = state.heroActive && state.animationInProgress;
+                if (shouldBlock && !scrollBlocked) {
+                    document.documentElement.classList.add('no-scroll');
+                    document.body.classList.add('no-scroll');
+                    scrollBlocked = true;
+                } else if (!shouldBlock && scrollBlocked) {
+                    document.documentElement.classList.remove('no-scroll');
+                    document.body.classList.remove('no-scroll');
+                    scrollBlocked = false;
+                }
+            }
+
+            // ============================================================
+            // 5. ОСНОВНАЯ ФУНКЦИЯ АНИМАЦИИ
+            // ============================================================
+            function animateScene(p) {
+                const pr = Math.min(1, Math.max(0, p));
+
+                // ——— Артефакт (коробка) ———
+                const closedFade = smoothstep(0, 0.80, pr);
+                boxClosed.style.opacity = 1 - closedFade;
+                boxClosed.style.transform = `scale(${1 - closedFade * 0.15})`;
+
+                // Масштаб открытого изображения и контейнера зависит от устройства
+                const laptop = isLaptop();
+
+                // Для открытого изображения: базовый scale 0.85, макс. прирост 0.15 (исходно) или 0.40 (для ноутбука)
+                const openBase = 0.85;
+                const openDelta = laptop ? 0.40 : 0.15;
+                const openReveal = smoothstep(0.15, 0.90, pr);
+                boxOpen.style.opacity = openReveal;
+                boxOpen.style.transform = `scale(${openBase + openReveal * openDelta})`;
+
+                // Для контейнера: базовый 1, прирост 0.04 (исходно) или 0.10 (для ноутбука)
+                const containerDelta = laptop ? 0.10 : 0.04;
+                const sceneScale = 1 + containerDelta * smoothstep(0, 0.60, pr);
+                boxWrapper.style.transform = `scale(${sceneScale})`;
+
+                const glowIntensity = 0.6 + 0.4 * smoothstep(0.1, 0.60, pr);
+                boxGlow.style.opacity = Math.min(1, glowIntensity);
+                const sceneGlowIntensity = 0.4 + 0.5 * smoothstep(0.1, 0.60, pr);
+                sceneGlow.style.opacity = Math.min(1, sceneGlowIntensity);
+
+                // ——— Логотипы и заголовок ———
+                const hideProgress = smoothstep(0, 0.35, pr);
+                const hideOpacity = 1 - hideProgress;
+                const hideTransform = -30 * hideProgress;
+                actLogos.style.opacity = hideOpacity;
+                actLogos.style.transform = `translateY(${hideTransform}px)`;
+                actTitles.style.opacity = hideOpacity;
+                actTitles.style.transform = `translateY(${hideTransform}px)`;
+                actSub.style.opacity = hideOpacity;
+                actSub.style.transform = `translateY(${hideTransform}px)`;
+
+                // ——— Scroll Indicator ———
+                const scrollHide = smoothstep(0, 0.30, pr);
+                const scrollOpacity = 1 - scrollHide;
+                actScroll.style.opacity = scrollOpacity;
+                if (scrollOpacity < 0.05) {
+                    actScroll.classList.add('hidden');
+                } else {
+                    actScroll.classList.remove('hidden');
+                }
+
+                // ——— Заголовок и преамбула ———
+                const titleShow = smoothstep(0.45, 0.80, pr);
+                if (titleShow > 0.05) {
+                    sceneRevealTop.classList.add('visible');
+                    sceneRevealTop.style.opacity = titleShow;
+                    sceneRevealTop.style.transform = `translateX(-50%) translateY(${10 - 10 * titleShow}px)`;
+                } else {
+                    sceneRevealTop.classList.remove('visible');
+                    sceneRevealTop.style.opacity = 0;
+                }
+
+                // ——— Плашки ———
+                const descShow = smoothstep(0.65, 1.0, pr);
+                if (descShow > 0.05) {
+                    sceneRevealBottom.classList.add('visible');
+                    sceneRevealBottom.style.opacity = descShow;
+                    sceneRevealBottom.style.transform = `translateX(-50%) translateY(${20 - 20 * descShow}px)`;
+                } else {
+                    sceneRevealBottom.classList.remove('visible');
+                    sceneRevealBottom.style.opacity = 0;
+                }
+            }
+
+            // ============================================================
+            // 6. ОБНОВЛЕНИЕ ПРОГРЕССА
+            // ============================================================
+            function setProgress(value) {
+                const newVal = Math.min(1, Math.max(0, value));
+                if (newVal === state.progress) return;
+                state.progress = newVal;
+                state.animationInProgress = (state.progress > 0 && state.progress < 1);
+                state.isFinished = (state.progress >= 1);
+                animateScene(state.progress);
+                updateScrollBlock();
+            }
+
+            // ============================================================
+            // 7. ОБРАБОТЧИКИ СОБЫТИЙ
+            // ============================================================
+            function onWheel(e) {
+                if (!state.heroActive) return;
+                const delta = e.deltaY;
+                let consumed = false;
+                if (delta > 0) {
+                    if (state.progress < 1) {
+                        consumed = true;
+                        setProgress(state.progress + delta / 3000);
+                    }
+                } else {
+                    if (state.progress > 0) {
+                        consumed = true;
+                        setProgress(state.progress + delta / 3000);
+                    }
+                }
+                if (consumed) e.preventDefault();
+            }
+
+            let touchStartY = 0;
+            let touchActive = false;
+
+            function onTouchStart(e) {
+                if (!state.heroActive) return;
+                const touch = e.touches[0];
+                if (touch) {
+                    touchStartY = touch.clientY;
+                    touchActive = true;
+                }
+            }
+
+            function onTouchMove(e) {
+                if (!state.heroActive || !touchActive) return;
+                const touch = e.touches[0];
+                if (!touch) return;
+                const deltaY = touch.clientY - touchStartY;
+                const step = -deltaY / window.innerHeight;
+                let consumed = false;
+                if (step > 0) {
+                    if (state.progress < 1) {
+                        consumed = true;
+                        setProgress(state.progress + step);
+                    }
+                } else {
+                    if (state.progress > 0) {
+                        consumed = true;
+                        setProgress(state.progress + step);
+                    }
+                }
+                if (consumed) e.preventDefault();
+                touchStartY = touch.clientY;
+            }
+
+            function onTouchEnd() {
+                touchActive = false;
+            }
+
+            // ============================================================
+            // 8. INTERSECTION OBSERVER
+            // ============================================================
+            const observer = new IntersectionObserver((entries) => {
+                for (const entry of entries) {
+                    const ratio = entry.intersectionRatio;
+                    const active = ratio >= 0.75;
+                    if (active !== state.heroActive) {
+                        state.heroActive = active;
+                        updateScrollBlock();
+                    }
+                }
+            }, {
+                threshold: [0, 0.25, 0.5, 0.75, 0.9, 1],
+                rootMargin: '0px',
+            });
+
+            if (wrapper) {
+                observer.observe(wrapper);
+            }
+
+            // ============================================================
+            // 9. РЕСЕТ
+            // ============================================================
+            function resetHero() {
+                state.progress = 0;
+                state.animationInProgress = false;
+                state.isFinished = false;
+
+                if (scrollBlocked) {
+                    document.documentElement.classList.remove('no-scroll');
+                    document.body.classList.remove('no-scroll');
+                    scrollBlocked = false;
+                }
+
+                sceneRevealTop.classList.remove('visible');
+                sceneRevealTop.style.opacity = '';
+                sceneRevealTop.style.transform = '';
+                sceneRevealBottom.classList.remove('visible');
+                sceneRevealBottom.style.opacity = '';
+                sceneRevealBottom.style.transform = '';
+
+                actScroll.classList.remove('hidden');
+                actScroll.style.opacity = '';
+
+                actLogos.style.opacity = '';
+                actLogos.style.transform = '';
+                actTitles.style.opacity = '';
+                actTitles.style.transform = '';
+                actSub.style.opacity = '';
+                actSub.style.transform = '';
+
+                animateScene(0);
+                sceneHero.classList.add('visible');
+                updateScrollBlock();
+                console.log('[Hero] Сброшен в начальное состояние');
+            }
+
+            // ============================================================
+            // 10. ИНИЦИАЛИЗАЦИЯ
+            // ============================================================
+            function init() {
+                sceneHero.classList.add('visible');
+                state.progress = 0;
+                state.animationInProgress = false;
+                state.isFinished = false;
+                animateScene(0);
+
+                window.addEventListener('wheel', onWheel, { passive: false });
+                document.addEventListener('touchstart', onTouchStart, { passive: true });
+                document.addEventListener('touchmove', onTouchMove, { passive: false });
+                document.addEventListener('touchend', onTouchEnd, { passive: true });
+
+                updateScrollBlock();
+                console.log('[Hero] Инициализирован. heroActive:', state.heroActive, 'progress:', state.progress);
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+            // ============================================================
+            // 11. ПУБЛИЧНЫЙ ИНТЕРФЕЙС
+            // ============================================================
+            window.resetHero = resetHero;
+            window.addEventListener('hero:reset', resetHero);
+            window.__heroState = state;
+            console.log('[Hero] Доступны: window.resetHero() и событие hero:reset');
+        })();
+    </script>
+</body>
+</html>

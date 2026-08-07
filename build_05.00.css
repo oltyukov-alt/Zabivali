@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ACT IV — Анимации (BUILD 15)</title>
+  <style>
+    /* ============================================================
+       ПОДКЛЮЧЕНИЕ ШРИФТОВ (Inter)
+    ============================================================ */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,700&display=swap');
+
+    /* ============================================================
+       ПРОСТРАНСТВО ИМЕН .act4 (изоляция)
+    ============================================================ */
+    .act4,
+    .act4 * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .act4 {
+      width: 100%;
+      background: #070707;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      color: #fff;
+      padding: 40px 0;
+    }
+
+    .act4-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ============================================================
+       HEADER (без анимаций)
+    ============================================================ */
+    .act4-header {
+      width: 100%;
+      max-width: 880px;
+      text-align: center;
+      margin-bottom: 56px;
+      padding: 0;
+    }
+
+    .act4-title {
+      font-family: 'Impact', 'Arial Black', sans-serif;
+      font-weight: 400;
+      font-size: clamp(2.8rem, 6.5vw, 5.2rem);
+      line-height: 1.1;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      color: #ffffff;
+      display: block;
+      position: relative;
+    }
+
+    .act4-title .act4-title-red {
+      color: #E53935;
+    }
+
+    .act4-title::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" stitchTiles="stitch"/><feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.05 0"/></filter><rect width="100%25" height="100%25" filter="url(%23n)" opacity="0.4"/></svg>');
+      background-repeat: repeat;
+      background-size: 120px 120px;
+      mix-blend-mode: soft-light;
+      opacity: 0.25;
+      border-radius: 0;
+      z-index: 0;
+    }
+
+    .act4-title span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .act4-subtitle {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-weight: 400;
+      font-size: clamp(1rem, 1.4vw, 1.25rem);
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.8);
+      max-width: 800px;
+      margin: 0 auto;
+      letter-spacing: 0.01em;
+    }
+
+    .act4-subtitle .highlight {
+      color: #E53935;
+      font-weight: 600;
+    }
+
+    /* ============================================================
+       КАРТОЧКИ (базовые стили + анимации появления)
+    ============================================================ */
+    .act4-steps {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+      align-items: stretch;
+      gap: 0;
+      width: 100%;
+      max-width: 1200px;
+      margin-bottom: 50px;
+    }
+
+    .act4-step {
+      background: #171717;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 22px;
+      padding: 24px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      min-height: 300px;
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+
+      /* ----- АНИМАЦИЯ ПОЯВЛЕНИЯ ----- */
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.65s cubic-bezier(0.22, 0.61, 0.36, 1),
+                  transform 0.65s cubic-bezier(0.22, 0.61, 0.36, 1),
+                  box-shadow 0.35s ease;
+    }
+
+    /* Состояние "видимо" (добавляется JS) */
+    .act4-step.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Задержки для последовательного появления */
+    .act4-step:nth-child(1) { transition-delay: 0ms; }
+    .act4-step:nth-child(3) { transition-delay: 120ms; }
+    .act4-step:nth-child(5) { transition-delay: 240ms; }
+    .act4-step:nth-child(7) { transition-delay: 360ms; }
+
+    /* ----- HOVER КАРТОЧЕК ----- */
+    .act4-step:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    /* ----- Контейнер изображения (почти незаметная подложка) ----- */
+    .act4-step-image {
+      width: 100%;
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.018), rgba(255, 255, 255, 0.006));
+      position: relative;
+      overflow: hidden;
+      padding: 14px;
+      transition: box-shadow 0.35s ease;
+    }
+
+    /* ----- СВЕЧЕНИЕ ДЛЯ ВСЕХ КАРТОЧЕК (разная интенсивность) ----- */
+    /* Покупка и Активация — слабое свечение */
+    .act4-step:nth-child(1) .act4-step-image,
+    .act4-step:nth-child(5) .act4-step-image {
+      box-shadow: 0 0 12px rgba(229, 57, 53, 0.08), 0 0 24px rgba(229, 57, 53, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    /* Артефакты — выраженное свечение (главный акцент) */
+    .act4-step:nth-child(3) .act4-step-image,
+    .act4-step:nth-child(7) .act4-step-image {
+      box-shadow: 0 0 20px rgba(229, 57, 53, 0.18), 0 0 40px rgba(229, 57, 53, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    /* Усиление свечения при hover (для всех карточек) */
+    .act4-step:hover .act4-step-image {
+      box-shadow: 0 0 18px rgba(229, 57, 53, 0.14), 0 0 34px rgba(229, 57, 53, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    /* ----- ОБЩИЕ СТИЛИ ДЛЯ ИЗОБРАЖЕНИЙ (PNG) ----- */
+    .act4-step-image img {
+      display: block;
+      max-width: 136px;
+      max-height: 136px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      margin: 0 auto;
+      user-select: none;
+      -webkit-user-drag: none;
+      position: relative;
+      z-index: 1;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.40)) drop-shadow(0 0 10px rgba(229, 57, 53, 0.06));
+      transition: transform 0.35s ease;
+    }
+
+    /* Hover изображения — лёгкое увеличение */
+    .act4-step:hover .act4-step-image img {
+      transform: scale(1.03);
+    }
+
+    /* ----- УСИЛЕНИЕ ДЛЯ ОТДЕЛЬНЫХ КАРТОЧЕК ----- */
+    .act4-step:nth-child(1) img {
+      filter: brightness(1.04) contrast(1.03) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.40));
+    }
+
+    .act4-step:nth-child(7) img {
+      filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.50)) drop-shadow(0 0 12px rgba(229, 57, 53, 0.10));
+    }
+
+    /* ----- ЗАГОЛОВКИ ----- */
+    .act4-step-title {
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 1.2rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #ffffff;
+      margin-top: 2px;
+      margin-bottom: 8px;
+    }
+
+    /* ----- ПОДПИСИ ----- */
+    .act4-step-description {
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.70);
+      line-height: 1.45;
+      max-width: 90%;
+    }
+
+    /* ============================================================
+       РАЗДЕЛИТЕЛИ (без анимаций)
+    ============================================================ */
+    .act4-divider {
+      width: 2px;
+      background: rgba(216, 31, 38, 0.38);
+      align-self: stretch;
+      margin: 0 12px;
+      flex-shrink: 0;
+      box-shadow: 0 0 8px rgba(229, 57, 53, 0.12);
+      border-radius: 1px;
+    }
+
+    /* ============================================================
+       АДАПТИВ — планшет (БЕЗ ИЗМЕНЕНИЙ)
+    ============================================================ */
+    @media (max-width: 1024px) {
+      .act4-steps {
+        grid-template-columns: 1fr auto 1fr;
+        grid-template-rows: auto auto;
+        row-gap: 24px;
+      }
+      .act4-divider:nth-child(2) {
+        grid-column: 2 / 3;
+        grid-row: 1 / 2;
+        width: 2px;
+        height: auto;
+        align-self: stretch;
+      }
+      .act4-divider:nth-child(4) {
+        grid-column: 2 / 3;
+        grid-row: 2 / 3;
+        width: 2px;
+        height: auto;
+        align-self: stretch;
+      }
+      .act4-divider:nth-child(6) {
+        grid-column: 1 / 4;
+        grid-row: 3 / 4;
+        width: 100%;
+        height: 2px;
+        background: rgba(216, 31, 38, 0.38);
+        margin: 0;
+        align-self: center;
+        display: block;
+        box-shadow: 0 0 8px rgba(229, 57, 53, 0.12);
+        border-radius: 1px;
+      }
+      .act4-step:nth-child(1) { grid-column: 1 / 2; grid-row: 1 / 2; }
+      .act4-step:nth-child(3) { grid-column: 3 / 4; grid-row: 1 / 2; }
+      .act4-step:nth-child(5) { grid-column: 1 / 2; grid-row: 3 / 4; }
+      .act4-step:nth-child(7) { grid-column: 3 / 4; grid-row: 3 / 4; }
+      .act4-divider:nth-child(2) { grid-row: 1 / 2; }
+      .act4-divider:nth-child(4) { grid-row: 3 / 4; }
+      .act4-divider:nth-child(6) { grid-row: 2 / 3; }
+
+      .act4-step-image img {
+        max-width: 130px;
+        max-height: 130px;
+      }
+      .act4-step-image {
+        padding: 12px;
+      }
+    }
+
+    /* ============================================================
+       МОБИЛЬНАЯ ВЕРСИЯ (390–767 px) — ИСПРАВЛЕННАЯ С ОТСТУПАМИ
+    ============================================================ */
+    @media (max-width: 767px) {
+      /* Переопределяем контейнер карточек на grid */
+      .act4-steps {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        grid-template-rows: auto auto auto;
+        column-gap: 12px;   /* отступ между колонками (карточка-разделитель-карточка) */
+        row-gap: 12px;      /* отступ между рядами (карточки-горизонтальный разделитель) */
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 30px;
+        align-items: stretch;
+        justify-items: stretch;
+      }
+
+      /* Разделители */
+      .act4-divider {
+        margin: 0;
+        align-self: stretch;
+        justify-self: stretch;
+        flex-shrink: 0;
+        box-shadow: 0 0 8px rgba(229, 57, 53, 0.12);
+        border-radius: 1px;
+      }
+
+      /* Первый разделитель (после карточки 1) — вертикальный в первом ряду */
+      .act4-divider:nth-child(2) {
+        grid-column: 2 / 3;
+        grid-row: 1 / 2;
+        width: 2px;
+        height: 100%;
+        background: rgba(216, 31, 38, 0.38);
+      }
+
+      /* Второй разделитель (после карточки 2) — горизонтальный между рядами */
+      .act4-divider:nth-child(4) {
+        grid-column: 1 / 4;
+        grid-row: 2 / 3;
+        width: 100%;
+        height: 2px;
+        background: rgba(216, 31, 38, 0.38);
+      }
+
+      /* Третий разделитель (после карточки 3) — вертикальный во втором ряду */
+      .act4-divider:nth-child(6) {
+        grid-column: 2 / 3;
+        grid-row: 3 / 4;
+        width: 2px;
+        height: 100%;
+        background: rgba(216, 31, 38, 0.38);
+      }
+
+      /* Карточки */
+      .act4-step {
+        grid-column: auto;
+        grid-row: auto;
+        height: 190px;
+        min-height: unset;
+        padding: 12px 10px 14px;
+        border-radius: 16px;
+        width: 100%;
+        margin: 0;
+        justify-self: stretch;
+        align-self: stretch;
+      }
+
+      /* Позиционирование карточек в сетке */
+      .act4-step:nth-child(1) {
+        grid-column: 1 / 2;
+        grid-row: 1 / 2;
+      }
+      .act4-step:nth-child(3) {
+        grid-column: 3 / 4;
+        grid-row: 1 / 2;
+      }
+      .act4-step:nth-child(5) {
+        grid-column: 1 / 2;
+        grid-row: 3 / 4;
+      }
+      .act4-step:nth-child(7) {
+        grid-column: 3 / 4;
+        grid-row: 3 / 4;
+      }
+
+      /* Стили для контейнера изображения */
+      .act4-step-image {
+        height: 82px;
+        padding: 6px;
+        margin-bottom: 8px;
+      }
+
+      .act4-step-image img {
+        max-width: 72px;
+        max-height: 72px;
+      }
+
+      .act4-step-title {
+        font-size: 0.85rem;
+        margin-top: 0;
+        margin-bottom: 2px;
+        letter-spacing: 0.03em;
+      }
+
+      .act4-step-description {
+        font-size: 0.75rem;
+        line-height: 1.3;
+        max-width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 38px;
+        text-align: center;
+      }
+
+      /* Header — адаптация под мобильную ширину */
+      .act4-header {
+        margin-bottom: 30px;
+        max-width: 100%;
+      }
+      .act4-subtitle {
+        max-width: 100%;
+        font-size: clamp(0.85rem, 3vw, 1rem);
+      }
+    }
+
+    /* ============================================================
+       ОЧЕНЬ МАЛЕНЬКИЕ ЭКРАНЫ (≤480 px)
+    ============================================================ */
+    @media (max-width: 480px) {
+      .act4-container {
+        padding: 0 12px;
+      }
+      .act4-step {
+        height: 170px;
+        padding: 8px 6px 10px;
+        border-radius: 12px;
+      }
+      .act4-step-image {
+        height: 64px;
+        padding: 4px;
+        margin-bottom: 4px;
+      }
+      .act4-step-image img {
+        max-width: 56px;
+        max-height: 56px;
+      }
+      .act4-step-title {
+        font-size: 0.75rem;
+        margin-bottom: 2px;
+      }
+      .act4-step-description {
+        font-size: 0.65rem;
+        min-height: 32px;
+      }
+      .act4-steps {
+        column-gap: 10px;
+        row-gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="act4">
+    <div class="act4-container">
+
+      <div class="act4-header">
+        <h2 class="act4-title">
+          <span>ВАШ ПУТЬ</span><br />
+          <span class="act4-title-red">К АРТЕФАКТУ</span>
+        </h2>
+        <p class="act4-subtitle">
+          Всё начинается с покупки <span class="highlight">H15</span> от 10 000 ₽ или <span class="highlight">CCM</span> от 25 000 ₽.
+        </p>
+      </div>
+
+      <div class="act4-steps">
+
+        <!-- ПОКУПКА -->
+        <div class="act4-step">
+          <div class="act4-step-image">
+            <img
+              src="https://eimage.sendsay.ru/image/x_1768223591756466/%D0%97%D0%B0%D0%B1%D0%B8%D0%B2%D0%B0%D0%BB%D1%8B%202.0/gfrtnbrb.webp"
+              alt="Пакет H15 × CCM"
+            />
+          </div>
+          <h3 class="act4-step-title">ПОКУПКА</h3>
+          <p class="act4-step-description">H15 или CCM</p>
+        </div>
+
+        <div class="act4-divider"></div>
+
+        <!-- АРТЕФАКТ -->
+        <div class="act4-step">
+          <div class="act4-step-image">
+            <img
+              src="https://eimage.sendsay.ru/image/x_1768223591756466/%D0%97%D0%B0%D0%B1%D0%B8%D0%B2%D0%B0%D0%BB%D1%8B%202.0/red%2002.2.png"
+              alt="Красный Артефакт"
+            />
+          </div>
+          <h3 class="act4-step-title">АРТЕФАКТ</h3>
+          <p class="act4-step-description">Получите Артефакт</p>
+        </div>
+
+        <div class="act4-divider"></div>
+
+        <!-- АКТИВАЦИЯ (заменён на PNG) -->
+        <div class="act4-step">
+          <div class="act4-step-image">
+            <img
+              src="https://eimage.sendsay.ru/image/x_1768223591756466/%D0%97%D0%B0%D0%B1%D0%B8%D0%B2%D0%B0%D0%BB%D1%8B%202.0/%D1%87%D0%B5%D0%BA.webp"
+              alt="Активация Артефакта"
+            />
+          </div>
+          <h3 class="act4-step-title">АКТИВАЦИЯ</h3>
+          <p class="act4-step-description">Активируйте Артефакт</p>
+        </div>
+
+        <div class="act4-divider"></div>
+
+        <!-- УЧАСТИЕ -->
+        <div class="act4-step">
+          <div class="act4-step-image">
+            <img
+              src="https://eimage.sendsay.ru/image/x_1768223591756466/%D0%97%D0%B0%D0%B1%D0%B8%D0%B2%D0%B0%D0%BB%D1%8B%202.0/black%2001.2.png"
+              alt="Черный Артефакт"
+            />
+          </div>
+          <h3 class="act4-step-title">УЧАСТИЕ</h3>
+          <p class="act4-step-description">Шанс на Редкий Артефакт</p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================
+     JAVASCRIPT (только IntersectionObserver для появления)
+  ============================================================ -->
+  <script>
+    (function() {
+      'use strict';
+
+      const steps = document.querySelectorAll('.act4-step');
+
+      if (steps.length === 0) return;
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, {
+        threshold: 0.15,
+        rootMargin: '0px 0px -40px 0px'
+      });
+
+      steps.forEach(step => observer.observe(step));
+
+      console.log('ACT IV — анимации запущены');
+    })();
+  </script>
+</body>
+</html>
